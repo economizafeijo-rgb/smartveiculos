@@ -35,10 +35,10 @@ export function FormField({ id, label, error, hint, className, children }: FormF
 export const toNumber = (v: string): number => (v.trim() === "" ? Number.NaN : Number(v.replace(",", ".")));
 
 /** Achata erros do Zod em { campo: mensagem }. */
-export function fieldErrors(issues: { path: (string | number)[]; message: string }[]): Record<string, string> {
-  const out: Record<string, string> = {};
+export function fieldErrors<K extends string>(issues: { path: (string | number)[]; message: string }[]): Partial<Record<K, string>> {
+  const out: Partial<Record<K, string>> = {};
   for (const i of issues) {
-    const key = String(i.path[0] ?? "form");
+    const key = String(i.path[0] ?? "form") as K;
     out[key] ??= i.message;
   }
   return out;

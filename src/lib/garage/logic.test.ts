@@ -34,7 +34,7 @@ describe("upcomingServices", () => {
       16000,
     );
     expect(list).toHaveLength(1);
-    expect(list[0].nextKm).toBe(20000);
+    expect(list[0]?.nextKm).toBe(20000);
   });
   it("um serviço mais novo sem próximo km remove o lembrete", () => {
     const list = upcomingServices([rec({ km: 10000, nextKm: 15000 }), rec({ km: 15000, nextKm: null })], 16000);

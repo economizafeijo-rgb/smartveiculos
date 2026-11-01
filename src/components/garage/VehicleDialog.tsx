@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { garage } from "@/lib/garage/store";
-import { VEHICLE_KINDS, VEHICLE_LABELS, vehicleInputSchema, type Vehicle, type VehicleKind } from "@/lib/garage/types";
+import { VEHICLE_KINDS, VEHICLE_LABELS, vehicleInputSchema, type Vehicle, type VehicleInput, type VehicleKind } from "@/lib/garage/types";
 
 import { FormField, fieldErrors, toNumber } from "./FormField";
 import { VEHICLE_ICONS } from "./kind-meta";
@@ -34,7 +34,7 @@ function VehicleForm({ vehicle, onDone }: { vehicle?: Vehicle | undefined; onDon
   const [name, setName] = useState(vehicle?.name ?? "");
   const [plate, setPlate] = useState(vehicle?.plate ?? "");
   const [km, setKm] = useState(vehicle ? String(vehicle.currentKm) : "");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof VehicleInput, string>>>({});
 
   function submit(e: FormEvent) {
     e.preventDefault();

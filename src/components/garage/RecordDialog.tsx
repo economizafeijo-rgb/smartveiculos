@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { formatKm } from "@/lib/garage/logic";
 import { garage } from "@/lib/garage/store";
-import { RECORD_KINDS, RECORD_LABELS, recordInputSchema, type RecordKind, type ServiceRecord, type Vehicle } from "@/lib/garage/types";
+import { RECORD_KINDS, RECORD_LABELS, recordInputSchema, type RecordInput, type RecordKind, type ServiceRecord, type Vehicle } from "@/lib/garage/types";
 
 import { FormField, fieldErrors, toNumber } from "./FormField";
 import { RECORD_ICONS, SUGGESTED_INTERVAL_KM } from "./kind-meta";
@@ -40,7 +40,7 @@ function RecordForm({ vehicle, record, defaultKind, onDone }: { vehicle: Vehicle
   const [cost, setCost] = useState(record ? String(record.cost) : "");
   const [nextKm, setNextKm] = useState(record?.nextKm != null ? String(record.nextKm) : "");
   const [description, setDescription] = useState(record?.description ?? "");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof RecordInput, string>>>({});
 
   const interval = SUGGESTED_INTERVAL_KM[vehicle.kind][kind];
   const kmNum = toNumber(km);
