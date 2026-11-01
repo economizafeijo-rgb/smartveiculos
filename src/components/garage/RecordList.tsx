@@ -24,7 +24,7 @@ export function RecordList({ records, onEdit }: RecordListProps) {
 
   return (
     <section aria-labelledby="history-title" className="space-y-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3">
         <h2 id="history-title" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Histórico</h2>
         <ToggleGroup type="single" value={filter} onValueChange={(v) => v && setFilter(v as Filter)} className="flex flex-wrap justify-start gap-1" aria-label="Filtrar por tipo">
           <ToggleGroupItem value="todos" size="sm" className="rounded-full px-3 data-[state=on]:bg-ink data-[state=on]:text-ink-foreground">Todos</ToggleGroupItem>

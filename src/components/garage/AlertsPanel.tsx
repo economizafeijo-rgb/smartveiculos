@@ -28,7 +28,7 @@ export function AlertsPanel({ items, onQuickAdd }: AlertsPanelProps) {
           Nenhum lembrete. Ao registrar um serviço, preencha “Próximo em (km)” para acompanhar aqui.
         </p>
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
           {items.map((item) => {
             const s = STATE_STYLE[item.status.state];
             const Icon = RECORD_ICONS[item.kind];
