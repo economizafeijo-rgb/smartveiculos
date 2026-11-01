@@ -29,8 +29,8 @@ export const Route = createFileRoute("/")({
   component: GaragePage,
 });
 
-type RecordDialogState = { open: boolean; record?: ServiceRecord; defaultKind?: RecordKind };
-type VehicleDialogState = { open: boolean; vehicle?: Vehicle };
+type RecordDialogState = { open: boolean; record?: ServiceRecord | undefined; defaultKind?: RecordKind | undefined };
+type VehicleDialogState = { open: boolean; vehicle?: Vehicle | undefined };
 
 function GaragePage() {
   const hydrated = useHydrated();

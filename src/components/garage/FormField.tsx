@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 export interface FormFieldProps {
   id: string;
   label: string;
-  error?: string;
-  hint?: string;
+  error?: string | undefined;
+  hint?: string | undefined;
   className?: string;
   children: ReactNode;
 }

@@ -14,8 +14,8 @@ import { VEHICLE_ICONS } from "./kind-meta";
 export interface VehicleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  vehicle?: Vehicle;
-  onSaved?: (id: string) => void;
+  vehicle?: Vehicle | undefined;
+  onSaved?: ((id: string) => void) | undefined;
 }
 
 export function VehicleDialog({ open, onOpenChange, vehicle, onSaved }: VehicleDialogProps) {
@@ -29,7 +29,7 @@ export function VehicleDialog({ open, onOpenChange, vehicle, onSaved }: VehicleD
   );
 }
 
-function VehicleForm({ vehicle, onDone }: { vehicle?: Vehicle; onDone: (id: string) => void }) {
+function VehicleForm({ vehicle, onDone }: { vehicle?: Vehicle | undefined; onDone: (id: string) => void }) {
   const [kind, setKind] = useState<VehicleKind>(vehicle?.kind ?? "carro");
   const [name, setName] = useState(vehicle?.name ?? "");
   const [plate, setPlate] = useState(vehicle?.plate ?? "");

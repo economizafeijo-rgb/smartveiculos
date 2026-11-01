@@ -17,8 +17,8 @@ export interface RecordDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   vehicle: Vehicle;
-  record?: ServiceRecord;
-  defaultKind?: RecordKind;
+  record?: ServiceRecord | undefined;
+  defaultKind?: RecordKind | undefined;
 }
 
 export function RecordDialog({ open, onOpenChange, vehicle, record, defaultKind }: RecordDialogProps) {
@@ -33,7 +33,7 @@ export function RecordDialog({ open, onOpenChange, vehicle, record, defaultKind 
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-function RecordForm({ vehicle, record, defaultKind, onDone }: { vehicle: Vehicle; record?: ServiceRecord; defaultKind?: RecordKind; onDone: () => void }) {
+function RecordForm({ vehicle, record, defaultKind, onDone }: { vehicle: Vehicle; record?: ServiceRecord | undefined; defaultKind?: RecordKind | undefined; onDone: () => void }) {
   const [kind, setKind] = useState<RecordKind>(record?.kind ?? defaultKind ?? "oleo");
   const [date, setDate] = useState(record?.date ?? today());
   const [km, setKm] = useState(String(record?.km ?? vehicle.currentKm));
