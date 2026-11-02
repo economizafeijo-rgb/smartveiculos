@@ -1186,97 +1186,150 @@ body:has(.sv-homepage)::-webkit-scrollbar {
   .sv-owner-garage .sv-garage-vehicle-card {transition: none !important;animation: none !important;}
 }
 
-/* Campanha gratuita — apenas a área de proprietários.
-   Componente responsivo com interação por tipo de veículo e recursos. */
-.sv-free-campaign {
-  scroll-margin-top: 80px;
+/* SmartVeículos / campanha da garagem: mesma identidade azul-marinho + laranja
+   da homepage. Transições contidas e contraste seguro em todas as interações. */
+.sv-homepage .sv-free-campaign {
+  scroll-margin-top: 76px;
   background:
-    radial-gradient(ellipse 42% 65% at 100% 2%, rgb(249 115 22 / 10%), transparent 84%),
-    radial-gradient(ellipse 50% 75% at 0% 100%, rgb(59 130 246 / 8%), transparent 90%),
-    #edf2f8;
+    radial-gradient(ellipse 42% 55% at 5% 18%, rgb(249 115 22 / 9%), transparent 80%),
+    radial-gradient(ellipse 48% 66% at 93% 70%, rgb(59 130 246 / 13%), transparent 85%),
+    linear-gradient(135deg, #0c1627 0%, #11233b 55%, #0e1b2e 100%);
+  color: #f8fafc;
 }
 .sv-free-campaign-pattern {
-  opacity: .45;
+  opacity: .28;
   background-image:
-    linear-gradient(rgb(144 158 178 / 12%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(144 158 178 / 12%) 1px, transparent 1px);
-  background-size: 38px 38px;
-  mask-image: linear-gradient(90deg, transparent, black 25%, black 76%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 25%, black 76%, transparent);
+    linear-gradient(rgb(255 255 255 / 10%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 10%) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(90deg, transparent 0%, black 32%, black 76%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 32%, black 76%, transparent 100%);
 }
-.sv-free-campaign .sv-free-accent {
+.sv-homepage .sv-free-campaign .sv-free-accent {
   display: inline;
-  background: linear-gradient(100deg, #ea580c 4%, #b9380b 82%);
+  background: linear-gradient(100deg, #fdba74 6%, #fb923c 55%, #f97316 98%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
-.sv-free-campaign .sv-free-offer {
+.sv-homepage .sv-free-campaign .sv-free-offer {
   max-width: 570px;
-  border-color: rgb(253 186 116 / 77%);
-  box-shadow: 0 15px 38px -25px rgb(101 51 16 / 22%);
+  border-color: rgb(251 146 60 / 33%);
+  background: linear-gradient(120deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 4%));
+  box-shadow: 0 18px 43px -29px rgb(0 0 0 / 57%);
 }
 .sv-free-campaign .sv-free-price {
   font-variant-numeric: tabular-nums;
-  letter-spacing: -.05em;
+  letter-spacing: -.055em;
+  color: #fdba74;
+  text-shadow: 0 6px 30px rgb(249 115 22 / 14%);
 }
-.sv-free-campaign .sv-free-cta {
-  background: linear-gradient(110deg, #ea580c, #c2410c);
-  color: #fff;
-  box-shadow: 0 12px 28px -16px rgb(154 52 18 / 75%);
-  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+.sv-homepage .sv-free-campaign .sv-free-cta {
+  background: linear-gradient(112deg, #fb923c, #f97316 65%, #ea580c);
+  border: 1px solid #fb923c;
+  color: #101c30;
+  box-shadow: 0 11px 27px -14px rgb(249 115 22 / 70%);
+  transition: transform .22s ease, box-shadow .22s ease, background-color .22s ease;
 }
-.sv-free-campaign .sv-free-cta:hover {
-  background: linear-gradient(110deg, #c2410c, #9a3412);
-  color: white;
+.sv-homepage .sv-free-campaign .sv-free-cta:hover {
+  background: linear-gradient(112deg, #fdba74, #fb923c);
+  color: #101c30;
   transform: translateY(-2px);
-  box-shadow: 0 16px 25px -13px rgb(154 52 18 / 58%);
+  box-shadow: 0 14px 30px -12px rgb(249 115 22 / 55%);
 }
-.sv-free-campaign .sv-free-preview {
-  background: linear-gradient(150deg, rgb(255 255 255 / 99%), rgb(248 250 252 / 96%));
+.sv-homepage .sv-free-campaign .sv-free-preview {
+  background: linear-gradient(135deg, rgb(30 50 76 / 96%) 0%, rgb(18 36 59 / 96%) 100%);
+  border-color: rgb(255 255 255 / 16%);
+  box-shadow: 0 24px 61px -24px rgb(0 0 0 / 51%);
 }
 .sv-free-campaign .sv-free-choice,
 .sv-free-campaign .sv-free-feature {
   cursor: pointer;
-  transition: background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
+  transition: background-color .19s ease, border-color .19s ease, color .19s ease, box-shadow .19s ease, transform .19s ease;
+}
+.sv-free-campaign .sv-free-choice[aria-pressed="true"] {
+  background: #f97316;
+  color: #111c30;
+}
+.sv-free-campaign .sv-free-choice:hover,
+.sv-free-campaign .sv-free-feature:hover {
+  transform: translateY(-1px);
 }
 .sv-free-campaign .sv-free-choice:focus-visible,
 .sv-free-campaign .sv-free-feature:focus-visible,
 .sv-free-campaign .sv-free-cta:focus-visible {
   outline: 3px solid #fb923c;
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 .sv-free-campaign .sv-free-feature[aria-pressed="true"] {
-  box-shadow: 0 0 0 2px rgb(249 115 22 / 12%);
-}
-.sv-free-campaign .sv-free-feature:hover {
-  transform: translateY(-1px);
+  border-color: rgb(251 146 60 / 83%);
+  background: rgb(249 115 22 / 18%);
+  color: #fed7aa;
+  box-shadow: 0 0 0 2px rgb(249 115 22 / 14%);
 }
 .sv-free-campaign .sv-free-image-card {
-  height: clamp(210px, 25vw, 275px);
+  height: clamp(205px, 24vw, 265px);
 }
 .sv-free-campaign .sv-free-visual {
-  object-position: center 49%;
-  filter: brightness(1.08) saturate(1.05);
+  object-position: center 48%;
+  filter: brightness(1.07) saturate(1.04);
   animation: sv-free-visual-in .42s ease-out both;
 }
 .sv-free-campaign .sv-free-image-overlay {
   background: linear-gradient(to top,
-    rgb(5 15 30 / 85%) 0%,
-    rgb(5 15 30 / 52%) 24%,
-    rgb(5 15 30 / 7%) 62%,
-    rgb(5 15 30 / 23%) 100%);
+    rgb(5 15 30 / 86%) 0%,
+    rgb(5 15 30 / 51%) 23%,
+    rgb(5 15 30 / 8%) 60%,
+    rgb(5 15 30 / 22%) 100%);
 }
 .sv-free-campaign .sv-free-feature-detail {
   animation: sv-free-detail-in .24s ease-out;
 }
 @keyframes sv-free-visual-in {
-  from {opacity: .65;transform: scale(1.035);}
+  from {opacity: .67;transform: scale(1.026);}
   to {opacity: 1;transform: scale(1);}
 }
 @keyframes sv-free-detail-in {
   from {opacity: .7;transform: translateY(3px);}
   to {opacity: 1;transform: translateY(0);}
+}
+/* O mesmo material, botões e iluminação da seção superior:
+   contraste alto sem grandes superfícies brancas desconectadas. */
+.sv-homepage .sv-ecosystem-section {
+  scroll-margin-top: 76px;
+  background:
+    radial-gradient(ellipse 35% 55% at 100% 0%, rgb(249 115 22 / 9%), transparent 88%),
+    linear-gradient(180deg, #101f33 0%, #12263e 62%, #101d30 100%);
+  color: #f8fafc;
+}
+.sv-homepage .sv-ecosystem-panel {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: linear-gradient(130deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 4%));
+  color: #f8fafc;
+  box-shadow: 0 16px 42px -27px rgb(0 0 0 / 38%);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+.sv-homepage .sv-ecosystem-panel > button {
+  color: #f8fafc;
+  cursor: pointer;
+}
+.sv-homepage .sv-ecosystem-profile-card {
+  border-color: rgb(255 255 255 / 15%);
+  background: linear-gradient(140deg, #192e48, #14253b);
+  color: #f8fafc;
+  box-shadow: 0 14px 36px -25px rgb(0 0 0 / 53%);
+}
+.sv-homepage .sv-ecosystem-profile-card:hover,
+.sv-homepage .sv-ecosystem-profile-card:focus-visible {
+  border-color: rgb(251 146 60 / 70%);
+  background: #1d3653;
+}
+.sv-homepage .sv-ecosystem-profile-card > div:last-child {
+  color: #f8fafc;
+}
+.sv-homepage .sv-ecosystem-profile-card img {
+  filter: saturate(1.07) contrast(1.025);
 }
 @media (max-width: 639px) {
   .sv-free-campaign .sv-free-image-card {height: 220px;}
@@ -1293,7 +1346,6 @@ body:has(.sv-homepage)::-webkit-scrollbar {
     transform: none !important;
   }
 }
-
 
 /* Homepage / Bento profissional: carros e motos lado a lado;
    oficina em destaque horizontal. As imagens permanecem claras e o texto
