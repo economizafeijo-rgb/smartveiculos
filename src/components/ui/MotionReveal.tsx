@@ -11,7 +11,7 @@ export function MotionReveal({children,delay=0,className=''}:{
  useEffect(()=>{
   const element=ref.current;
   if(!element||typeof window==='undefined'||!('IntersectionObserver' in window))return;
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if(typeof window.matchMedia==='function'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   // Do not hide elements already in view or on back/forward page restore.
   if(element.getBoundingClientRect().top<=window.innerHeight*0.92)return;
   element.classList.add('sv-reveal-pending');
