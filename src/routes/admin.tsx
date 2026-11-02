@@ -61,8 +61,10 @@ function AdminPage() {
  const invite=async(e:React.FormEvent)=>{e.preventDefault();if(!supabase)return;setBusy(true);setError('');setNotice('');const {data,error}=await supabase.functions.invoke('invite-user',{body:{email:inviteEmail,fullName:inviteName}});setBusy(false);if(error||data?.error)setError(data?.error||error?.message||'Não foi possível convidar');else{setNotice('Convite enviado para '+inviteEmail);setInviteEmail('');setInviteName('');void refresh();}};
  const create=async(e:React.FormEvent)=>{e.preventDefault();if(!supabase||section==='visao'||section==='usuarios')return;setBusy(true);setError('');setNotice('');
   const table=config[section].table;
-  const data:Record<string,string|number|null>=section==='veiculos'?{name:form.name,plate:form.plate.toUpperCase(),current_km:Number(form.current_km),workshop_id:form.workshop_id||null}:{name:form.name,city:form.city,phone:form.phone};
-  const {error}=await supabase.from(table).insert(data);
+  // Insert per branch so each payload keeps its own concrete shape.
+  const {error}=section==='veiculos'
+   ? await supabase.from(table).insert({name:form.name,plate:form.plate.toUpperCase(),current_km:Number(form.current_km),workshop_id:form.workshop_id||null})
+   : await supabase.from(table).insert({name:form.name,city:form.city,phone:form.phone});
   setBusy(false);
   if(error)setError(error.message);else{setOpenForm(false);setForm({name:'',city:'',phone:'',plate:'',current_km:'0',workshop_id:''});setNotice('Cadastro realizado com sucesso.');void refresh();}
  };
