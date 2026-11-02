@@ -12,15 +12,15 @@ export function RegistrationProfilePicker({
  onSelect:(value:RegistrationProfile)=>void;
  onContinue:()=>void;
 }){
- return <div className="sv-registration-step space-y-3">
+ return <div className="sv-registration-step">
   <div className="flex flex-wrap items-center justify-between gap-2">
    <div>
-    <p className="text-[11px] font-extrabold uppercase tracking-[.13em] text-orange-700">Etapa 1 de 2 — seu perfil</p>
+    
     <h3 className="mt-0.5 text-base font-black tracking-tight text-[#14213B] sm:text-lg">Em qual área você atua?</h3>
    </div>
    <span className="sv-registration-hint rounded-full border border-orange-300/80 bg-orange-50 px-3 py-1.5 text-[10px] font-extrabold text-orange-800">Escolha uma opção</span>
   </div>
-  <div role="radiogroup" aria-label="Escolha o ramo de atuação" className="grid grid-cols-2 gap-2.5 sm:gap-3">
+  <div role="radiogroup" aria-label="Escolha o ramo de atuação" className="sv-registration-grid grid grid-cols-2 gap-2 sm:gap-2.5">
    {REGISTRATION_PROFILES.map(profile=>{
     const Icon=icons[profile.id];
     const isSelected=selected===profile.id;
@@ -42,6 +42,6 @@ export function RegistrationProfilePicker({
    className="sv-auth-primary flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-45">
    Continuar para o cadastro <ArrowRight size={17} aria-hidden="true"/>
   </button>
-  <p className="text-center text-[10px] leading-[1.4] text-slate-600 sm:text-[11px]">Lojas e oficinas terão cadastro de CNPJ. Proprietários precisam apenas de uma conta pessoal.</p>
+  <p className="sv-registration-footnote text-center text-[10px] leading-[1.4] text-slate-600 sm:text-[11px]">Lojas e oficinas terão cadastro de CNPJ. Proprietários precisam apenas de uma conta pessoal.</p>
  </div>;
 }
