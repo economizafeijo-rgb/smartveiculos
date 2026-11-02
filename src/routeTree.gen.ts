@@ -20,6 +20,7 @@ import { Route as GolG6RouteImport } from './routes/gol-g6'
 import { Route as MeusAtendimentosRouteImport } from './routes/meus-atendimentos'
 import { Route as NegocioRouteImport } from './routes/negocio'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as VitrinesRouteImport } from './routes/vitrines'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -77,7 +78,14 @@ const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
+const VitrinesRoute = VitrinesRouteImport.update({
+  id: '/vitrines',
+  path: '/vitrines',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
 export interface FileRoutesByFullPath {
+  '/vitrines': typeof VitrinesRoute
   '/': typeof IndexRoute
   '/acesso': typeof AcessoRoute
   '/admin': typeof AdminRoute
@@ -91,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/redefinir-senha': typeof RedefinirSenhaRoute
 }
 export interface FileRoutesByTo {
+  '/vitrines': typeof VitrinesRoute
   '/': typeof IndexRoute
   '/acesso': typeof AcessoRoute
   '/admin': typeof AdminRoute
@@ -104,6 +113,7 @@ export interface FileRoutesByTo {
   '/redefinir-senha': typeof RedefinirSenhaRoute
 }
 export interface FileRoutesById {
+  '/vitrines': typeof VitrinesRoute
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/acesso': typeof AcessoRoute
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/meus-atendimentos'
     | '/negocio'
     | '/redefinir-senha'
+    | '/vitrines'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/meus-atendimentos'
     | '/negocio'
     | '/redefinir-senha'
+    | '/vitrines'
   id:
     | '__root__'
     | '/'
@@ -157,9 +169,11 @@ export interface FileRouteTypes {
     | '/meus-atendimentos'
     | '/negocio'
     | '/redefinir-senha'
+    | '/vitrines'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  VitrinesRoute: typeof VitrinesRoute
   IndexRoute: typeof IndexRoute
   AcessoRoute: typeof AcessoRoute
   AdminRoute: typeof AdminRoute
@@ -175,6 +189,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vitrines': {
+      id: '/vitrines'
+      path: '/vitrines'
+      fullPath: '/vitrines'
+      preLoaderRoute: typeof VitrinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -256,6 +277,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  VitrinesRoute: VitrinesRoute,
   IndexRoute: IndexRoute,
   AcessoRoute: AcessoRoute,
   AdminRoute: AdminRoute,
