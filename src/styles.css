@@ -776,3 +776,99 @@ body:has(.sv-homepage)::-webkit-scrollbar {
     transform: none !important;
   }
 }
+
+/* Formulário empresarial: proporção de janela, sem conteúdo cortado ou
+   botões desbotados; o cadastro em dois passos mantém seu tamanho próprio. */
+.sv-auth-cinematic .sv-auth-card--login {
+  width: min(100%, 548px);
+  max-height: calc(100dvh - 104px);
+  padding: clamp(14px, 2.6vh, 23px) clamp(17px, 2.4vw, 29px);
+  border-radius: 24px;
+  border: 1px solid rgb(255 255 255 / 95%);
+  background: linear-gradient(145deg, rgb(255 255 255 / 97%), rgb(246 248 252 / 95%));
+  box-shadow: 0 24px 70px -24px rgb(3 15 34 / 74%);
+}
+.sv-auth-cinematic .sv-auth-card--profiles {max-width: 700px;}
+.sv-auth-cinematic .sv-auth-card--details {max-width: 608px;}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-tabs {
+  margin-bottom: .7rem;
+}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-tab {
+  padding-block: .55rem;
+}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-session {
+  margin-top: .6rem;
+  padding-block: .55rem;
+  border-radius: 13px;
+}
+.sv-auth-cinematic .sv-auth-card--login form {
+  margin-top: .65rem;
+  display: grid;
+  gap: .65rem;
+}
+.sv-auth-cinematic .sv-auth-card--login form label {
+  gap: .3rem;
+  color: #334155;
+  font-size: 12px;
+}
+.sv-auth-cinematic .sv-auth-card--login form input {
+  min-height: 41px;
+  background: rgb(255 255 255 / 96%);
+  border-color: #cbd5e1;
+  box-shadow: inset 0 1px 2px rgb(15 23 42 / 3%);
+  color: #17233b;
+}
+.sv-auth-cinematic .sv-auth-card--login form input:focus {
+  border-color: #f97316;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgb(251 146 60 / 16%);
+}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-primary {
+  min-height: 43px;
+  margin-top: .1rem;
+  background: linear-gradient(110deg, #ea580c, #c2410c);
+  border-color: #c2410c;
+  color: white;
+  opacity: 1;
+  box-shadow: 0 9px 23px -14px rgb(194 65 12 / 78%);
+}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-primary:hover:not(:disabled) {
+  background: linear-gradient(110deg, #c2410c, #9a3412);
+  color: #fff;
+}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-primary:disabled {
+  opacity: .62;
+}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-tab-selected {
+  box-shadow: 0 1px 6px rgb(15 23 42 / 11%);
+}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-tab:not(.sv-auth-tab-selected) {
+  color: #475569;
+}
+.sv-auth-cinematic .sv-auth-card--login .sv-auth-tab:not(.sv-auth-tab-selected):hover {
+  background: rgb(255 255 255 / 53%);
+}
+.sv-auth-cinematic .sv-auth-home-link:hover {color: #fdba74;}
+@media (max-height: 710px) and (min-width: 641px) {
+  .sv-auth-cinematic .sv-auth-card--login {
+    padding-block: .75rem;
+    max-height: calc(100dvh - 84px);
+  }
+  .sv-auth-cinematic .sv-auth-card--login .sv-auth-tabs {margin-bottom: .45rem;}
+  .sv-auth-cinematic .sv-auth-card--login form {gap: .45rem;margin-top: .5rem;}
+  .sv-auth-cinematic .sv-auth-card--login .sv-auth-session {padding-block: .4rem;}
+  .sv-auth-cinematic .sv-auth-card--login form input {min-height: 36px;padding-block: .4rem;}
+  .sv-auth-cinematic .sv-auth-card--login .sv-auth-primary {min-height: 38px;padding-block: .55rem;}
+}
+@media (max-width: 640px) {
+  .sv-auth-cinematic .sv-auth-card--login {
+    width: 100%;
+    max-height: calc(100dvh - 77px);
+    padding-inline: 15px;
+    padding-block: 14px;
+    border-radius: 20px;
+  }
+  .sv-auth-cinematic .sv-auth-card--login form {gap: .5rem;}
+  .sv-auth-cinematic .sv-auth-card--login .sv-auth-tabs {margin-bottom: .6rem;}
+  .sv-auth-cinematic .sv-auth-card--login .sv-auth-session {gap: .3rem;font-size: 11px;}
+}
