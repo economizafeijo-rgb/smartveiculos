@@ -17,7 +17,7 @@ export const Route=createFileRoute('/')({
 const imagery={
  car:'https://images.unsplash.com/photo-1727893119356-1702fe921cf9?auto=format&fit=crop&w=1300&q=86',
  bike:'https://images.unsplash.com/photo-1755378909673-d5afd0a15ee3?auto=format&fit=crop&w=1300&q=85',
- shop:'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1100&q=82&fit=crop',
+ shop:'https://images.pexels.com/photos/13065692/pexels-photo-13065692.jpeg?auto=compress&cs=tinysrgb&w=1400',
  garage:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&q=82&fit=crop'
 };
 const businessCards=[
@@ -28,7 +28,7 @@ const businessCards=[
 const heroTiles=[
  {id:'parts_cars',image:imagery.car,title:'Autopeças para carros',subtitle:'Produtos, estoque e gestão',eyebrow:'AUTOMÓVEIS',icon:CarFront},
  {id:'parts_bikes',image:imagery.bike,title:'Autopeças para motos',subtitle:'Peças, acessórios e catálogo',eyebrow:'MOTOCICLETAS',icon:Bike},
- {id:'workshop',image:'https://images.pexels.com/photos/13065692/pexels-photo-13065692.jpeg?auto=compress&cs=tinysrgb&w=1400',title:'Oficinas e serviços',subtitle:'Revisões, manutenção e assistência ao cliente',eyebrow:'SERVIÇOS MECÂNICOS',icon:Wrench},
+ {id:'workshop',image:imagery.shop,title:'Oficinas e serviços',subtitle:'Revisões, manutenção e assistência ao cliente',eyebrow:'SERVIÇOS MECÂNICOS',icon:Wrench},
 ] as const;
 function HomePortal(){
  const [partsOpen,setPartsOpen]=useState(true);
