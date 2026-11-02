@@ -16,6 +16,16 @@ dist-ssr
 .nitro
 *.local
 
+# Privileged credentials never belong in Git.
+.env
+.env.*
+!.env.example
+supabase/.branches/
+supabase/.temp/
+supabase/.profiles/
+*.pem
+*.key
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
