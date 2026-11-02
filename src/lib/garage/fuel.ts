@@ -43,6 +43,14 @@ export function addFillup(input:Omit<Fillup,'id'>){
  commit([...getSnapshot(),result]);return result;
 }
 export function removeFillup(id:string){commit(getSnapshot().filter(x=>x.id!==id));}
+/** Restaura abastecimentos ausentes mantendo os registros existentes no navegador. */
+export function mergeCloudFillups(rows: readonly Fillup[]):number {
+ const existing=getSnapshot();
+ const ids=new Set(existing.map(x=>x.id));
+ const added=rows.filter(x=>!ids.has(x.id));
+ if(added.length)commit([...existing,...added]);
+ return added.length;
+}
 export type FuelStat={fuel:FuelKind;kmPerLiter:number;costPerKm:number;distance:number;liters:number};
 export function calculateFuelStats(fillups:readonly Fillup[]):FuelStat[]{
  const sorted=[...fillups].sort((a,b)=>a.km-b.km);
