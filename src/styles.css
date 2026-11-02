@@ -194,3 +194,139 @@ div:has(> a[href*="utm_source=lovable-badge"]) {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+/* SmartVeículos Motion System — movimentos curtos, funcionais e acessíveis. */
+@keyframes sv-rise-in {
+  from {opacity: 0; transform: translate3d(0, 17px, 0);}
+  to {opacity: 1; transform: translate3d(0, 0, 0);}
+}
+@keyframes sv-mosaic-in {
+  from {opacity: 0; transform: translate3d(0, 19px, 0) scale(.98);}
+  to {opacity: 1; transform: translate3d(0, 0, 0) scale(1);}
+}
+@keyframes sv-glow-drift {
+  0%, 100% {transform: translate3d(0, 0, 0);}
+  50% {transform: translate3d(24px, -16px, 0);}
+}
+@keyframes sv-highlight-draw {
+  from {transform: scaleX(0); opacity: .1;}
+  to {transform: scaleX(1); opacity: .65;}
+}
+.sv-reveal {
+  transition: opacity .58s ease, transform .58s cubic-bezier(.22, 1, .36, 1);
+  transition-delay: var(--sv-reveal-delay, 0ms);
+}
+.sv-reveal.sv-reveal-pending {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+}
+.sv-accent-word {
+  position: relative;
+  white-space: nowrap;
+}
+.sv-accent-word::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -.09em;
+  height: .065em;
+  background: #fb923c;
+  opacity: .6;
+  border-radius: 999px;
+  transform-origin: left center;
+}
+.sv-logo-mark {
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1), box-shadow .28s ease;
+}
+.sv-hero-tile, .sv-vehicle-card {
+  isolation: isolate;
+  transition: box-shadow .35s ease, border-color .35s ease, transform .35s cubic-bezier(.22, 1, .36, 1);
+}
+.sv-hero-photo, .sv-card-photo {
+  transition: transform .8s cubic-bezier(.22, 1, .36, 1), filter .45s ease;
+}
+.sv-cta-link, .sv-nav-action {
+  transition: background-color .22s ease, border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.sv-cta-link svg, .sv-vehicle-card svg {
+  transition: transform .25s ease;
+}
+.sv-interactive-surface {
+  transition: border-color .3s ease, box-shadow .3s ease, transform .3s cubic-bezier(.22, 1, .36, 1);
+}
+.sv-accordion-body {
+  animation: sv-rise-in .32s cubic-bezier(.22, 1, .36, 1) both;
+}
+.sv-garage-backdrop {
+  transition: transform 1.2s cubic-bezier(.22, 1, .36, 1);
+}
+.sv-tab-content {
+  animation: sv-rise-in .3s cubic-bezier(.22, 1, .36, 1) both;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {scroll-behavior: smooth;}
+  .sv-intro-item {
+    animation: sv-rise-in .65s cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .sv-intro-item--1 {animation-delay: 60ms;}
+  .sv-intro-item--2 {animation-delay: 135ms;}
+  .sv-intro-item--3 {animation-delay: 215ms;}
+  .sv-intro-item--4 {animation-delay: 295ms;}
+  .sv-intro-item--5 {animation-delay: 360ms;}
+  .sv-hero-tile {
+    animation: sv-mosaic-in .75s cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .sv-hero-tile--1 {animation-delay: 165ms;}
+  .sv-hero-tile--2 {animation-delay: 255ms;}
+  .sv-hero-tile--3 {animation-delay: 335ms;}
+  .sv-ambient-orb {
+    animation: sv-glow-drift 13s ease-in-out infinite;
+  }
+  .sv-ambient-orb--reverse {
+    animation-direction: reverse;
+    animation-duration: 17s;
+  }
+  .sv-accent-word::after {
+    animation: sv-highlight-draw .8s .6s cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .sv-cta-link:hover, .sv-nav-action:hover {transform: translateY(-2px);}
+  .sv-cta-link:hover svg {transform: translateX(4px);}
+  .sv-hero-tile:hover .sv-hero-photo {transform: scale(1.055);}
+  .sv-vehicle-card:hover, .sv-vehicle-card:focus-visible {
+    box-shadow: 0 21px 50px -24px rgb(7 16 31 / 65%);
+    border-color: rgb(251 146 60 / 55%);
+    transform: translateY(-4px);
+  }
+  .sv-vehicle-card:hover .sv-card-photo, .sv-vehicle-card:focus-visible .sv-card-photo {transform: scale(1.055);}
+  .sv-vehicle-card:hover svg:last-child {transform: translateX(3px);}
+  .sv-interactive-surface:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px -26px rgb(16 24 40 / 40%);
+    border-color: rgb(251 146 60 / 40%);
+  }
+  .sv-logo-mark:hover {transform: rotate(-5deg) scale(1.05);box-shadow: 0 0 24px -9px rgb(251 146 60 / 65%);}
+  .sv-card-load {
+    animation: sv-mosaic-in .62s cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .sv-card-load--0 {animation-delay: 90ms;}
+  .sv-card-load--1 {animation-delay: 185ms;}
+  .sv-card-load--2 {animation-delay: 260ms;}
+  .sv-card-load--3 {animation-delay: 335ms;}
+}
+@media (prefers-reduced-motion: reduce) {
+  html {scroll-behavior: auto;}
+  .sv-reveal, .sv-logo-mark, .sv-hero-tile, .sv-vehicle-card,
+  .sv-hero-photo, .sv-card-photo, .sv-interactive-surface,
+  .sv-cta-link, .sv-nav-action, .sv-cta-link svg,
+  .sv-vehicle-card svg, .sv-garage-backdrop {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .sv-reveal.sv-reveal-pending {transform: none;opacity: 1;}
+  .sv-accent-word::after {animation: none;transform: scaleX(1);}
+  .sv-accordion-body, .sv-tab-content {animation: none;}
+  .sv-intro-item, .sv-card-load, .sv-ambient-orb {animation: none;opacity: 1;transform: none;}
+}
