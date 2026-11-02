@@ -39,7 +39,7 @@ export function RegistrationProfilePicker({
    })}
   </div>
   <button type="button" disabled={!selected} onClick={onContinue}
-   className="sv-auth-primary flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-45"
+   className="sv-auth-primary flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-45">
    Continuar para o cadastro <ArrowRight size={17} aria-hidden="true"/>
   </button>
   <p className="text-center text-[10px] leading-[1.4] text-slate-600 sm:text-[11px]">Lojas e oficinas terão cadastro de CNPJ. Proprietários precisam apenas de uma conta pessoal.</p>
