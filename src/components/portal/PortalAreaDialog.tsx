@@ -1,160 +1,157 @@
-import {ArrowRight,Bike,CarFront,CheckCircle2,Gauge,ShieldCheck,Wrench,type LucideIcon} from 'lucide-react';
-import {Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle} from '@/components/ui/dialog';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import {
+ ArrowRight,Bike,CarFront,CheckCircle2,Clock3,Gauge,
+ Headset,PackageCheck,ShieldCheck,TrendingUp,Wrench,X,
+ type LucideIcon
+} from 'lucide-react';
+import {useEffect,useState} from 'react';
 
 export type PortalArea='parts_cars'|'parts_bikes'|'workshop'|'garage';
-
+type SectionId='management'|'service'|'evolution';
 type AreaDetail={
  title:string;
  eyebrow:string;
- introduction:string;
- features:readonly string[];
- upcoming:readonly string[];
+ summary:string;
+ current:readonly string[];
+ service:readonly string[];
+ evolution:readonly string[];
  href:string;
  buttonLabel:string;
- image:string;
  icon:LucideIcon;
  business:boolean;
 };
 
 const AREAS:Record<PortalArea,AreaDetail>={
  parts_cars:{
-  title:'Autopeças para carros',
-  eyebrow:'SOLUÇÃO PARA LOJISTAS',
-  introduction:'Sua autopeças merece mais do que uma planilha. Centralize seu catálogo, organize o estoque e prepare sua empresa para atender clientes com mais agilidade — do primeiro contato à venda.',
-  features:[
-   'Cadastro de peças por código SKU, descrição e aplicação',
-   'Controle de quantidades e valores de referência em estoque',
-   'Busca e organização de produtos para diferentes veículos',
-  ],
-  upcoming:[
-   'Vitrine de peças com fotos, compatibilidade e links para enviar aos clientes',
-   'Chat integrado para tirar dúvidas, negociar e acompanhar atendimentos',
-   'Pedidos, separação de produtos e atualização do status de entrega',
-  ],
-  href:'/acesso?segment=parts_cars',
-  buttonLabel:'Entrar na área de autopeças',
-  image:'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1100&q=82&fit=crop',
-  icon:CarFront,
-  business:true,
+  title:'Autopeças para carros',eyebrow:'Solução para lojistas',
+  summary:'Mais controle para sua loja. Mais oportunidades para atender seus clientes.',
+  current:['Cadastre peças por código e aplicação','Controle quantidades e preços','Encontre produtos rapidamente'],
+  service:['Catálogo com fotos e links de peças','Chat e solicitações de orçamento'],
+  evolution:['Pedidos em um só painel','Atualizações sobre o envio'],
+  href:'/acesso?segment=parts_cars',buttonLabel:'Entrar na área de autopeças',icon:CarFront,business:true,
  },
  parts_bikes:{
-  title:'Autopeças para motos',
-  eyebrow:'SOLUÇÃO PARA O SETOR DE MOTOS',
-  introduction:'Organize sua loja de peças para motos em um só lugar. Tenha controle dos componentes por modelo, apresente seu catálogo com clareza e prepare um atendimento mais próximo para cada motociclista.',
-  features:[
-   'Cadastro de componentes com SKU e modelos compatíveis',
-   'Acompanhamento da quantidade de peças disponíveis',
-   'Consulta de preços e pesquisa rápida no catálogo',
-  ],
-  upcoming:[
-   'Catálogo ilustrado de peças com links exclusivos para compartilhar',
-   'Conversas diretas com clientes e solicitações de orçamento',
-   'Pedidos, acompanhamento de envio e informações de entrega',
-  ],
-  href:'/acesso?segment=parts_bikes',
-  buttonLabel:'Entrar na área de motos',
-  image:'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1100&q=82&fit=crop',
-  icon:Bike,
-  business:true,
+  title:'Autopeças para motos',eyebrow:'Solução para o setor de motos',
+  summary:'Sua loja organizada para atender cada motociclista com agilidade.',
+  current:['Cadastre peças e modelos compatíveis','Controle estoque e preços','Consulte o catálogo com rapidez'],
+  service:['Links individuais para compartilhar peças','Chat e atendimento ao cliente'],
+  evolution:['Pedidos e solicitações online','Acompanhamento das entregas'],
+  href:'/acesso?segment=parts_bikes',buttonLabel:'Entrar na área de motos',icon:Bike,business:true,
  },
  workshop:{
-  title:'Oficinas mecânicas',
-  eyebrow:'GESTÃO PARA PROFISSIONAIS',
-  introduction:'Dê mais transparência ao atendimento da sua oficina. Registre os serviços e organize os orçamentos hoje, enquanto evoluímos a plataforma para que cada cliente possa acompanhar o veículo do agendamento à entrega.',
-  features:[
-   'Abertura de ordens de serviço vinculadas a cliente e veículo',
-   'Registro de descrição dos reparos e valor orçado',
-   'Acompanhamento interno de OS abertas, em andamento ou concluídas',
-  ],
-  upcoming:[
-   'Agenda online para marcar e confirmar serviços',
-   'Linha do tempo do reparo com atualizações visíveis ao cliente',
-   'Chat, avisos e fotos do serviço para manter o cliente informado',
-  ],
-  href:'/acesso?segment=workshop',
-  buttonLabel:'Entrar na área da oficina',
-  image:'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1100&q=82&fit=crop',
-  icon:Wrench,
-  business:true,
+  title:'Oficinas mecânicas',eyebrow:'Gestão profissional de oficinas',
+  summary:'Organize os serviços hoje e construa uma experiência mais transparente.',
+  current:['Abra ordens de serviço','Registre orçamentos e reparos','Controle o andamento das OS'],
+  service:['Agendamento online de serviços','Chat direto com cada cliente'],
+  evolution:['Etapas do reparo em tempo real','Fotos e avisos até a entrega'],
+  href:'/acesso?segment=workshop',buttonLabel:'Entrar na área da oficina',icon:Wrench,business:true,
  },
  garage:{
-  title:'Minha garagem digital',
-  eyebrow:'SOLUÇÃO PARA PROPRIETÁRIOS',
-  introduction:'Seu carro e sua moto têm uma história. Mantenha revisões, manutenção e abastecimentos organizados e tenha um espaço pessoal para acompanhar o que importa em cada veículo.',
-  features:[
-   'Fichas individuais para carros e motocicletas',
-   'Histórico de serviços, revisões e despesas registradas',
-   'Informações de combustível e quilometragem informadas pelo proprietário',
-  ],
-  upcoming:[
-   'Conexão com oficinas para receber atualizações do serviço',
-   'Agendamentos e mensagens com profissionais cadastrados',
-   'Consulta de peças e pedidos vinculados ao seu veículo',
-  ],
-  href:'/acesso?next=%2Fgaragem',
-  buttonLabel:'Entrar na minha garagem',
-  image:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1100&q=82&fit=crop',
-  icon:Gauge,
-  business:false,
- }
+  title:'Minha garagem digital',eyebrow:'Para proprietários de veículos',
+  summary:'Seu carro e sua moto organizados em uma garagem feita para você.',
+  current:['Acesse fichas de carros e motos','Registre revisões e manutenções','Acompanhe combustível e gastos'],
+  service:['Contato com lojas e oficinas','Agendamentos e mensagens'],
+  evolution:['Andamento dos serviços','Acompanhamento dos pedidos'],
+  href:'/acesso?next=%2Fgaragem',buttonLabel:'Entrar na minha garagem',icon:Gauge,business:false,
+ },
 };
+const SECTIONS:{id:SectionId;title:string;subtitle:string;icon:LucideIcon}[]=[
+ {id:'management',title:'Gestão',subtitle:'Já disponível',icon:PackageCheck},
+ {id:'service',title:'Atendimento',subtitle:'Em desenvolvimento',icon:Headset},
+ {id:'evolution',title:'Evolução',subtitle:'Em desenvolvimento',icon:TrendingUp},
+];
 
-/** Exibe explicações sem tirar o visitante da homepage. O acesso continua pela rota autenticada. */
+/** Apresentação clara, compacta e sem barra de rolagem.
+ * Em celular, os três grupos viram abas para manter o CTA visível.
+ */
 export function PortalAreaDialog({area,onOpenChange}:{
  area:PortalArea|null;
  onOpenChange:(open:boolean)=>void;
 }){
  const data=area?AREAS[area]:null;
  const Icon=data?.icon;
- return <Dialog open={area!==null} onOpenChange={onOpenChange}>
-  <DialogContent className="max-h-[min(90dvh,760px)] w-[calc(100%-2rem)] max-w-[570px] overflow-y-auto rounded-3xl border-0 bg-white p-0 text-slate-900 shadow-2xl gap-0 [&>button]:z-20 [&>button]:rounded-full [&>button]:bg-white [&>button]:p-2 [&>button]:text-slate-800 [&>button]:opacity-100 [&>button]:shadow-md">
-   {data&&Icon&&<>
-    <div className="relative h-40 overflow-hidden bg-[#101b2b] sm:h-48">
-     <img src={data.image} alt="" className="absolute inset-0 h-full w-full object-cover object-center" loading="lazy"/>
-     <div className="absolute inset-0 bg-gradient-to-t from-[#101b2b]/90 via-[#101b2b]/30 to-[#101b2b]/5"/>
-     <div className="absolute bottom-5 left-6 flex items-center gap-3 text-white sm:left-8">
-      <span className="grid size-11 place-items-center rounded-xl border border-white/25 bg-orange-500 text-slate-950"><Icon size={22}/></span>
-      <span className="text-xs font-extrabold uppercase tracking-[0.16em] text-orange-200">{data.eyebrow}</span>
-     </div>
-    </div>
-    <div className="space-y-5 px-6 pb-7 pt-6 sm:px-8 sm:pb-8">
-     <DialogHeader className="space-y-3 text-left">
-      <DialogTitle className="text-2xl font-black leading-tight tracking-tight text-[#101b2b] sm:text-3xl">{data.title}</DialogTitle>
-      <DialogDescription className="text-sm leading-7 text-slate-600">{data.introduction}</DialogDescription>
-     </DialogHeader>
-     <div>
-      <h3 className="text-xs font-black uppercase tracking-[0.15em] text-slate-500">O que você já pode fazer</h3>
-      <ul className="mt-3 grid gap-3">{data.features.map(feature=>
-       <li key={feature} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
-        <CheckCircle2 size={19} className="mt-0.5 shrink-0 text-orange-600" aria-hidden="true"/>
-        <span>{feature}</span>
-       </li>
-      )}</ul>
-     </div>
-     <div className="rounded-2xl border border-orange-200/80 bg-orange-50/60 px-4 py-4">
-      <div className="flex flex-wrap items-center gap-2">
-       <h3 className="text-xs font-black uppercase tracking-[0.12em] text-orange-900">Novidades que estão a caminho</h3>
-       <span className="rounded-full border border-orange-200 bg-white px-2 py-0.5 text-[10px] font-extrabold text-orange-800">Em desenvolvimento</span>
+ const [selected,setSelected]=useState<SectionId>('management');
+ useEffect(()=>{setSelected('management');},[area]);
+ return <DialogPrimitive.Root open={area!==null} onOpenChange={onOpenChange}>
+  <DialogPrimitive.Portal>
+   <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[#0c1627]/35 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0"/>
+   <DialogPrimitive.Content
+    className="sv-portal-dialog fixed left-1/2 top-1/2 z-50 flex max-h-[calc(100dvh-24px)] w-[min(840px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[22px] border border-slate-200 bg-white text-[#12203a] shadow-[0_28px_90px_-28px_rgba(8,20,44,0.35)] outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0">
+    {data&&Icon&&<>
+     <div className="shrink-0 border-b border-slate-100 px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
+      <div className="flex items-start gap-3.5 pr-8 sm:gap-4">
+       <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-orange-100 text-orange-600 sm:size-12"><Icon size={24} aria-hidden="true"/></div>
+       <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-orange-700">{data.eyebrow}</p>
+        <DialogPrimitive.Title className="mt-1 text-[clamp(1.25rem,3.3vw,1.75rem)] font-black leading-tight tracking-tight">{data.title}</DialogPrimitive.Title>
+        <DialogPrimitive.Description className="mt-1.5 max-w-2xl text-[12px] leading-[1.45] text-slate-600 sm:text-sm">
+         {data.summary}
+        </DialogPrimitive.Description>
+       </div>
       </div>
-      <ul className="mt-3 grid gap-2">{data.upcoming.map(feature=>
-       <li key={feature} className="flex items-start gap-2 text-xs leading-5 text-slate-700">
-        <ArrowRight size={14} className="mt-0.5 shrink-0 text-orange-600" aria-hidden="true"/>
-        <span>{feature}</span>
-       </li>
-      )}</ul>
-      <p className="mt-3 text-[11px] leading-5 text-slate-500">Estas funcionalidades fazem parte do plano de evolução e ainda não estão disponíveis para uso.</p>
+      <DialogPrimitive.Close
+       aria-label="Fechar apresentação"
+       className="absolute right-3 top-3 grid size-9 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 sm:right-5 sm:top-5">
+       <X size={18} aria-hidden="true"/>
+      </DialogPrimitive.Close>
      </div>
-     <div className="flex items-start gap-2 rounded-xl border border-orange-100 bg-orange-50 px-4 py-3 text-xs leading-6 text-orange-900">
-      <ShieldCheck size={18} className="mt-0.5 shrink-0" aria-hidden="true"/>
-      <span>{data.business?'Acesso profissional com login e senha. O cadastro da empresa exige CNPJ com dígitos verificadores válidos e verificação de titularidade.':'Acesso com e-mail e senha. Seus veículos ficam vinculados à sua conta.'}</span>
+     <div className="min-h-0 flex-1 px-5 py-4 sm:px-7 sm:py-5">
+      <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-slate-100 p-1 sm:hidden" role="tablist" aria-label="Conheça esta solução">
+       {SECTIONS.map(section=><button key={section.id} type="button" role="tab"
+        id={'sv-tab-'+section.id}
+        aria-selected={selected===section.id}
+        aria-controls={'sv-panel-'+section.id}
+        onClick={()=>setSelected(section.id)}
+        className={'rounded-lg px-1.5 py-2 text-[11px] font-extrabold transition-colors focus-visible:outline-2 focus-visible:outline-orange-500 '+(selected===section.id?'bg-white text-orange-700 shadow-sm':'text-slate-600 hover:bg-white/60')}>
+        {section.title}
+       </button>)}
+      </div>
+      <div className="mt-3 grid gap-3 sm:mt-0 sm:grid-cols-3 sm:gap-3.5">
+       {SECTIONS.map(section=>{
+        const FeatureIcon=section.icon;
+        const items=section.id==='management'?data.current:section.id==='service'?data.service:data.evolution;
+        const isCurrent=section.id==='management';
+        return <section key={section.id}
+         id={'sv-panel-'+section.id}
+         aria-labelledby={'sv-tab-'+section.id}
+         role="tabpanel"
+         className={'rounded-2xl border p-3.5 sm:p-4 '+(isCurrent?'border-orange-200 bg-orange-50/50':'border-slate-200 bg-[#f8fafc]')+(selected!==section.id?' hidden sm:block':'')}>
+         <div className="flex items-center gap-2">
+          <span className={'grid size-8 shrink-0 place-items-center rounded-lg '+(isCurrent?'bg-orange-100 text-orange-700':'bg-slate-200/65 text-slate-700')}>
+           <FeatureIcon size={17} aria-hidden="true"/>
+          </span>
+          <div className="min-w-0">
+           <h3 className="text-[13px] font-extrabold leading-tight text-slate-900">{section.title}</h3>
+           <p className={'mt-0.5 text-[10px] font-bold '+(isCurrent?'text-emerald-700':'text-orange-700')}>{section.subtitle}</p>
+          </div>
+         </div>
+         <ul className="mt-3 space-y-2.5">
+          {items.map(item=><li key={item} className="flex items-start gap-2 text-xs leading-[1.4] text-slate-700 sm:text-[12px]">
+           {isCurrent?<CheckCircle2 size={15} className="mt-0.5 shrink-0 text-emerald-600" aria-hidden="true"/>:
+            <Clock3 size={15} className="mt-0.5 shrink-0 text-orange-600" aria-hidden="true"/>}
+           <span>{item}</span>
+          </li>)}
+         </ul>
+        </section>;
+       })}
+      </div>
      </div>
-     <a href={data.href}
-       className="sv-cta-link flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3.5 text-sm font-extrabold text-[#101b2b] shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500">
-      {data.buttonLabel}<ArrowRight size={19} aria-hidden="true"/>
-     </a>
-     <p className="text-center text-xs text-slate-500">Explore as funcionalidades atuais em um ambiente protegido por login.</p>
-    </div>
-   </>}
-  </DialogContent>
- </Dialog>;
+     <div className="shrink-0 border-t border-slate-100 bg-white px-5 py-3.5 sm:px-7 sm:py-4">
+      <div className="flex flex-wrap items-center justify-between gap-2.5">
+       <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+        <ShieldCheck size={15} className="text-emerald-600" aria-hidden="true"/>
+        {data.business?'Login e CNPJ para empresas':'Acesso pessoal protegido'}
+       </p>
+       <div className="flex flex-wrap items-center gap-2">
+        <DialogPrimitive.Close className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-orange-500">Fechar</DialogPrimitive.Close>
+        <a href={data.href} className="sv-cta-link inline-flex items-center justify-center gap-1.5 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-black text-slate-950 hover:bg-orange-400 focus-visible:outline-2 focus-visible:outline-orange-500 sm:text-sm">
+         {data.buttonLabel}<ArrowRight size={17} aria-hidden="true"/>
+        </a>
+       </div>
+      </div>
+     </div>
+    </>}
+   </DialogPrimitive.Content>
+  </DialogPrimitive.Portal>
+ </DialogPrimitive.Root>;
 }
