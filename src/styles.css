@@ -963,3 +963,62 @@ body:has(.sv-homepage)::-webkit-scrollbar {
   object-position: center 43%;
   filter: brightness(1.075) contrast(1.02) saturate(1.075);
 }
+
+/* Login único: acesso pessoal ou empresarial claramente selecionável.
+   Mantém o card compacto em notebooks e o formulário acessível em telas baixas. */
+.sv-auth-cinematic .sv-login-audience {
+  margin-top: .65rem;
+  padding: .65rem;
+  border: 1px solid rgb(226 232 240 / 92%);
+  border-radius: 14px;
+  background: rgb(247 249 252 / 86%);
+}
+.sv-auth-cinematic .sv-login-audience-choice {
+  min-width: 0;
+  min-height: 44px;
+  box-shadow: 0 3px 10px -8px rgb(15 23 42 / 27%);
+}
+.sv-auth-cinematic .sv-login-audience-choice[aria-pressed="true"] {
+  border-color: #ea580c;
+  color: #9a3412;
+  background: #fff7ed;
+  box-shadow: 0 0 0 2px rgb(249 115 22 / 12%);
+}
+.sv-auth-cinematic .sv-login-audience-choice[aria-pressed="false"] {
+  background: rgb(255 255 255 / 95%);
+}
+.sv-auth-cinematic .sv-login-segment select {
+  color: #172033;
+  background: #fff;
+}
+.sv-auth-cinematic .sv-auth-eyebrow {
+  margin-top: .6rem;
+}
+.sv-auth-cinematic .sv-auth-card--business {
+  max-width: 490px;
+  padding-block: clamp(11px, 1.8vh, 17px);
+}
+.sv-auth-cinematic .sv-auth-card--business .sv-tab-content {
+  gap: .5rem;
+  margin-top: .55rem;
+}
+.sv-auth-cinematic .sv-auth-card--business .sv-auth-session {
+  margin-top: .55rem;
+}
+.sv-auth-cinematic .sv-auth-card--business .sv-auth-primary {
+  min-height: 40px;
+}
+@media (max-height: 720px) {
+  .sv-auth-cinematic .sv-login-audience {
+    margin-top: .45rem;
+    padding: .5rem;
+  }
+  .sv-auth-cinematic .sv-login-audience-choice {min-height: 37px;padding-block: .35rem;}
+  .sv-auth-cinematic .sv-login-segment select {min-height: 34px;padding-block: .3rem;}
+  .sv-auth-cinematic .sv-auth-eyebrow {margin-top: .4rem;}
+  .sv-auth-cinematic .sv-auth-card--business .sv-tab-content {gap: .35rem;}
+}
+@media (max-width: 425px) {
+  .sv-auth-cinematic .sv-login-audience-choice {font-size: 10px;gap: 4px;}
+  .sv-auth-cinematic .sv-login-audience-choice svg {width: 15px;height: 15px;}
+}
