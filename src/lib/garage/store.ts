@@ -84,6 +84,22 @@ const bumpKm = (vehicles: Vehicle[], vehicleId: string, km: number): Vehicle[] =
   vehicles.map((v) => (v.id === vehicleId ? { ...v, currentKm: nextOdometer(v.currentKm, km) } : v));
 
 export const garage = {
+  /** Acrescenta registros ausentes, preservando a versão local de cada registro existente. */
+  mergeCloud(input: GarageData): { vehiclesAdded: number; recordsAdded: number } {
+    const data = garageDataSchema.parse(input);
+    const current = getSnapshot();
+    const vehicleIds = new Set(current.vehicles.map(v => v.id));
+    const recordIds = new Set(current.records.map(r => r.id));
+    const addedVehicles = data.vehicles.filter(v => !vehicleIds.has(v.id));
+    const allVehicleIds = new Set([...current.vehicles, ...addedVehicles].map(v => v.id));
+    const addedRecords = data.records.filter(r => !recordIds.has(r.id) && allVehicleIds.has(r.vehicleId));
+    if (addedVehicles.length || addedRecords.length) commit({
+      ...current,
+      vehicles: [...current.vehicles, ...addedVehicles],
+      records: [...current.records, ...addedRecords],
+    });
+    return { vehiclesAdded: addedVehicles.length, recordsAdded: addedRecords.length };
+  },
   addVehicle(input: VehicleInput): Vehicle {
     const vehicle: Vehicle = { ...input, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
     commit({ ...getSnapshot(), vehicles: [...getSnapshot().vehicles, vehicle] });
