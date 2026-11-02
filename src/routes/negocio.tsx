@@ -1,3 +1,4 @@
+import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import {createFileRoute} from '@tanstack/react-router';
 import {useCallback,useEffect,useMemo,useState,type FormEvent} from 'react';
 import {ArrowLeft,ArrowRight,Building2,CheckCircle2,ClipboardList,Clock3,LayoutDashboard,LogOut,Package,Plus,Search,ShieldCheck,Store,Trash2,Wrench} from 'lucide-react';
@@ -180,5 +181,6 @@ function BusinessPage({segmentFilter}:{segmentFilter:BusinessSegment|undefined})
     </>
    }
   </main>
+  <footer className="border-t border-slate-200 px-5 py-6 text-center"><DeveloperCredit compact /></footer>
  </div>;
 }
