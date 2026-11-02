@@ -1,3 +1,4 @@
+import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import {createFileRoute,Link} from '@tanstack/react-router';
 import {useEffect,useMemo,useState,type ReactNode} from 'react';
 import {
@@ -241,7 +242,7 @@ function OwnerGarage(){
       <p className="mt-5 text-xs text-slate-400">Dados pessoais são isolados por conta. Fotografias dos veículos são ilustrativas e não representam suas unidades reais.</p>
     </div>}
    </section>
-   <footer className="flex flex-wrap items-center justify-between gap-2 py-2 text-[11px] text-slate-500"><span>SmartVeículos · Espaço exclusivo do proprietário</span><span>{userEmail?'Conta: '+userEmail:'Seus dados estão protegidos por login'}</span></footer>
+   <footer className="flex flex-wrap items-center justify-between gap-2 py-2 text-[11px] text-slate-500"><span>SmartVeículos · Espaço exclusivo do proprietário</span><span>{userEmail?'Conta: '+userEmail:'Seus dados estão protegidos por login'}</span><DeveloperCredit compact /></footer>
   </main>
   <VehicleDialog open={vehicleDialog.open} vehicle={vehicleDialog.vehicle} onOpenChange={open=>setVehicleDialog(v=>({...v,open}))} onSaved={id=>{setSelectedId(id);setManagerOpen(true)}}/>
   {selected&&<RecordDialog open={recordDialog.open} vehicle={selected} record={recordDialog.record} defaultKind={recordDialog.defaultKind} onOpenChange={open=>setRecordDialog(v=>({...v,open}))}/>}
