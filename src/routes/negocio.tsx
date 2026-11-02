@@ -20,7 +20,7 @@ const btn='inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 
 const panel='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm';
 const currency=(n:number)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(n);
 function BusinessAccess(){const q=Route.useSearch();return <AuthGate next={'/negocio'+(q.segment?'?segment='+q.segment:'')}><BusinessPage segmentFilter={q.segment}/></AuthGate>}
-function BusinessPage({segmentFilter}:{segmentFilter?:BusinessSegment}){
+function BusinessPage({segmentFilter}:{segmentFilter:BusinessSegment|undefined}){
  const [accountId,setAccountId]=useState('');
  const [userId,setUserId]=useState('');
  const [email,setEmail]=useState('');
