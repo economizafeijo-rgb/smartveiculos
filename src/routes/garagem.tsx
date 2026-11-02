@@ -191,6 +191,7 @@ function OwnerGarage(){
     <div className="flex items-center gap-3"><span className="sv-logo-mark grid size-10 place-items-center rounded-xl bg-[#121d30] text-orange-400"><CarFront size={21}/></span><div><p className="text-base font-black leading-5">Smart<span className="text-orange-600">Veículos</span></p><p className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Área do proprietário</p></div></div>
     <div className="flex flex-wrap items-center gap-2">
      <Link to="/" className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100"><Home size={15}/> <span className="hidden sm:inline">Início</span></Link>
+     <a href="/meus-atendimentos" className="inline-flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-bold text-orange-900 hover:bg-orange-100"><Wrench size={15}/> Meus atendimentos</a>
      {isAdmin&&<a href="/admin" className="inline-flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-bold text-orange-900 hover:bg-orange-100"><ShieldCheck size={15}/> Administração</a>}
      <button type="button" onClick={()=>void logout()} className="inline-flex items-center gap-1.5 rounded-lg bg-[#111e30] px-3 py-2 text-xs font-bold text-white hover:bg-[#24354e]"><LogOut size={15}/> Sair</button>
     </div>
