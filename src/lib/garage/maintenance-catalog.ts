@@ -59,7 +59,7 @@ export function itemForVehicle(kind:VehicleKind,id:string):ServiceItem|undefined
 }
 export function buildMaintenanceDescription(input:{
  item:ServiceItem;partBrand:string;partCode:string;quantity:string;
- workshop:string;invoice:string;notes:string;
+ workshop:string;invoice:string;notes:string;partsCost:string;laborCost:string;
 }):string{
  // Texto legível e compatível com registros e backup Supabase já existentes.
  const parts=[
@@ -69,9 +69,20 @@ export function buildMaintenanceDescription(input:{
   input.quantity.trim()?'Qtde: '+input.quantity.trim():'',
   input.workshop.trim()?'Oficina: '+input.workshop.trim():'',
   input.invoice.trim()?'OS/NF: '+input.invoice.trim():'',
+  'Peças R$: '+input.partsCost.trim(),
+  'MO R$: '+input.laborCost.trim(),
   input.notes.trim()?'Obs: '+input.notes.trim():'',
  ].filter(Boolean);
  return parts.join(' | ');
+}
+/** Compatibilidade com os dados de serviços salvos em uma única descrição textual. */
+export function parseMaintenanceDescription(description:string):Record<string,string>{
+ const fields:Record<string,string>={};
+ for(const chunk of description.split(' | ')){
+  const ix=chunk.indexOf(': ');
+  if(ix>0)fields[chunk.slice(0,ix).trim()]=chunk.slice(ix+2).trim();
+ }
+ return fields;
 }
 export function maintenanceItemInDescription(description:string):string|null{
  const name=description.match(/^Serviço:\s*([^|]+)/)?.[1]?.trim();
