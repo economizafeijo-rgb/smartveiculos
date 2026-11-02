@@ -17,9 +17,11 @@ import { Route as GaragemRouteImport } from './routes/garagem'
 import { Route as AcessoRouteImport } from './routes/acesso'
 import { Route as NegocioRouteImport } from './routes/negocio'
 import { Route as AdminEmpresasRouteImport } from './routes/admin-empresas'
+import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as ConfirmarEmailRouteImport } from './routes/confirmar-email'
 
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
+  id: '/', | '/confirmar-email' | '/redefinir-senha'
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -66,7 +68,21 @@ const AdminEmpresasRoute = AdminEmpresasRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
+const ConfirmarEmailRoute = ConfirmarEmailRouteImport.update({
+  id: '/confirmar-email',
+  path: '/confirmar-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
+  id: '/redefinir-senha',
+  path: '/redefinir-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
 export interface FileRoutesByFullPath {
+  '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/confirmar-email': typeof ConfirmarEmailRoute
   '/admin-empresas': typeof AdminEmpresasRoute
   '/negocio': typeof NegocioRoute
   '/acesso': typeof AcessoRoute
@@ -77,6 +93,8 @@ export interface FileRoutesByFullPath {
   '/cb650r': typeof CB650RRoute
 }
 export interface FileRoutesByTo {
+  '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/confirmar-email': typeof ConfirmarEmailRoute
   '/admin-empresas': typeof AdminEmpresasRoute
   '/negocio': typeof NegocioRoute
   '/acesso': typeof AcessoRoute
@@ -87,6 +105,8 @@ export interface FileRoutesByTo {
   '/cb650r': typeof CB650RRoute
 }
 export interface FileRoutesById {
+  '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/confirmar-email': typeof ConfirmarEmailRoute
   '/admin-empresas': typeof AdminEmpresasRoute
   '/negocio': typeof NegocioRoute
   '/acesso': typeof AcessoRoute
@@ -99,13 +119,15 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas'
+  fullPaths: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/confirmar-email' | '/redefinir-senha'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas'
+  to: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/confirmar-email' | '/redefinir-senha'
   id: '__root__' | '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  RedefinirSenhaRoute: typeof RedefinirSenhaRoute
+  ConfirmarEmailRoute: typeof ConfirmarEmailRoute
   AdminEmpresasRoute: typeof AdminEmpresasRoute
   NegocioRoute: typeof NegocioRoute
   AcessoRoute: typeof AcessoRoute
@@ -118,6 +140,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/redefinir-senha': {
+      id: '/redefinir-senha'
+      path: '/redefinir-senha'
+      fullPath: '/redefinir-senha'
+      preLoaderRoute: typeof RedefinirSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirmar-email': {
+      id: '/confirmar-email'
+      path: '/confirmar-email'
+      fullPath: '/confirmar-email'
+      preLoaderRoute: typeof ConfirmarEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin-empresas': {
       id: '/admin-empresas'
       path: '/admin-empresas'
@@ -178,6 +214,8 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  RedefinirSenhaRoute: RedefinirSenhaRoute,
+  ConfirmarEmailRoute: ConfirmarEmailRoute,
   AdminEmpresasRoute: AdminEmpresasRoute,
   NegocioRoute: NegocioRoute,
   AcessoRoute: AcessoRoute,
