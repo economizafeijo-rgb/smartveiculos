@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as GolG6RouteImport } from './routes/gol-g6'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -17,8 +19,22 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const GolG6Route = GolG6RouteImport.update({
+  id: '/gol-g6',
+  path: '/gol-g6',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/gol-g6': typeof GolG6Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -29,14 +45,16 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/admin' | '/gol-g6'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/admin' | '/gol-g6'
+  id: '__root__' | '/' | '/admin' | '/gol-g6'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  GolG6Route: typeof GolG6Route
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +66,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gol-g6': {
+      id: '/gol-g6'
+      path: '/gol-g6'
+      fullPath: '/gol-g6'
+      preLoaderRoute: typeof GolG6RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  GolG6Route: GolG6Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
