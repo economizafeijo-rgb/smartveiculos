@@ -158,7 +158,7 @@ export function CB650RDashboard(){
           <p className="mt-2 text-2xl font-extrabold">{formatKm(r.km)}</p><p className="mt-1 text-xs text-slate-500">Ou {r.months} meses da entrega</p>
           {r.due.date&&<p className="mt-2 text-xs font-semibold text-slate-700">Prazo: {formatDate(r.due.date)}</p>}
           {r.index<=2&&<p className="mt-2 text-xs text-orange-700">Mão de obra gratuita dentro das condições Honda</p>}
-          {!r.done?<button disabled={!bike} type="button" className={secondary+' mt-4 w-full'} onClick={()=>openRevision(r)}>Registrar revisão realizada</button>:<p className="mt-4 text-xs font-bold text-emerald-800">Registro lançado no histórico</p>}
+          {!r.done?<button disabled={!bike} type="button" className={secondary+' mt-4 w-full'} onClick={()=>openRevision(r)}>Registrar revisão realizada</button>:<p className="mt-4 text-xs font-bold text-emerald-800">Revisão informada pelo proprietário</p>}
          </div>)}</div>
        <button type="button" className={secondary+' mt-5'} onClick={()=>setAllRevisions(v=>!v)}>{allRevisions?'Mostrar primeiras 9 revisões':'Ver todas as '+milestones.length+' revisões'}</button>
        <p className="mt-5 rounded-xl bg-slate-50 p-4 text-xs leading-6 text-slate-600">O registro digital é pessoal e não substitui o carimbo, a assinatura e os comprovantes exigidos pela Honda para garantia. As revisões anteriores não são consideradas feitas automaticamente. Consulte sua concessionária para recuperar as ordens de serviço.</p>
