@@ -37,8 +37,18 @@ A foto de carro usada no painel é de um Gol 2014 **prata ilustrativo**, de font
 
 Sintomas e soluções na biblioteca são hipóteses para inspeção; não são diagnósticos do veículo. Sistemas críticos exigem serviço especializado.
 
+## Backup manual na nuvem
+
+O painel do Gol agora oferece um bloco **Backup em nuvem**, com login por e-mail/senha via Supabase Auth e ações **Enviar backup** e **Restaurar deste backup**.
+
+- Envio: insere os veículos, manutenções e abastecimentos ausentes no Supabase, preservando registros remotos existentes. A importação é idempotente por identificador.
+- Restauração: adiciona ao navegador os registros ausentes, sem substituir os que já estão armazenados localmente.
+- A ordem de importação respeita as chaves estrangeiras de veículos, serviços e abastecimentos.
+- Essas ações são **manuais**: não há sincronização automática, resolução de conflitos entre dispositivos ou propagação de exclusões.
+- Para usar o backup é indispensável ter o projeto `pwvayaflyamjihqqqvpk` com migrações aplicadas e autenticação ativa.
+
 ## Implementação e limites
-- Os registros pessoais da garagem, as manutenções e os abastecimentos atualmente ficam em `localStorage`.
+- Os registros pessoais da garagem, as manutenções e os abastecimentos são salvos primeiro em `localStorage`. A transferência para a nuvem exige ação manual no painel.
 - As migrações são preparatórias: **não foram executadas no banco remoto**. Aplicá-las depois de validar migrações anteriores e credenciais.
-- A sincronização de abastecimentos com Supabase ainda precisa de integração cliente e autenticação efetiva.
-- O site não foi publicado em hospedagem; o código foi enviado à branch `main`. Verificar `bun install`, `bun run test` e `bun run build` no ambiente com dependências disponíveis.
+- A lógica de backup/restauração com Supabase e a interface de login já estão implementadas, mas dependem de configuração da hospedagem, aplicação das migrações e implantação do projeto remoto.
+- O código foi enviado à `main`. A rotina do GitHub Actions valida `bunx tsc --noEmit`, `bun run test` e `bun run build`; isto não comprova que o banco esteja ativo ou que a hospedagem esteja publicada.
