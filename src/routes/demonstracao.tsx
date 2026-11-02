@@ -7,13 +7,10 @@ import {
  type LucideIcon
 } from 'lucide-react';
 import {
- DEMO_AREAS,DEMO_PERSONAS,DEMO_STOCK,DEMO_ORDERS,DEMO_VEHICLES,
- DEMO_FUEL,DEMO_SERVICES,formatDemoBRL,demoFuelTotal,
- demoStockValue,demoOpenOrders,isDemoArea,
- type DemoArea,type DemoVehicle,type DemoOrder,type DemoStock,
+ DEMO_PERSONAS,DEMO_STOCK,DEMO_ORDERS,DEMO_WORKSHOP_SERVICES,
+ formatDemoBRL,demoStockValue,demoOpenOrders,isDemoArea,
+ type DemoArea,type DemoOrder,type DemoShopArea,
 } from '@/lib/demo/demo-data';
-import {VehicleVideoLibrary} from '@/components/garage/VehicleVideoLibrary';
-import {servicesForRevision} from '@/lib/garage/manufacturer-service-guide';
 
 type DemoPage='visao'|'veiculos'|'abastecimentos'|'revisoes'|'fipe'|'videos'|'estoque'|'pedidos'|'servicos'|'vitrine';
 const PAGE_NAMES:Record<DemoPage,string>={
@@ -125,26 +122,19 @@ function DemoPortal(){
     </div>
    </section>
    <ReadonlyBanner/>
-   <section aria-label="Escolha uma área de demonstração">
-    <SectionTitle title="Explore os quatro perfis" desc="Troque de perfil sem login. Cada um possui informações fictícias e separadas."/>
-    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{CONFIG.map(c=>{
-     const Component=c.icon;return <Link key={c.area} to="/demonstracao" search={{area:c.area,pagina:'visao'}}
-      aria-current={area===c.area?'page':undefined}
-      className={'sv-demo-area-card flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors '+(
-       area===c.area?'border-orange-400 bg-[#152942] text-white shadow-md':'border-slate-200 bg-white text-slate-900 hover:border-orange-300 hover:bg-orange-50'
-      )}>
-      <span className={'grid size-10 shrink-0 place-items-center rounded-xl '+(area===c.area?'bg-orange-500 text-slate-950':'bg-orange-100 text-orange-700')}><Component size={19}/></span>
-      <span className="min-w-0"><strong className="block text-xs font-black">{c.label}</strong><span className={'mt-1 block text-[11px] '+(area===c.area?'text-slate-200':'text-slate-500')}>{c.short}</span></span>
-     </Link>;
-    })}</div>
-   </section>
+   <div className="flex flex-wrap items-center justify-between gap-2">
+    <p className="text-xs font-semibold text-slate-600">Você está conhecendo apenas a área de <strong className="text-slate-900">{config.label}</strong>.</p>
+    <a href="/" className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-orange-700 hover:border-orange-300">
+     Escolher outra área <ArrowUpRight size={14}/>
+    </a>
+   </div>
    <nav aria-label={'Páginas de '+config.label} className="sv-demo-page-nav flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
     {pages.map(p=><Link key={p} to="/demonstracao" search={{area,pagina:p}} aria-current={page===p?'page':undefined}
      className={'inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-extrabold transition-colors sm:px-4 '+(
       page===p?'bg-[#132941] text-white':'text-slate-700 hover:bg-orange-50 hover:text-orange-800'
      )}><PageIcon id={p}/>{PAGE_NAMES[p]}</Link>)}
    </nav>
-   {area==='garage'?<GarageDemo page={page}/>:<BusinessDemo area={area} page={page}/>}
+   {area==='garage'?<GarageDemo page={page}/>:<BusinessDemo key={area} area={area} page={page}/>}
    <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-5 text-xs text-slate-500">
     <p>Exibição ilustrativa, somente leitura. Sem autenticação nem gravação de informações.</p>
     <a href="/acesso?mode=register" className="inline-flex items-center gap-2 font-black text-orange-700 hover:underline">Criar conta real <ArrowUpRight size={14}/></a>
@@ -152,118 +142,68 @@ function DemoPortal(){
   </main>
  </div>;
 }
+/**
+ * Visitante nunca acessa fichas de clientes ou dados de um veículo real.
+ * Essa prévia explica os módulos e apresenta campos desativados, sem cadastro
+ * de carro/moto e sem consulta ao Supabase, à FIPE ou a historicos pessoais.
+ */
+const GARAGE_FEATURES=[
+ {page:'veiculos',title:'Minha garagem',detail:'Cadastro privado de carros e motos, quilometragem e ficha técnica.',icon:CarFront},
+ {page:'abastecimentos',title:'Abastecimentos',detail:'Registro de litros, preço por litro e análise de gastos.',icon:Fuel},
+ {page:'revisoes',title:'Revisões e manutenções',detail:'Agenda, serviços, valores e recomendações do fabricante.',icon:CalendarClock},
+ {page:'fipe',title:'Tabela FIPE',detail:'Consulta atualizada conforme o veículo do próprio cliente.',icon:TrendingUp},
+ {page:'videos',title:'Vídeos de reparos',detail:'Biblioteca particular filtrada pelo modelo e ano do veículo.',icon:Video},
+] as const;
 function GarageDemo({page}:{page:DemoPage}){
- const [vehicleId,setVehicleId]=useState<DemoVehicle['id']>('gol');
- const [query,setQuery]=useState('');
- const vehicle=DEMO_VEHICLES.find(v=>v.id===vehicleId)!;
- const fuels=DEMO_FUEL.filter(v=>v.vehicleId===vehicleId);
- const services=DEMO_SERVICES.filter(v=>v.vehicleId===vehicleId);
- const confirmed=services.filter(v=>v.status==='realizado');
- const total=demoFuelTotal(fuels);
- const plan=servicesForRevision({
-  kind:vehicle.kind,name:vehicle.name,modelYear:vehicle.year,
-  modelKey:vehicle.id==='gol'?'gol-g6-selecao-2014':'cb650r-2024'
- },vehicle.id==='gol'?190000:18000);
- const monthCost=demoFuelTotal(fuels.filter(v=>v.date.startsWith('2026-10')));
- const selectedServiceRows=services.filter(s=>s.name.toLowerCase().includes(query.toLowerCase()));
- const selector=<label className="inline-flex items-center gap-2 text-xs font-bold text-slate-600">Veículo
-  <select aria-label="Veículo do perfil demonstrativo" value={vehicleId} onChange={e=>{setVehicleId(e.target.value as DemoVehicle['id']);setQuery('')}} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 font-bold text-slate-900">
-   {DEMO_VEHICLES.map(v=><option key={v.id} value={v.id}>{v.kind==='carro'?'Carro':'Moto'} · {v.name}</option>)}
-  </select>
- </label>;
+ const selected=GARAGE_FEATURES.find(f=>f.page===page);
+ const Icon=selected?.icon??CarFront;
  return <div className="space-y-4">
-  {page==='visao'&&<>
-   <SectionTitle title="Visão geral da minha garagem" desc="Dois veículos de exemplo com dados independentes."/>
-   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    <Metric title="Veículos cadastrados" value="2" icon={CarFront} sub="1 carro · 1 moto"/>
-    <Metric title="Gastos em combustível" value={formatDemoBRL(demoFuelTotal(DEMO_FUEL))} icon={Fuel} sub="Período ilustrativo"/>
-    <Metric title="Manutenções registradas" value={String(DEMO_SERVICES.filter(s=>s.status==='realizado').length)} icon={Wrench}/>
-    <Metric title="Cotação FIPE" value="2 veículos" icon={TrendingUp} sub="Referências históricas ilustrativas"/>
+  {page==='visao'?<>
+   <SectionTitle title="Conheça sua garagem digital" desc="Prévia sem veículos de clientes: clique nos serviços para entender as funções de uma conta particular."/>
+   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {GARAGE_FEATURES.map(feature=>{
+     const FeatureIcon=feature.icon;
+     return <Link key={feature.page} to="/demonstracao" search={{area:'garage',pagina:feature.page}}
+      className={card+' group flex min-h-32 flex-col justify-between gap-3 hover:border-orange-400'}>
+      <div className="flex items-center justify-between"><span className="grid size-11 place-items-center rounded-xl bg-[#142941] text-orange-300"><FeatureIcon size={22}/></span>
+       <ArrowUpRight size={18} className="text-orange-600"/></div>
+      <div><h3 className="text-sm font-black text-slate-900">{feature.title}</h3>
+       <p className="mt-1 text-xs leading-5 text-slate-600">{feature.detail}</p></div>
+     </Link>;
+    })}
    </div>
-   <VehicleCards onPick={setVehicleId} selected={vehicleId}/>
-   <div className={card}><h3 className="text-sm font-black text-slate-900">Como funciona esta garagem?</h3>
-    <p className="mt-2 text-xs leading-6 text-slate-600">Use as abas acima para consultar gastos, revisões, valores FIPE e tutoriais. Experimente trocar entre o Gol e a Honda. Os botões de cadastro estão bloqueados porque este é um ambiente público somente leitura.</p>
-    <button type="button" className={btnOff+' mt-3'} disabled title="Disponível após cadastrar uma conta real"><LockKeyhole size={15}/> Cadastrar novo veículo (bloqueado)</button>
+  </>:<>
+   <div className={card+' space-y-4'}>
+    <div className="flex flex-wrap items-start gap-3">
+     <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#142941] text-orange-300"><Icon size={24}/></span>
+     <div className="min-w-0 flex-1"><h2 className="text-lg font-black text-slate-900">{selected?.title??'Garagem'}</h2>
+      <p className="mt-1 text-xs leading-5 text-slate-600">{selected?.detail}</p></div>
+     <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-bold text-slate-600">Nenhum cadastro exibido</span>
+    </div>
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-7 text-center">
+     <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#182f4d] text-orange-300"><LockKeyhole size={26}/></span>
+     <h3 className="mt-3 text-base font-black text-slate-900">Dados dos proprietários são privados</h3>
+     <p className="mx-auto mt-2 max-w-xl text-xs leading-6 text-slate-600">
+      A demonstração não exibe veículos cadastrados, placas, quilometragem, abastecimentos, preços FIPE, revisões ou vídeos personalizados de outras pessoas.
+      O conteúdo desta ferramenta é preenchido exclusivamente na conta particular de cada cliente.
+     </p>
+    </div>
+    {page==='abastecimentos'&&<div className="grid gap-3 sm:grid-cols-3">
+     {['Data do abastecimento','Litros abastecidos','Valor por litro (R$)'].map(name=><label key={name} className="grid gap-1 text-xs font-bold text-slate-600">
+      {name}<input disabled placeholder="Disponível na conta do proprietário" className="w-full rounded-xl border border-slate-200 bg-slate-100 px-3 py-3 text-xs" /></label>)}
+    </div>}
+    {page==='revisoes'&&<div className="grid gap-2 sm:grid-cols-3">
+     {['Plano por quilometragem','Histórico de serviços','Alertas e manuais'].map(title=><div key={title} className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-extrabold text-slate-900">{title}</p><p className="mt-2 text-[11px] text-slate-600">Personalizado depois que o proprietário cadastrar seu veículo.</p></div>)}
+    </div>}
+    {page==='fipe'&&<p className="rounded-xl border border-orange-200 bg-orange-50 p-4 text-xs leading-6 text-orange-900">Os valores FIPE não são simulados para veículos de terceiros. Consulte o valor do seu próprio carro ou moto após entrar em sua garagem.</p>}
+    {page==='videos'&&<p className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-xs leading-6 text-blue-900">Cada biblioteca é exclusiva do modelo cadastrado. O acervo não utiliza veículos de outras contas para gerar a demonstração pública.</p>}
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
+     <p className="max-w-xl text-xs leading-5 text-slate-600">Navegação liberada para conhecer a estrutura. Nenhum dado particular é compartilhado com visitantes.</p>
+     <a href="/acesso?mode=register" className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-3 text-xs font-black text-slate-950 hover:bg-orange-400">Criar minha garagem gratuita <ArrowRight size={15}/></a>
+    </div>
    </div>
   </>}
-  {page==='veiculos'&&<><SectionTitle title="Meus veículos" desc="Explore cada ficha, ano, quilometragem e preço de referência."/><VehicleCards onPick={setVehicleId} selected={vehicleId}/></>}
-  {page!=='visao'&&page!=='veiculos'&&<>
-   <div className={card+' flex flex-wrap items-center justify-between gap-3'}>
-    <div><h2 className="text-lg font-black text-slate-900">{PAGE_NAMES[page]}</h2>
-     <p className="mt-1 text-xs text-slate-500">Dados fictícios organizados por veículo, para demonstração.</p></div>
-    {selector}
-   </div>
-  </>}
-  {page==='abastecimentos'&&<>
-   <div className="grid gap-3 sm:grid-cols-3">
-    <Metric title="Total do histórico" value={formatDemoBRL(total)} icon={Fuel} sub={fuels.length+' abastecimentos'}/>
-    <Metric title="Gasto em outubro" value={formatDemoBRL(monthCost)} icon={CalendarClock} sub="Dados demonstrativos"/>
-    <Metric title="Preço médio por litro" value={formatDemoBRL(total/fuels.reduce((n,r)=>n+r.liters,0))} icon={TrendingUp}/>
-   </div>
-   <div className={card}><div className="flex flex-wrap justify-between gap-2"><h3 className="text-sm font-black text-slate-900">Histórico de abastecimentos</h3>
-    <button type="button" disabled className={btnOff}><LockKeyhole size={14}/> Novo abastecimento</button></div>
-    <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[550px] text-left text-xs">
-     <thead className="bg-slate-50 text-slate-500"><tr>{['Data','Combustível','Odômetro','Litros','Preço/L','Total calculado'].map(h=><th key={h} className="px-3 py-3">{h}</th>)}</tr></thead>
-     <tbody>{fuels.map(f=><tr key={f.date} className="border-t border-slate-100 text-slate-700">
-      <td className="px-3 py-3">{formatDate(f.date)}</td><td className="px-3 py-3">{f.fuel}</td><td className="px-3 py-3">{number(f.km)} km</td>
-      <td className="px-3 py-3">{number(f.liters)} L</td><td className="px-3 py-3">{formatDemoBRL(f.priceLiter)}</td>
-      <td className="px-3 py-3 font-black">{formatDemoBRL(f.liters*f.priceLiter)}</td>
-     </tr>)}</tbody></table></div>
-    <p className="mt-3 text-[11px] text-slate-500">Na conta real, os gastos são calculados automaticamente com litros × preço por litro. A demonstração não aceita novos lançamentos.</p>
-   </div>
-  </>}
-  {page==='revisoes'&&<>
-   <div className="grid gap-3 sm:grid-cols-3">
-    <Metric title="Odômetro ilustrativo" value={number(vehicle.km)+' km'} icon={Gauge}/>
-    <Metric title="Serviços registrados" value={String(confirmed.length)} icon={Wrench}/>
-    <Metric title="Gasto histórico" value={formatDemoBRL(confirmed.reduce((n,r)=>n+r.value,0))} icon={TrendingUp}/>
-   </div>
-   <div className={card}><div className="flex flex-wrap justify-between gap-2"><h3 className="text-sm font-black text-slate-900">Histórico de revisões e serviços</h3>
-    <button disabled type="button" className={btnOff}><LockKeyhole size={14}/> Registrar revisão</button></div>
-    <label className="relative mt-3 block"><Search size={16} className="absolute left-3 top-3 text-slate-500"/>
-     <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Filtrar por serviço" aria-label="Pesquisar serviço demonstrativo" className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm text-slate-900"/></label>
-    <div className="mt-3 divide-y divide-slate-100">{selectedServiceRows.map(s=><div key={s.name} className="flex flex-wrap items-center justify-between gap-2 py-3">
-     <div><p className="text-xs font-black text-slate-900">{s.name}</p><p className="mt-1 text-[11px] text-slate-500">{formatDate(s.date)} · {number(s.km)} km</p></div>
-     <div className="text-right"><span className={'rounded-full px-2 py-1 text-[10px] font-bold '+(s.status==='realizado'?'bg-emerald-50 text-emerald-800':'bg-amber-50 text-amber-900')}>{s.status==='realizado'?'Registrado':'A conferir'}</span><p className="mt-1 text-xs font-black">{s.status==='realizado'?formatDemoBRL(s.value):'—'}</p></div>
-    </div>)}</div>
-   </div>
-   {plan&&<div className={card}><SectionTitle title="O que a montadora recomenda?" desc={plan.notice}>
-    <a href={plan.source} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-700"><BookOpen size={14}/> Consultar fonte <ArrowUpRight size={13}/></a></SectionTitle>
-    <p className="mb-3 text-sm font-black text-slate-900">Revisão ilustrativa de {number(plan.revisionKm)} km</p>
-    <div className="grid gap-2 sm:grid-cols-2">{plan.items.slice(0,12).map(item=><div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-     <div className="flex justify-between gap-2"><p className="text-xs font-black text-slate-900">{item.title}</p>
-     <span className="text-[10px] font-black text-orange-700">{item.action==='trocar'?'Trocar':'Conferir'}</span></div>
-     <p className="mt-1 text-[11px] text-slate-600">{item.interval}</p>
-    </div>)}</div>
-    <p className="mt-3 text-[11px] text-slate-500">Esta visualização não marca revisões como concluídas.</p>
-   </div>}
-  </>}
-  {page==='fipe'&&<div className={card}>
-   <SectionTitle title={'Valor FIPE de '+vehicle.name} desc="Exemplo histórico para explorar a apresentação do sistema. Não é uma cotação em tempo real."/>
-   <p className="text-4xl font-black tracking-tight text-slate-900">{formatDemoBRL(vehicle.fipeValue)}</p>
-   <p className="mt-3 text-xs font-semibold text-slate-600">Código FIPE: {vehicle.fipeCode} · Referência: {vehicle.fipeMonth}</p>
-   <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950">Os valores nesta demonstração são exemplos históricos. Na conta real, a consulta depende da versão do veículo e da resposta da fonte FIPE.</p>
-   <button type="button" disabled className={btnOff+' mt-4'}><LockKeyhole size={15}/> Atualizar cotação real — somente conta cadastrada</button>
-  </div>}
-  {page==='videos'&&<VehicleVideoLibrary key={vehicle.id} vehicle={{
-   kind:vehicle.kind,name:vehicle.name,modelYear:vehicle.year,
-   modelKey:vehicle.id==='gol'?'gol-g6-selecao-2014':'cb650r-2024'
-  }}/>}
  </div>;
-}
-function VehicleCards({selected,onPick}:{selected:DemoVehicle['id'];onPick:(id:DemoVehicle['id'])=>void}){
- return <div className="grid gap-3 sm:grid-cols-2">{DEMO_VEHICLES.map(v=>{
-  const Icon=v.kind==='carro'?CarFront:Bike;
-  return <button key={v.id} onClick={()=>onPick(v.id)} type="button" aria-pressed={selected===v.id}
-   className={'sv-demo-vehicle-card min-w-0 rounded-2xl border p-5 text-left transition-colors '+(selected===v.id?'border-orange-400 bg-[#172c48] text-white shadow-md':'border-slate-200 bg-white text-slate-900 hover:border-orange-300')}>
-   <div className="flex justify-between gap-2"><Icon size={27} className="text-orange-500"/>
-    <span className={'rounded-full px-2.5 py-1 text-[11px] font-bold '+(selected===v.id?'bg-orange-500/20 text-orange-200':'bg-slate-100 text-slate-600')}>{selected===v.id?'Selecionado':'Ver ficha'}</span></div>
-   <h3 className="mt-4 text-lg font-black">{v.name}</h3><p className={'mt-1 text-xs '+(selected===v.id?'text-slate-300':'text-slate-500')}>{v.year} · {number(v.km)} km</p>
-   <div className={'mt-4 border-t pt-4 '+(selected===v.id?'border-white/20':'border-slate-100')}>
-    <span className="text-[11px] font-bold">FIPE demonstrativa</span><p className="mt-1 text-xl font-black">{formatDemoBRL(v.fipeValue)}</p><p className="text-[11px]">{v.fipeMonth}</p>
-   </div>
-  </button>;
- })}</div>;
 }
 function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage}){
  const isShop=area!=='workshop';
