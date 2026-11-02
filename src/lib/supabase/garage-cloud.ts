@@ -9,7 +9,7 @@ function client() {
 async function currentUser() {
   const { data, error } = await client().auth.getUser();
   if (error || !data.user) throw new Error('Entre na sua conta antes de sincronizar.');
-  return data.user.id;
+  return data.user['id'];
 }
 async function readAll(table:'vehicles'|'service_records',orderField:'created_at'|'service_date'){
   const rows: Record<string,unknown>[]=[];
@@ -30,16 +30,16 @@ export async function loadCloudGarage(): Promise<GarageData> {
   ]);
   return garageDataSchema.parse({
     version:1,
-    vehicles:vehicles.map(v=>({id:v.id,kind:v.kind,name:v.name,plate:v.plate,currentKm:v.current_km,createdAt:v.created_at})),
-    records:records.map(r=>({id:r.id,vehicleId:r.vehicle_id,kind:r.kind,date:r.service_date,km:r.km,description:r.description,cost:Number(r.cost),nextKm:r.next_km}))
+    vehicles:vehicles.map(v=>({id:v['id'],kind:v['kind'],name:v['name'],plate:v['plate'],currentKm:v['current_km'],createdAt:v['created_at']})),
+    records:records.map(r=>({id:r['id'],vehicleId:r['vehicle_id'],kind:r['kind'],date:r['service_date'],km:r['km'],description:r['description'],cost:Number(r['cost']),nextKm:r['next_km']}))
   });
 }
 /** Importação explícita; preserva dados locais e registros remotos. */
 export async function importLocalGarage(data: GarageData): Promise<{vehicles:number;records:number}> {
   const parsed = garageDataSchema.parse(data);
   const owner = await currentUser();
-  const vehicles = parsed.vehicles.map(v => ({id:v.id,owner_id:owner,kind:v.kind,name:v.name,plate:v.plate,current_km:v.currentKm,created_at:v.createdAt}));
-  const records = parsed.records.map(r => ({id:r.id,owner_id:owner,vehicle_id:r.vehicleId,kind:r.kind,service_date:r.date,km:r.km,description:r.description,cost:r.cost,next_km:r.nextKm}));
+  const vehicles = parsed.vehicles.map(v => ({id:v['id'],owner_id:owner,kind:v['kind'],name:v['name'],plate:v['plate'],current_km:v.currentKm,created_at:v.createdAt}));
+  const records = parsed.records.map(r => ({id:r['id'],owner_id:owner,vehicle_id:r.vehicleId,kind:r['kind'],service_date:r.date,km:r['km'],description:r['description'],cost:r['cost'],next_km:r.nextKm}));
   if(vehicles.length) {
     const {error} = await client().from('vehicles').upsert(vehicles,{onConflict:'id',ignoreDuplicates:true});
     if(error) throw error;
@@ -71,7 +71,7 @@ export async function loadCloudFillups(): Promise<Fillup[]> {
     const rows = data ?? [];
     for (const r of rows) {
       const item:Fillup={
-        id:r.id,vehicleId:r.vehicle_id,date:r.fill_date,km:r.odometer_km,
+        id:r['id'],vehicleId:r['vehicle_id'],date:r.fill_date,km:r.odometer_km,
         fuel:r.fuel as Fillup['fuel'],liters:Number(r.liters),
         pricePerLiter:Number(r.price_per_liter),fullTank:r.full_tank
       };
