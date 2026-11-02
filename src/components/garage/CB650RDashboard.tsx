@@ -108,7 +108,7 @@ export function CB650RDashboard(){
  }
  const totalSpent=services.reduce((sum,s)=>sum+s.cost,0)+fuelSpent(fillups);
  if(!hydrated)return <div className="grid min-h-screen place-items-center bg-slate-100 text-slate-600">Carregando sua CB650R...</div>;
- return <div className="min-h-screen bg-[#f3f5fa] text-slate-900">
+ return <div className="sv-theme-surface sv-dashboard-shell min-h-screen bg-[#f3f5fa] text-slate-900">
   <header className="border-b border-slate-200 bg-white"><div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-7">
     <Link to="/" className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-slate-900 text-orange-400"><Bike/></span><span className="text-base font-extrabold">Smart<span className="text-orange-500">Veículos</span><small className="block text-xs font-normal text-slate-500">Minha garagem premium</small></span></Link>
     <div className="flex gap-2"><Link to="/" className={secondary}><ArrowLeft size={15}/> Garagem</Link><Link to="/gol-g6" className={secondary+' hidden sm:inline-flex'}>Gol G6</Link></div>
