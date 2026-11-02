@@ -199,7 +199,8 @@ function OwnerGarage(){
   return result;
  },[profiles,vehicles]);
  const selected=vehicles.find(v=>v.id===selectedId)??vehicles[0];
- const fipeEntry=entries.find(v=>v.id===requestedVehicle||v.localVehicleId===requestedVehicle||v.modelKey===requestedVehicle)??entries.find(v=>v.id===fipeEntryId)??entries[0];
+ const requestedEntry=requestedVehicle?entries.find(v=>v.id===requestedVehicle||v.localVehicleId===requestedVehicle||v.modelKey===requestedVehicle):undefined;
+ const fipeEntry=requestedVehicle?requestedEntry:(entries.find(v=>v.id===fipeEntryId)??entries[0]);
  const activeLocal=fipeEntry?.localVehicleId?vehicles.find(v=>v.id===fipeEntry.localVehicleId):undefined;
  const vehicleRecords=useMemo(()=>selected?sortRecords(records.filter(r=>r.vehicleId===selected.id)):[],[selected?.id,records]);
  const alerts=useMemo(()=>selected?upcomingServices(vehicleRecords,selected.currentKm):[],[vehicleRecords,selected?.currentKm]);
@@ -326,6 +327,11 @@ function OwnerGarage(){
    {pagina==='inicio'&&(!hydrated||loading)&&<div aria-label="Carregando veículos" className="sv-garage-vehicle-grid grid min-h-0 flex-1 gap-3 md:grid-cols-2">{[0,1].map(i=><div key={i} className="sv-garage-skeleton min-h-[230px] animate-pulse rounded-[20px] bg-slate-200"/>)}</div>}
    {pagina==='inicio'&&hydrated&&!loading&&entries.length>0&&<div className="sv-garage-vehicle-grid grid min-h-0 flex-1 gap-3 md:grid-cols-2">{entries.map((v,i)=><VehicleCard key={v.id} vehicle={v} index={i} onSelect={()=>openLocal(v.modelKey)}/>)}</div>}
    {pagina==='inicio'&&hydrated&&!loading&&!entries.length&&<section className="sv-garage-empty flex min-h-0 flex-1 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-8"><div className="mx-auto grid size-14 place-items-center rounded-xl bg-orange-50 text-orange-600"><CarFront size={28}/></div><h3 className="mt-5 text-xl font-black">Sua garagem ainda está vazia</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Cadastre seu primeiro veículo para ter acesso às suas informações. Nenhuma quilometragem será presumida.</p><button onClick={()=>setVehicleDialog({open:true})} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-slate-950"><Plus size={16}/> Adicionar veículo</button></section>}
+   {pagina!=='inicio'&&requestedVehicle&&hydrated&&!loading&&entries.length>0&&!fipeEntry&&
+    <section role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 p-5 text-sm font-semibold text-amber-900">
+     Este veículo não está disponível na sua garagem. Nenhum vídeo ou registro de outro carro ou moto será exibido no lugar dele.
+     <Link to="/garagem" search={{pagina:'inicio'}} className="ml-2 font-black underline">Escolher veículo</Link>
+    </section>}
    {pagina!=='inicio'&&!loading&&hydrated&&entries.length===0&&<section className="rounded-2xl border border-orange-200 bg-orange-50 p-6 text-center text-sm text-orange-950">
     Cadastre seu primeiro veículo para acessar os serviços personalizados.
     <button type="button" onClick={()=>setVehicleDialog({open:true})} className="ml-2 font-black underline">Cadastrar veículo</button>
