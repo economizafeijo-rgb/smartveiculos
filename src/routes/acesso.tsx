@@ -53,7 +53,7 @@ function Access(){
     const {data,error}=await supabase.auth.signUp({email:email.trim().toLowerCase(),password});
     if(error)throw error;
     if(data.session){
-     if(segment)await registerCompany();
+     if(segment){await registerCompany();window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({cnpj:cleanCnpj(cnpj),segment}));}
      window.location.assign(target);return;
     }
     setMessage('Conta solicitada. Confira o e-mail de confirmação do Supabase; após confirmar, entre novamente e conclua o cadastro da empresa. O CNPJ ainda não foi aprovado.');
@@ -63,7 +63,8 @@ function Access(){
     const {data,error}=await supabase.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
     if(error)throw error;
     if(!data.user)throw new Error('Não foi possível confirmar sua sessão.');
-    // O cadastro empresarial também pode ser finalizado na área /negocio.
+    // O CNPJ selecionado identifica qual unidade empresarial abrir, além do login do responsável.
+    if(segment)window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({cnpj:cleanCnpj(cnpj),segment}));
     window.location.assign(target);
    }
   }catch(e){setError(e instanceof Error?e.message:'Não foi possível concluir. Tente novamente.');}
