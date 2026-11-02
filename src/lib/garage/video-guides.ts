@@ -80,8 +80,9 @@ export function videoProfile(vehicle:VideoVehicle):'gol'|'cb650r'|'generic'{
  const name=clean(vehicle.name),key=clean(vehicle.modelKey??'');
  const yearInName=name.match(/\b(?:19|20)\d{2}\b/)?.[0];
  const year=vehicle.modelYear??(yearInName?Number(yearInName):null);
- if(vehicle.kind==='carro'&&year!==null&&year!==2014)return 'generic';
- if(vehicle.kind==='moto'&&year!==null&&year!==2024)return 'generic';
+ // Não inferir a versão 2014/2024 para cadastros sem ano: evite tutoriais errados.
+ if(vehicle.kind==='carro'&&year!==2014)return 'generic';
+ if(vehicle.kind==='moto'&&year!==2024)return 'generic';
  // Nunca exibir tutoriais do Gol em uma moto ou vice-versa;
  // para modelos desconhecidos, oferecemos apenas busca pelo cadastro do cliente.
  if(vehicle.kind==='carro'&&(
