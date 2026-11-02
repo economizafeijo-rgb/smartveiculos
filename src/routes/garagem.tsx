@@ -17,6 +17,7 @@ import {OdometerCard} from '@/components/garage/OdometerCard';
 import {RecordDialog} from '@/components/garage/RecordDialog';
 import {RecordList} from '@/components/garage/RecordList';
 import {VehicleDialog} from '@/components/garage/VehicleDialog';
+import {FipeValuePanel,FipeVehicleSummary} from '@/components/garage/FipeValuePanel';
 import type {Vehicle,RecordKind,ServiceRecord} from '@/lib/garage/types';
 
 export const Route=createFileRoute('/garagem')({
@@ -35,6 +36,7 @@ type CloudVehicle={
 type PortalVehicle={
  id:string;modelKey:string;kind:'carro'|'moto';name:string;subtitle:string;
  plate:string|null;km:number|null;url:'/gol-g6'|'/cb650r'|null;
+ fipeKey:string;brand:string;modelYear:number|null;
  photo:string;photocredit:string;source:'perfil'|'local';
 };
 const photoGarage='https://images.unsplash.com/photo-1727893153491-392fd2d1c721?auto=format&fit=crop&w=1800&q=85';
@@ -46,6 +48,7 @@ function toProfile(p:CloudVehicle,local:Vehicle|undefined):PortalVehicle{
  const isCb=p.model_key==='cb650r-2024';
  return {
   id:p.id,modelKey:p.model_key,kind:p.kind,name:p.display_name,
+  fipeKey:local?.id??p.id,brand:p.brand,modelYear:p.model_year,
   subtitle:isGol?'2014 · 1.6 Flex · Prata':isCb?'2024 · Vermelha · 649 cm³ · 4 cilindros':[
     p.model_year?p.model_year.toString():'',p.color??''
   ].filter(Boolean).join(' · '),
@@ -62,6 +65,8 @@ function fromLocal(v:Vehicle):PortalVehicle{
  const isCb=v.name===CB650R_NAME;
  return {
   id:v.id,modelKey:'local:'+v.id,kind:v.kind,name:v.name,
+  fipeKey:v.id,brand:isGol?'VW':isCb?'Honda':v.name.split(' ')[0]??'',
+  modelYear:Number(v.name.match(/(?:19|20)\d{2}/)?.[0])|| (isGol?2014:isCb?2024:null),
   subtitle:isCb?'2024 · Vermelha · 649 cm³':v.kind==='carro'?'Automóvel · Meu veículo':'Motocicleta · Meu veículo',
   plate:v.plate||null,km:v.currentKm,
   url:isGol?'/gol-g6':isCb?'/cb650r':null,
@@ -97,6 +102,7 @@ function VehicleCard({vehicle,index,onSelect}:{vehicle:PortalVehicle;index:numbe
      <Spec icon={<Gauge size={14}/>}>{vehicle.km!==null?formatKm(vehicle.km):'KM a informar'}</Spec>
      {vehicle.plate&&<Spec icon={<CarFront size={14}/>}>{vehicle.plate}</Spec>}
     </div>
+    <div className="mt-2"><FipeVehicleSummary vehicleId={vehicle.fipeKey}/></div>
     <div className="mt-3 flex items-center justify-between gap-3">
      <span className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-extrabold text-[#111827] shadow-lg transition group-hover:bg-orange-400">
       {vehicle.url?'Abrir painel completo':'Gerenciar veículo'}<ArrowRight size={17}/>
@@ -121,6 +127,7 @@ function OwnerGarage(){
  const [userEmail,setUserEmail]=useState('');
  const [managerOpen,setManagerOpen]=useState(false);
  const [selectedId,setSelectedId]=useState<string|null>(null);
+ const [fipeEntryId,setFipeEntryId]=useState<string|null>(null);
  const [vehicleDialog,setVehicleDialog]=useState<{open:boolean;vehicle?:Vehicle}>({open:false});
  const [recordDialog,setRecordDialog]=useState<{open:boolean;record?:ServiceRecord;defaultKind?:RecordKind}>({open:false});
  const [loadToken,setLoadToken]=useState(0);
@@ -157,6 +164,7 @@ function OwnerGarage(){
   return result;
  },[profiles,vehicles]);
  const selected=vehicles.find(v=>v.id===selectedId)??vehicles[0];
+ const fipeEntry=entries.find(v=>v.id===fipeEntryId)??entries[0];
  const vehicleRecords=useMemo(()=>selected?sortRecords(records.filter(r=>r.vehicleId===selected.id)):[],[selected?.id,records]);
  const alerts=useMemo(()=>selected?upcomingServices(vehicleRecords,selected.currentKm):[],[vehicleRecords,selected?.currentKm]);
   const needsKm=entries.filter(v=>v.km===null).length;
@@ -227,6 +235,17 @@ function OwnerGarage(){
    {(!hydrated||loading)&&<div aria-label="Carregando veículos" className="sv-garage-vehicle-grid grid min-h-0 flex-1 gap-3 md:grid-cols-2">{[0,1].map(i=><div key={i} className="sv-garage-skeleton min-h-[230px] animate-pulse rounded-[20px] bg-slate-200"/>)}</div>}
    {hydrated&&!loading&&entries.length>0&&<div className="sv-garage-vehicle-grid grid min-h-0 flex-1 gap-3 md:grid-cols-2">{entries.map((v,i)=><VehicleCard key={v.id} vehicle={v} index={i} onSelect={()=>openLocal(v.modelKey)}/>)}</div>}
    {hydrated&&!loading&&!entries.length&&<section className="sv-garage-empty flex min-h-0 flex-1 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-8"><div className="mx-auto grid size-14 place-items-center rounded-xl bg-orange-50 text-orange-600"><CarFront size={28}/></div><h3 className="mt-5 text-xl font-black">Sua garagem ainda está vazia</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Cadastre seu primeiro veículo para ter acesso às suas informações. Nenhuma quilometragem será presumida.</p><button onClick={()=>setVehicleDialog({open:true})} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-slate-950"><Plus size={16}/> Adicionar veículo</button></section>}
+   {hydrated&&!loading&&fipeEntry&&<div className="sv-garage-fipe-zone shrink-0 space-y-3">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+     <div><p className="text-[10px] font-bold uppercase tracking-[.15em] text-orange-700">Valor atualizado da Tabela FIPE</p><h2 className="text-lg font-black text-[#14243b]">Cotação por carro ou moto cadastrada</h2></div>
+     {entries.length>1&&<label className="flex items-center gap-2 text-xs font-bold text-slate-600">Veículo
+      <select aria-label="Selecionar veículo para consultar FIPE" value={fipeEntry.id} onChange={e=>setFipeEntryId(e.target.value)} className="min-w-[190px] max-w-[260px] rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-900">
+       {entries.map(v=><option key={v.id} value={v.id}>{v.kind==='carro'?'Carro':'Moto'} · {v.name}</option>)}
+      </select>
+     </label>}
+    </div>
+    <FipeValuePanel key={fipeEntry.fipeKey} vehicleId={fipeEntry.fipeKey} kind={fipeEntry.kind} vehicleName={fipeEntry.name} brandHint={fipeEntry.brand} yearHint={fipeEntry.modelYear??undefined}/>
+   </div>}
    <section id="gestao-local" className="sv-garage-manager sv-interactive-surface shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white/95 shadow-sm">
     <button type="button" aria-expanded={managerOpen} onClick={()=>setManagerOpen(v=>!v)} className="sv-garage-manager-toggle flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left sm:px-5">
      <div className="flex items-center gap-2.5"><span className="grid size-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-700"><SlidersHorizontal size={17}/></span><div><h3 className="text-sm font-extrabold">Gerenciar registros e outros veículos</h3><p className="mt-0.5 text-[11px] leading-4 text-slate-500">Adicionar veículos, consultar registros e importar dados anteriores</p></div></div>
