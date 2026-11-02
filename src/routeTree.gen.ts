@@ -10,180 +10,176 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as GolG6RouteImport } from './routes/gol-g6'
-import { Route as CB650RRouteImport } from './routes/cb650r'
-import { Route as GaragemRouteImport } from './routes/garagem'
 import { Route as AcessoRouteImport } from './routes/acesso'
-import { Route as NegocioRouteImport } from './routes/negocio'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminEmpresasRouteImport } from './routes/admin-empresas'
-import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as Cb650rRouteImport } from './routes/cb650r'
 import { Route as ConfirmarEmailRouteImport } from './routes/confirmar-email'
+import { Route as GaragemRouteImport } from './routes/garagem'
+import { Route as GolG6RouteImport } from './routes/gol-g6'
 import { Route as MeusAtendimentosRouteImport } from './routes/meus-atendimentos'
+import { Route as NegocioRouteImport } from './routes/negocio'
+import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-
-const GolG6Route = GolG6RouteImport.update({
-  id: '/gol-g6',
-  path: '/gol-g6',
-  getParentRoute: () => rootRouteImport,
-} as any)
-
-const CB650RRoute = CB650RRouteImport.update({
-  id: '/cb650r',
-  path: '/cb650r',
-  getParentRoute: () => rootRouteImport,
-} as any)
-
-const GaragemRoute = GaragemRouteImport.update({
-  id: '/garagem',
-  path: '/garagem',
-  getParentRoute: () => rootRouteImport,
-} as any)
-
 const AcessoRoute = AcessoRouteImport.update({
   id: '/acesso',
   path: '/acesso',
   getParentRoute: () => rootRouteImport,
 } as any)
-
-const NegocioRoute = NegocioRouteImport.update({
-  id: '/negocio',
-  path: '/negocio',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-
 const AdminEmpresasRoute = AdminEmpresasRouteImport.update({
   id: '/admin-empresas',
   path: '/admin-empresas',
   getParentRoute: () => rootRouteImport,
 } as any)
-
+const Cb650rRoute = Cb650rRouteImport.update({
+  id: '/cb650r',
+  path: '/cb650r',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConfirmarEmailRoute = ConfirmarEmailRouteImport.update({
   id: '/confirmar-email',
   path: '/confirmar-email',
   getParentRoute: () => rootRouteImport,
 } as any)
-
+const GaragemRoute = GaragemRouteImport.update({
+  id: '/garagem',
+  path: '/garagem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GolG6Route = GolG6RouteImport.update({
+  id: '/gol-g6',
+  path: '/gol-g6',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeusAtendimentosRoute = MeusAtendimentosRouteImport.update({
+  id: '/meus-atendimentos',
+  path: '/meus-atendimentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NegocioRoute = NegocioRouteImport.update({
+  id: '/negocio',
+  path: '/negocio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
   id: '/redefinir-senha',
   path: '/redefinir-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 
-const MeusAtendimentosRoute = MeusAtendimentosRouteImport.update({
-  id: '/meus-atendimentos',
-  path: '/meus-atendimentos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-
 export interface FileRoutesByFullPath {
-  '/meus-atendimentos': typeof MeusAtendimentosRoute
-  '/redefinir-senha': typeof RedefinirSenhaRoute
-  '/confirmar-email': typeof ConfirmarEmailRoute
-  '/admin-empresas': typeof AdminEmpresasRoute
-  '/negocio': typeof NegocioRoute
-  '/acesso': typeof AcessoRoute
-  '/garagem': typeof GaragemRoute
   '/': typeof IndexRoute
+  '/acesso': typeof AcessoRoute
   '/admin': typeof AdminRoute
+  '/admin-empresas': typeof AdminEmpresasRoute
+  '/cb650r': typeof Cb650rRoute
+  '/confirmar-email': typeof ConfirmarEmailRoute
+  '/garagem': typeof GaragemRoute
   '/gol-g6': typeof GolG6Route
-  '/cb650r': typeof CB650RRoute
+  '/meus-atendimentos': typeof MeusAtendimentosRoute
+  '/negocio': typeof NegocioRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
 }
 export interface FileRoutesByTo {
-  '/meus-atendimentos': typeof MeusAtendimentosRoute
-  '/redefinir-senha': typeof RedefinirSenhaRoute
-  '/confirmar-email': typeof ConfirmarEmailRoute
-  '/admin-empresas': typeof AdminEmpresasRoute
-  '/negocio': typeof NegocioRoute
-  '/acesso': typeof AcessoRoute
-  '/garagem': typeof GaragemRoute
   '/': typeof IndexRoute
+  '/acesso': typeof AcessoRoute
   '/admin': typeof AdminRoute
+  '/admin-empresas': typeof AdminEmpresasRoute
+  '/cb650r': typeof Cb650rRoute
+  '/confirmar-email': typeof ConfirmarEmailRoute
+  '/garagem': typeof GaragemRoute
   '/gol-g6': typeof GolG6Route
-  '/cb650r': typeof CB650RRoute
+  '/meus-atendimentos': typeof MeusAtendimentosRoute
+  '/negocio': typeof NegocioRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
 }
 export interface FileRoutesById {
-  '/meus-atendimentos': typeof MeusAtendimentosRoute
-  '/redefinir-senha': typeof RedefinirSenhaRoute
-  '/confirmar-email': typeof ConfirmarEmailRoute
-  '/admin-empresas': typeof AdminEmpresasRoute
-  '/negocio': typeof NegocioRoute
-  '/acesso': typeof AcessoRoute
-  '/garagem': typeof GaragemRoute
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/acesso': typeof AcessoRoute
   '/admin': typeof AdminRoute
+  '/admin-empresas': typeof AdminEmpresasRoute
+  '/cb650r': typeof Cb650rRoute
+  '/confirmar-email': typeof ConfirmarEmailRoute
+  '/garagem': typeof GaragemRoute
   '/gol-g6': typeof GolG6Route
-  '/cb650r': typeof CB650RRoute
+  '/meus-atendimentos': typeof MeusAtendimentosRoute
+  '/negocio': typeof NegocioRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/confirmar-email' | '/redefinir-senha' | '/meus-atendimentos'
+  fullPaths:
+    | '/'
+    | '/acesso'
+    | '/admin'
+    | '/admin-empresas'
+    | '/cb650r'
+    | '/confirmar-email'
+    | '/garagem'
+    | '/gol-g6'
+    | '/meus-atendimentos'
+    | '/negocio'
+    | '/redefinir-senha'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/confirmar-email' | '/redefinir-senha' | '/meus-atendimentos'
-  id: '__root__' | '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/confirmar-email' | '/redefinir-senha' | '/meus-atendimentos'
+  to:
+    | '/'
+    | '/acesso'
+    | '/admin'
+    | '/admin-empresas'
+    | '/cb650r'
+    | '/confirmar-email'
+    | '/garagem'
+    | '/gol-g6'
+    | '/meus-atendimentos'
+    | '/negocio'
+    | '/redefinir-senha'
+  id:
+    | '__root__'
+    | '/'
+    | '/acesso'
+    | '/admin'
+    | '/admin-empresas'
+    | '/cb650r'
+    | '/confirmar-email'
+    | '/garagem'
+    | '/gol-g6'
+    | '/meus-atendimentos'
+    | '/negocio'
+    | '/redefinir-senha'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  MeusAtendimentosRoute: typeof MeusAtendimentosRoute
-  RedefinirSenhaRoute: typeof RedefinirSenhaRoute
-  ConfirmarEmailRoute: typeof ConfirmarEmailRoute
-  AdminEmpresasRoute: typeof AdminEmpresasRoute
-  NegocioRoute: typeof NegocioRoute
-  AcessoRoute: typeof AcessoRoute
-  GaragemRoute: typeof GaragemRoute
   IndexRoute: typeof IndexRoute
+  AcessoRoute: typeof AcessoRoute
   AdminRoute: typeof AdminRoute
+  AdminEmpresasRoute: typeof AdminEmpresasRoute
+  Cb650rRoute: typeof Cb650rRoute
+  ConfirmarEmailRoute: typeof ConfirmarEmailRoute
+  GaragemRoute: typeof GaragemRoute
   GolG6Route: typeof GolG6Route
-  CB650RRoute: typeof CB650RRoute
+  MeusAtendimentosRoute: typeof MeusAtendimentosRoute
+  NegocioRoute: typeof NegocioRoute
+  RedefinirSenhaRoute: typeof RedefinirSenhaRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/meus-atendimentos': {
-      id: '/meus-atendimentos'
-      path: '/meus-atendimentos'
-      fullPath: '/meus-atendimentos'
-      preLoaderRoute: typeof MeusAtendimentosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/redefinir-senha': {
-      id: '/redefinir-senha'
-      path: '/redefinir-senha'
-      fullPath: '/redefinir-senha'
-      preLoaderRoute: typeof RedefinirSenhaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/confirmar-email': {
-      id: '/confirmar-email'
-      path: '/confirmar-email'
-      fullPath: '/confirmar-email'
-      preLoaderRoute: typeof ConfirmarEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-empresas': {
-      id: '/admin-empresas'
-      path: '/admin-empresas'
-      fullPath: '/admin-empresas'
-      preLoaderRoute: typeof AdminEmpresasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/negocio': {
-      id: '/negocio'
-      path: '/negocio'
-      fullPath: '/negocio'
-      preLoaderRoute: typeof NegocioRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/acesso': {
@@ -193,20 +189,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AcessoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/garagem': {
-      id: '/garagem'
-      path: '/garagem'
-      fullPath: '/garagem'
-      preLoaderRoute: typeof GaragemRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -214,11 +196,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-empresas': {
+      id: '/admin-empresas'
+      path: '/admin-empresas'
+      fullPath: '/admin-empresas'
+      preLoaderRoute: typeof AdminEmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cb650r': {
       id: '/cb650r'
       path: '/cb650r'
       fullPath: '/cb650r'
-      preLoaderRoute: typeof CB650RRouteImport
+      preLoaderRoute: typeof Cb650rRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirmar-email': {
+      id: '/confirmar-email'
+      path: '/confirmar-email'
+      fullPath: '/confirmar-email'
+      preLoaderRoute: typeof ConfirmarEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/garagem': {
+      id: '/garagem'
+      path: '/garagem'
+      fullPath: '/garagem'
+      preLoaderRoute: typeof GaragemRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gol-g6': {
@@ -228,21 +231,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GolG6RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/meus-atendimentos': {
+      id: '/meus-atendimentos'
+      path: '/meus-atendimentos'
+      fullPath: '/meus-atendimentos'
+      preLoaderRoute: typeof MeusAtendimentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/negocio': {
+      id: '/negocio'
+      path: '/negocio'
+      fullPath: '/negocio'
+      preLoaderRoute: typeof NegocioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/redefinir-senha': {
+      id: '/redefinir-senha'
+      path: '/redefinir-senha'
+      fullPath: '/redefinir-senha'
+      preLoaderRoute: typeof RedefinirSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  MeusAtendimentosRoute: MeusAtendimentosRoute,
-  RedefinirSenhaRoute: RedefinirSenhaRoute,
-  ConfirmarEmailRoute: ConfirmarEmailRoute,
-  AdminEmpresasRoute: AdminEmpresasRoute,
-  NegocioRoute: NegocioRoute,
-  AcessoRoute: AcessoRoute,
-  GaragemRoute: GaragemRoute,
   IndexRoute: IndexRoute,
+  AcessoRoute: AcessoRoute,
   AdminRoute: AdminRoute,
+  AdminEmpresasRoute: AdminEmpresasRoute,
+  Cb650rRoute: Cb650rRoute,
+  ConfirmarEmailRoute: ConfirmarEmailRoute,
+  GaragemRoute: GaragemRoute,
   GolG6Route: GolG6Route,
-  CB650RRoute: CB650RRoute,
+  MeusAtendimentosRoute: MeusAtendimentosRoute,
+  NegocioRoute: NegocioRoute,
+  RedefinirSenhaRoute: RedefinirSenhaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
