@@ -200,7 +200,7 @@ function OwnerGarage(){
    <section className="sv-garage-hero relative isolate shrink-0 overflow-hidden rounded-[20px] bg-[#101e33] text-white shadow-lg">
     <div className="sv-garage-backdrop absolute inset-0 bg-cover bg-center" style={{backgroundImage:'url("'+photoGarage+'")'}} aria-hidden="true"/>
     <div className="sv-garage-hero-scrim absolute inset-0" aria-hidden="true"/>
-    <div className="sv-garage-hero-content relative z-10 grid h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 sm:px-7">
+    <div className="sv-garage-hero-content relative z-10 grid min-h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 sm:px-7">
      <div className="min-w-0">
       <span className="sv-intro-item sv-intro-item--1 inline-flex items-center gap-1.5 rounded-full border border-orange-400/40 bg-orange-500/10 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.14em] text-orange-200"><ShieldCheck size={12}/> Sua garagem digital</span>
       <h1 className="sv-intro-item sv-intro-item--2 mt-2 font-black tracking-tight text-white">Bem-vindo à sua <span className="text-orange-400">garagem.</span></h1>
