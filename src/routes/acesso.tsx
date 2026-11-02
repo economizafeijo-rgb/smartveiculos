@@ -136,9 +136,9 @@ function Access(){
      if(status==='setup')setMessage('Conta confirmada. Complete o cadastro da sua empresa para liberar os recursos comerciais.');
      window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({cnpj:cleanCnpj(cnpj),segment,trade_name:company.trim()}));
     }
-    const metadataProfile=data.user.user_metadata?.['intended_profile'];
-    const fallbackSegment=typeof metadataProfile==='string'&&isBusinessSegment(metadataProfile)?metadataProfile:undefined;
-    window.location.assign(segment?target:search.next??(fallbackSegment?'/negocio?segment='+fallbackSegment:'/garagem'));
+    // Respeitar a escolha explícita: o usuário pode ter empresa e garagem.
+    // O perfil de cadastro guardado em user_metadata não concede permissões.
+    window.location.assign(segment?target:(search.next??'/garagem'));
    }
   }catch(e){
    const reason=e instanceof Error?e.message:'Não foi possível concluir. Tente novamente.';
