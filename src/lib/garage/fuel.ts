@@ -49,7 +49,7 @@ export function calculateFuelStats(fillups:readonly Fillup[]):FuelStat[]{
  const totals:{fuel:FuelKind;distance:number;liters:number;spent:number}[]=[
  {fuel:'gasolina',distance:0,liters:0,spent:0},{fuel:'etanol',distance:0,liters:0,spent:0}];
  for(let i=1;i<sorted.length;i++){
-  const prev=sorted[i-1],cur=sorted[i];
+  const prev=sorted[i-1]!,cur=sorted[i]!;
   // Cada trecho exige dois tanques completos consecutivos do mesmo combustível.
   // O volume do SEGUNDO abastecimento representa o combustível gasto no trecho.
   if(!prev.fullTank||!cur.fullTank||prev.fuel!==cur.fuel||cur.km<=prev.km)continue;
