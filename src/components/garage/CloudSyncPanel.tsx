@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Cloud, CloudDownload, CloudUpload, LockKeyhole, LogOut, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import { importLocalGarage, importLocalFillups, loadCloudGarage, loadCloudFillups } from '@/lib/supabase/garage-cloud';
+import { importLocalGarage, importLocalFillups, loadCloudGarage, loadCloudFillups, importBikeMeasurements, loadBikeMeasurements } from '@/lib/supabase/garage-cloud';
+import { useBikeMeasurements, mergeBikeMeasurements } from '@/lib/garage/cb650r-state';
+import { CB650R_NAME } from '@/lib/garage/cb650r-reference';
 import { garage, useGarage } from '@/lib/garage/store';
 import { mergeCloudFillups, useFillups } from '@/lib/garage/fuel';
 
@@ -10,7 +12,8 @@ const actionClass='inline-flex items-center justify-center gap-2 rounded-xl px-4
 type Task = 'backup'|'restore'|'signIn'|'signOut'|null;
 
 /** Sincronização deliberada: nunca mescla ou apaga dados automaticamente na abertura da página. */
-export function CloudSyncPanel() {
+export function CloudSyncPanel({bikeProfile=false}:{bikeProfile?:boolean}) {
+  const bikeState=useBikeMeasurements();
   const data=useGarage();
   const fillups=useFillups();
   const [account,setAccount]=useState<string|null>(null);
@@ -59,7 +62,9 @@ export function CloudSyncPanel() {
       // A ordem é necessária para respeitar as chaves estrangeiras.
       const done=await importLocalGarage(data);
       const count=await importLocalFillups(fillups);
-      setMessage('Backup concluído: '+done.vehicles+' veículos, '+done.records+' manutenções e '+count+' abastecimentos processados. Registros remotos existentes foram preservados.');
+      const ownBike=data.vehicles.find(v=>v.kind==='moto'&&v.name===CB650R_NAME);
+      if(bikeProfile&&ownBike)await importBikeMeasurements(ownBike.id,bikeState);
+      setMessage('Backup concluído: '+done.vehicles+' veículos, '+done.records+' manutenções e '+count+' abastecimentos processados.'+(bikeProfile&&ownBike?' Inspeções da CB650R incluídas.':'')+' Registros remotos existentes foram preservados.');
     }catch(e){setError(e instanceof Error?e.message:'O backup falhou. Seus dados locais foram preservados.');}
     finally{setBusy(null);}
   }
@@ -69,9 +74,12 @@ export function CloudSyncPanel() {
       // Primeiro buscar todos os conjuntos. Só então começar a importar para o dispositivo.
       const remote=await loadCloudGarage();
       const remoteFillups=await loadCloudFillups();
+      const remoteBike=bikeProfile?remote.vehicles.find(v=>v.kind==='moto'&&v.name===CB650R_NAME):undefined;
+      const remoteMeasurements=remoteBike?await loadBikeMeasurements(remoteBike.id):null;
       const restored=garage.mergeCloud(remote);
       const restoredFillups=mergeCloudFillups(remoteFillups);
-      setMessage('Restauração concluída: '+restored.vehiclesAdded+' veículos, '+restored.recordsAdded+' manutenções e '+restoredFillups+' abastecimentos recuperados. Dados locais existentes não foram substituídos.');
+      const addedMeasurements=remoteMeasurements?mergeBikeMeasurements(remoteMeasurements):0;
+      setMessage('Restauração concluída: '+restored.vehiclesAdded+' veículos, '+restored.recordsAdded+' manutenções, '+restoredFillups+' abastecimentos e '+addedMeasurements+' medições recuperadas. Dados locais existentes não foram substituídos.');
     }catch(e){setError(e instanceof Error?e.message:'Não foi possível restaurar. Os registros já salvos localmente foram preservados.');}
     finally{setBusy(null);}
   }
