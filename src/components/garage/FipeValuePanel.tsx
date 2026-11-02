@@ -14,7 +14,7 @@ function currentReference(month:string):boolean {
 }
 const getMessage=(reason:unknown)=>reason instanceof Error?reason.message:'Não foi possível consultar a FIPE neste momento.';
 
-type Props={vehicleId:string;kind:FipeKind;vehicleName:string;brandHint?:string;yearHint?:number;};
+type Props={vehicleId:string;kind:FipeKind;vehicleName:string;brandHint?:string;yearHint?:number|undefined;};
 export function FipeValuePanel({vehicleId,kind,vehicleName,brandHint='',yearHint}:Props){
  const [saved,setSaved]=useState<FipeSaved|null>(null);
  const [editing,setEditing]=useState(false);
