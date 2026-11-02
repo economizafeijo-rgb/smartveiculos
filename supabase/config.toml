@@ -1,0 +1,6 @@
+# Identificador LOCAL para o CLI. O projeto remoto é associado via "supabase link".
+project_id = "smartveiculos"
+
+# Convites de usuários só podem ser enviados por sessão autenticada.
+[functions.invite-user]
+verify_jwt = true
