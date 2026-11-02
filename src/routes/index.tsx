@@ -1,9 +1,11 @@
 import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import { createFileRoute } from '@tanstack/react-router';
 import { ArrowRight, Bike, CarFront, CheckCircle2, ChevronDown, ClipboardCheck, Eye, Gauge, Layers3, Package, ShieldCheck, Store, Wrench } from 'lucide-react';
-import { useState } from 'react';
+import {useEffect,useState,type KeyboardEvent} from 'react';
 import { MotionReveal } from '@/components/ui/MotionReveal';
-import {PortalAreaDialog,type PortalArea} from '@/components/portal/PortalAreaDialog';
+import type {PortalArea} from '@/components/portal/PortalAreaDialog';
+import {supabase} from '@/lib/supabase/client';
+import {areaEntryPath,areaEntryLabel} from '@/lib/portal/area-entry';
 import {FreeGarageCampaign} from '@/components/marketing/FreeGarageCampaign';
 
 export const Route=createFileRoute('/')({
@@ -32,7 +34,25 @@ const heroTiles=[
 ] as const;
 function HomePortal(){
  const [partsOpen,setPartsOpen]=useState(true);
- const [selectedArea,setSelectedArea]=useState<PortalArea|null>(null);
+ const [authenticated,setAuthenticated]=useState(false);
+ useEffect(()=>{
+  const client=supabase;
+  if(!client)return;
+  let mounted=true;
+  const check=()=>{void client.auth.getUser().then(({data,error})=>{
+   if(mounted)setAuthenticated(!error&&Boolean(data.user));
+  }).catch(()=>{if(mounted)setAuthenticated(false)})};
+  const {data}=client.auth.onAuthStateChange((event)=>{
+   if(!mounted)return;
+   if(event==='SIGNED_OUT')setAuthenticated(false);
+   else if(event==='SIGNED_IN'||event==='TOKEN_REFRESHED')check();
+  });
+  check();
+  return ()=>{mounted=false;data.subscription.unsubscribe();};
+ },[]);
+ const handleCardKeyDown=(event:KeyboardEvent<HTMLAnchorElement>)=>{
+  if(event.key===' '){event.preventDefault();event.currentTarget.click();}
+ };
  return <div className="sv-homepage sv-theme-surface min-h-screen overflow-x-clip bg-[#f5f7fb] text-[#111c30]">
   <header className="sv-glass-header sticky top-0 z-20 border-b border-white/15 text-white">
    <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
@@ -48,15 +68,14 @@ function HomePortal(){
      <section aria-label="Escolha a solução profissional" className="sv-home-solutions sv-home-solutions--premium min-w-0">
       <div className="sv-home-solutions-heading">
        <h2 className="sv-home-solutions-eyebrow"><span className="sv-home-solutions-marker" aria-hidden="true"/>ESCOLHA SUA ÁREA</h2>
-       <span className="sv-home-solutions-count"><Layers3 size={17} aria-hidden="true"/> <span>03 soluções profissionais</span></span>
+       <span className="sv-home-solutions-count"><Layers3 size={17} aria-hidden="true"/> <span>{authenticated?'03 soluções profissionais':'03 áreas para explorar sem login'}</span></span>
       </div>
       <div className="sv-home-solutions-grid">
        {heroTiles.map((tile,index)=>{
         const TileIcon=tile.icon;
-        return <button key={tile.id} type="button"
-         aria-haspopup="dialog"
-         aria-label={'Conhecer a solução '+tile.title}
-         onClick={()=>setSelectedArea(tile.id)}
+        return <a key={tile.id} href={areaEntryPath(tile.id,authenticated)}
+         aria-label={areaEntryLabel(tile.id,authenticated)}
+         onKeyDown={handleCardKeyDown}
          className={'sv-home-solution-card sv-home-solution-card--'+(index+1)+' group relative flex min-w-0 cursor-pointer flex-col justify-between overflow-hidden text-left text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-orange-400'}>
           <img src={tile.image} loading={index<2?'eager':'lazy'} alt="" className="sv-home-solution-image absolute inset-0 h-full w-full object-cover"/>
           <span className="sv-home-solution-shade pointer-events-none absolute inset-0" aria-hidden="true"/>
@@ -69,10 +88,10 @@ function HomePortal(){
            <span className="sv-home-solution-title block font-black tracking-tight text-white">{tile.title}</span>
            <span className="sv-home-solution-desc block text-slate-100">{tile.subtitle}</span>
            <span className="sv-home-solution-link inline-flex items-center justify-center gap-3 font-extrabold text-white">
-            Conhecer a solução <ArrowRight size={20} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true"/>
+            {authenticated?'Entrar na minha área':'Explorar sem login'} <ArrowRight size={20} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true"/>
            </span>
           </span>
-         </button>;
+         </a>;
        })}
       </div>
      </section>
@@ -81,10 +100,10 @@ function HomePortal(){
    <FreeGarageCampaign/>
    <section id="solucoes" className="sv-ecosystem-section relative overflow-hidden border-t border-white/10 bg-[#111f33] py-12 text-white sm:py-16"><div className="relative mx-auto max-w-7xl space-y-7 px-5 sm:px-8">
     <MotionReveal><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-300">Escolha seu perfil</p><h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Qual é a sua área?</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">Cada ambiente foi pensado para o tipo de negócio. Empresas são registradas com CNPJ e passam por validação de cadastro.</p></div></MotionReveal>
-    <MotionReveal delay={60}><div className="sv-ecosystem-panel sv-interactive-surface rounded-2xl border border-white/10 bg-white/[.06] p-4 shadow-sm backdrop-blur-sm sm:p-5"><button className="flex w-full items-center justify-between gap-3 text-left" aria-expanded={partsOpen} onClick={()=>setPartsOpen(v=>!v)}><span className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-orange-500/15 text-orange-300"><Package/></span><span><span className="block text-lg font-extrabold">Autopeças</span><span className="text-xs text-slate-300">Selecione o seu segmento para entrar na área correta</span></span></span><ChevronDown className={'transition-transform '+(partsOpen?'rotate-180':'')}/></button>{partsOpen&&<div className="sv-accordion-body mt-5 grid gap-4 border-t border-white/10 pt-5 md:grid-cols-2">{businessCards.slice(0,2).map(c=><button type="button" onClick={()=>setSelectedArea(c.id)} key={c.label} aria-haspopup="dialog" className="sv-interactive-surface group relative min-h-64 w-full cursor-pointer overflow-hidden rounded-2xl bg-slate-900 text-left text-white focus-visible:outline-2 focus-visible:outline-[#F97316]"><img src={c.img} loading="lazy" alt={c.alt} className="sv-solution-photo absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"/><div className="sv-solution-scrim pointer-events-none absolute inset-0 bg-gradient-to-t from-[#061626]/72 via-[#061626]/0 via-[57%] to-transparent"/><div className="absolute inset-x-0 bottom-0 p-6"><c.icon size={27} className="mb-3 text-[#FDBA74]"/><h3 className="text-xl font-black">{c.label}</h3><p className="mt-1 text-sm text-slate-200">{c.subtitle}</p><span className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-[#FDBA74]">Conhecer solução <ArrowRight size={16}/></span></div></button>)}</div>}</div></MotionReveal>
-    <MotionReveal delay={95}><div className="grid gap-5 md:grid-cols-2"><button type="button" onClick={()=>setSelectedArea('workshop')} aria-haspopup="dialog" className="sv-ecosystem-profile-card sv-interactive-surface group w-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#182b44] text-left text-white shadow-sm focus-visible:outline-2 focus-visible:outline-[#F97316]"><div className="relative h-52 overflow-hidden"><img src={imagery.shop} alt="Fotografia real de profissional trabalhando em oficina" className="sv-solution-photo h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy"/></div><div className="p-6"><span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-300"><Wrench size={16}/> Para profissionais</span><h3 className="mt-2 text-2xl font-black">Oficinas mecânicas</h3><p className="mt-2 text-sm leading-6 text-slate-300">Gerencie ordens de serviço, atendimento e operações da sua oficina.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-orange-200">Conhecer solução <ArrowRight size={16}/></span></div></button><button type="button" onClick={()=>setSelectedArea('garage')} aria-haspopup="dialog" className="sv-ecosystem-profile-card sv-interactive-surface group w-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#182b44] text-left text-white shadow-sm focus-visible:outline-2 focus-visible:outline-[#F97316]"><div className="relative h-52 overflow-hidden"><img src={imagery.garage} alt="Fotografia real de automóvel estacionado" className="sv-solution-photo h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy"/></div><div className="p-6"><span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-300"><Gauge size={16}/> Para proprietários</span><h3 className="mt-2 text-2xl font-black">Minha garagem digital</h3><p className="mt-2 text-sm leading-6 text-slate-300">Tenha seus carros e motos, revisões, combustível e histórico de custos em um só lugar.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-orange-200">Conhecer solução <ArrowRight size={16}/></span></div></button></div></MotionReveal>
+    <MotionReveal delay={60}><div className="sv-ecosystem-panel sv-interactive-surface rounded-2xl border border-white/10 bg-white/[.06] p-4 shadow-sm backdrop-blur-sm sm:p-5"><button className="flex w-full items-center justify-between gap-3 text-left" aria-expanded={partsOpen} onClick={()=>setPartsOpen(v=>!v)}><span className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-orange-500/15 text-orange-300"><Package/></span><span><span className="block text-lg font-extrabold">Autopeças</span><span className="text-xs text-slate-300">Selecione o seu segmento para entrar na área correta</span></span></span><ChevronDown className={'transition-transform '+(partsOpen?'rotate-180':'')}/></button>{partsOpen&&<div className="sv-accordion-body mt-5 grid gap-4 border-t border-white/10 pt-5 md:grid-cols-2">{businessCards.slice(0,2).map(c=><a href={areaEntryPath(c.id,authenticated)} onKeyDown={handleCardKeyDown} key={c.label} aria-label={areaEntryLabel(c.id,authenticated)} className="sv-interactive-surface group relative min-h-64 w-full cursor-pointer overflow-hidden rounded-2xl bg-slate-900 text-left text-white focus-visible:outline-2 focus-visible:outline-[#F97316]"><img src={c.img} loading="lazy" alt={c.alt} className="sv-solution-photo absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"/><div className="sv-solution-scrim pointer-events-none absolute inset-0 bg-gradient-to-t from-[#061626]/72 via-[#061626]/0 via-[57%] to-transparent"/><div className="absolute inset-x-0 bottom-0 p-6"><c.icon size={27} className="mb-3 text-[#FDBA74]"/><h3 className="text-xl font-black">{c.label}</h3><p className="mt-1 text-sm text-slate-200">{c.subtitle}</p><span className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-[#FDBA74]">{authenticated?'Entrar na área':'Explorar sem login'} <ArrowRight size={16}/></span></div></a>)}</div>}</div></MotionReveal>
+    <MotionReveal delay={95}><div className="grid gap-5 md:grid-cols-2"><a href={areaEntryPath('workshop',authenticated)} aria-label={areaEntryLabel('workshop',authenticated)} onKeyDown={handleCardKeyDown} className="sv-ecosystem-profile-card sv-interactive-surface group w-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#182b44] text-left text-white shadow-sm focus-visible:outline-2 focus-visible:outline-[#F97316]"><div className="relative h-52 overflow-hidden"><img src={imagery.shop} alt="Fotografia real de profissional trabalhando em oficina" className="sv-solution-photo h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy"/></div><div className="p-6"><span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-300"><Wrench size={16}/> Para profissionais</span><h3 className="mt-2 text-2xl font-black">Oficinas mecânicas</h3><p className="mt-2 text-sm leading-6 text-slate-300">Gerencie ordens de serviço, atendimento e operações da sua oficina.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-orange-200">{authenticated?'Entrar na área':'Explorar sem login'} <ArrowRight size={16}/></span></div></a><a href={areaEntryPath('garage',authenticated)} aria-label={areaEntryLabel('garage',authenticated)} onKeyDown={handleCardKeyDown} className="sv-ecosystem-profile-card sv-interactive-surface group w-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#182b44] text-left text-white shadow-sm focus-visible:outline-2 focus-visible:outline-[#F97316]"><div className="relative h-52 overflow-hidden"><img src={imagery.garage} alt="Fotografia real de automóvel estacionado" className="sv-solution-photo h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy"/></div><div className="p-6"><span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-300"><Gauge size={16}/> Para proprietários</span><h3 className="mt-2 text-2xl font-black">Minha garagem digital</h3><p className="mt-2 text-sm leading-6 text-slate-300">Tenha seus carros e motos, revisões, combustível e histórico de custos em um só lugar.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-orange-200">{authenticated?'Entrar na garagem':'Explorar sem login'} <ArrowRight size={16}/></span></div></a></div></MotionReveal>
    </div></section>
    <section className="bg-[#111c30] py-14 text-white"><MotionReveal><div className="mx-auto flex max-w-7xl flex-col justify-between gap-5 px-5 sm:px-8 lg:flex-row lg:items-center"><div><h2 className="text-2xl font-black">Pronto para administrar tudo em um só lugar?</h2><p className="mt-2 max-w-2xl text-sm text-slate-300">Crie sua conta e escolha o ambiente ideal. Para empresas, o cadastro começa com CNPJ válido e fica pendente de verificação.</p></div><a href="/acesso?mode=register" className="sv-final-cta sv-action-primary sv-cta-link inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#FDBA74] bg-[#F97316] px-6 py-3 font-bold text-[#111827] shadow-md hover:border-[#F97316] hover:bg-[#EA580C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FB923C]">Começar agora <ArrowRight size={17}/></a></div></MotionReveal></section>
-  </main><PortalAreaDialog area={selectedArea} onOpenChange={open=>{if(!open)setSelectedArea(null)}}/><footer className="bg-[#0c1627] px-5 py-7 text-xs text-slate-400"><div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-3"><span>© 2026 SmartVeículos · Tecnologia para quem move o Brasil</span><span>Gestão inteligente para carros, motos e oficinas</span><DeveloperCredit tone="dark" /></div></footer>
+  </main><footer className="bg-[#0c1627] px-5 py-7 text-xs text-slate-400"><div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-3"><span>© 2026 SmartVeículos · Tecnologia para quem move o Brasil</span><span>Gestão inteligente para carros, motos e oficinas</span><DeveloperCredit tone="dark" /></div></footer>
  </div>;
 }
