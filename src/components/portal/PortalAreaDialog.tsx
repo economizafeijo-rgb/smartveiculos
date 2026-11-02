@@ -8,6 +8,7 @@ type AreaDetail={
  eyebrow:string;
  introduction:string;
  features:readonly string[];
+ upcoming:readonly string[];
  href:string;
  buttonLabel:string;
  image:string;
@@ -19,11 +20,16 @@ const AREAS:Record<PortalArea,AreaDetail>={
  parts_cars:{
   title:'Autopeças para carros',
   eyebrow:'SOLUÇÃO PARA LOJISTAS',
-  introduction:'Organize sua operação de autopeças em um ambiente desenvolvido para o comércio automotivo. Controle o que há no estoque, identifique cada produto e mantenha as informações acessíveis para sua equipe.',
+  introduction:'Sua autopeças merece mais do que uma planilha. Centralize seu catálogo, organize o estoque e prepare sua empresa para atender clientes com mais agilidade — do primeiro contato à venda.',
   features:[
    'Cadastro de peças por código SKU, descrição e aplicação',
    'Controle de quantidades e valores de referência em estoque',
    'Busca e organização de produtos para diferentes veículos',
+  ],
+  upcoming:[
+   'Vitrine de peças com fotos, compatibilidade e links para enviar aos clientes',
+   'Chat integrado para tirar dúvidas, negociar e acompanhar atendimentos',
+   'Pedidos, separação de produtos e atualização do status de entrega',
   ],
   href:'/acesso?segment=parts_cars',
   buttonLabel:'Entrar na área de autopeças',
@@ -34,11 +40,16 @@ const AREAS:Record<PortalArea,AreaDetail>={
  parts_bikes:{
   title:'Autopeças para motos',
   eyebrow:'SOLUÇÃO PARA O SETOR DE MOTOS',
-  introduction:'Um espaço dedicado à gestão de peças para motocicletas, com organização de catálogo, aplicações e estoque. Ideal para separar sua operação de motos do segmento automotivo.',
+  introduction:'Organize sua loja de peças para motos em um só lugar. Tenha controle dos componentes por modelo, apresente seu catálogo com clareza e prepare um atendimento mais próximo para cada motociclista.',
   features:[
    'Cadastro de componentes com SKU e modelos compatíveis',
    'Acompanhamento da quantidade de peças disponíveis',
    'Consulta de preços e pesquisa rápida no catálogo',
+  ],
+  upcoming:[
+   'Catálogo ilustrado de peças com links exclusivos para compartilhar',
+   'Conversas diretas com clientes e solicitações de orçamento',
+   'Pedidos, acompanhamento de envio e informações de entrega',
   ],
   href:'/acesso?segment=parts_bikes',
   buttonLabel:'Entrar na área de motos',
@@ -49,11 +60,16 @@ const AREAS:Record<PortalArea,AreaDetail>={
  workshop:{
   title:'Oficinas mecânicas',
   eyebrow:'GESTÃO PARA PROFISSIONAIS',
-  introduction:'Tenha mais organização no atendimento da sua oficina. Registre os serviços solicitados, acompanhe cada etapa e consulte os orçamentos em um painel próprio.',
+  introduction:'Dê mais transparência ao atendimento da sua oficina. Registre os serviços e organize os orçamentos hoje, enquanto evoluímos a plataforma para que cada cliente possa acompanhar o veículo do agendamento à entrega.',
   features:[
    'Abertura de ordens de serviço vinculadas a cliente e veículo',
    'Registro de descrição dos reparos e valor orçado',
-   'Acompanhamento de OS abertas, em andamento ou concluídas',
+   'Acompanhamento interno de OS abertas, em andamento ou concluídas',
+  ],
+  upcoming:[
+   'Agenda online para marcar e confirmar serviços',
+   'Linha do tempo do reparo com atualizações visíveis ao cliente',
+   'Chat, avisos e fotos do serviço para manter o cliente informado',
   ],
   href:'/acesso?segment=workshop',
   buttonLabel:'Entrar na área da oficina',
@@ -64,11 +80,16 @@ const AREAS:Record<PortalArea,AreaDetail>={
  garage:{
   title:'Minha garagem digital',
   eyebrow:'SOLUÇÃO PARA PROPRIETÁRIOS',
-  introduction:'Cada carro e moto merece um histórico organizado. Acesse o painel do seu veículo para registrar manutenção, acompanhar revisões e consultar os abastecimentos.',
+  introduction:'Seu carro e sua moto têm uma história. Mantenha revisões, manutenção e abastecimentos organizados e tenha um espaço pessoal para acompanhar o que importa em cada veículo.',
   features:[
    'Fichas individuais para carros e motocicletas',
    'Histórico de serviços, revisões e despesas registradas',
    'Informações de combustível e quilometragem informadas pelo proprietário',
+  ],
+  upcoming:[
+   'Conexão com oficinas para receber atualizações do serviço',
+   'Agendamentos e mensagens com profissionais cadastrados',
+   'Consulta de peças e pedidos vinculados ao seu veículo',
   ],
   href:'/acesso?next=%2Fgaragem',
   buttonLabel:'Entrar na minha garagem',
@@ -102,13 +123,26 @@ export function PortalAreaDialog({area,onOpenChange}:{
       <DialogDescription className="text-sm leading-7 text-slate-600">{data.introduction}</DialogDescription>
      </DialogHeader>
      <div>
-      <h3 className="text-xs font-black uppercase tracking-[0.15em] text-slate-500">O que você encontra nessa área</h3>
+      <h3 className="text-xs font-black uppercase tracking-[0.15em] text-slate-500">O que você já pode fazer</h3>
       <ul className="mt-3 grid gap-3">{data.features.map(feature=>
        <li key={feature} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
         <CheckCircle2 size={19} className="mt-0.5 shrink-0 text-orange-600" aria-hidden="true"/>
         <span>{feature}</span>
        </li>
       )}</ul>
+     </div>
+     <div className="rounded-2xl border border-orange-200/80 bg-orange-50/60 px-4 py-4">
+      <div className="flex flex-wrap items-center gap-2">
+       <h3 className="text-xs font-black uppercase tracking-[0.12em] text-orange-900">Novidades que estão a caminho</h3>
+       <span className="rounded-full border border-orange-200 bg-white px-2 py-0.5 text-[10px] font-extrabold text-orange-800">Em desenvolvimento</span>
+      </div>
+      <ul className="mt-3 grid gap-2">{data.upcoming.map(feature=>
+       <li key={feature} className="flex items-start gap-2 text-xs leading-5 text-slate-700">
+        <ArrowRight size={14} className="mt-0.5 shrink-0 text-orange-600" aria-hidden="true"/>
+        <span>{feature}</span>
+       </li>
+      )}</ul>
+      <p className="mt-3 text-[11px] leading-5 text-slate-500">Estas funcionalidades fazem parte do plano de evolução e ainda não estão disponíveis para uso.</p>
      </div>
      <div className="flex items-start gap-2 rounded-xl border border-orange-100 bg-orange-50 px-4 py-3 text-xs leading-6 text-orange-900">
       <ShieldCheck size={18} className="mt-0.5 shrink-0" aria-hidden="true"/>
@@ -118,7 +152,7 @@ export function PortalAreaDialog({area,onOpenChange}:{
        className="sv-cta-link flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3.5 text-sm font-extrabold text-[#101b2b] shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500">
       {data.buttonLabel}<ArrowRight size={19} aria-hidden="true"/>
      </a>
-     <p className="text-center text-xs text-slate-500">Você será direcionado para o acesso seguro da área selecionada.</p>
+     <p className="text-center text-xs text-slate-500">Explore as funcionalidades atuais em um ambiente protegido por login.</p>
     </div>
    </>}
   </DialogContent>
