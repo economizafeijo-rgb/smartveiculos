@@ -59,11 +59,16 @@ export const Route=createFileRoute('/demonstracao')({
 });
 
 function ReadonlyBanner(){
- return <div role="note" className="sv-demo-readonly flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-orange-400/30 bg-orange-500/10 px-4 py-3 text-xs text-slate-100 sm:px-5">
-  <span className="flex items-start gap-2"><ShieldCheck className="mt-0.5 shrink-0 text-orange-300" size={17}/>
-   <span><strong className="font-black text-white">Demonstração pública — somente visualização.</strong> Dados inteiramente fictícios. Não é uma conta real; nenhuma ação desta página consulta, altera ou exclui registros de clientes.</span>
+ return <div role="note" aria-label="Aviso de demonstração"
+  className="sv-demo-readonly flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border border-orange-400/25 bg-orange-500/[.065] px-3 py-2.5 text-[11px] text-slate-200 sm:px-4">
+  <span className="inline-flex items-center gap-2">
+   <Eye className="shrink-0 text-orange-300" size={15}/>
+   <strong className="font-extrabold text-orange-200">Modo demonstração</strong>
+   <span className="text-slate-300">Explore livremente com dados fictícios. Alterações e cadastros estão desativados.</span>
   </span>
-  <a href="/acesso?mode=register" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-orange-500 px-3 py-2 font-extrabold text-slate-950 hover:bg-orange-400">Criar minha conta <ArrowRight size={13}/></a>
+  <a href="/acesso?mode=register" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-orange-300/30 px-2.5 py-1.5 text-[11px] font-bold text-orange-200 hover:bg-orange-500/10">
+   Criar conta <ArrowRight size={13}/>
+  </a>
  </div>;
 }
 function Metric({title,value,sub,icon:Icon}:{title:string;value:string;sub?:string;icon:LucideIcon}){
@@ -116,7 +121,7 @@ function DemoPortal(){
        <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-300">{persona.description}</p>
       </div>
      </div>
-     <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-extrabold backdrop-blur-md"><LockKeyhole size={15} className="text-orange-300"/> Sem permissão de inserir, alterar ou excluir</span>
+     <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-[11px] font-semibold text-slate-200 backdrop-blur-md"><Eye size={14} className="text-orange-300"/> Prévia somente leitura</span>
     </div>
    </section>
    <ReadonlyBanner/>
