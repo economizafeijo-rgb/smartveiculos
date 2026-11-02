@@ -1,6 +1,6 @@
 import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import { createFileRoute } from '@tanstack/react-router';
-import { ArrowRight, Bike, CarFront, CheckCircle2, ChevronDown, ClipboardCheck, Gauge, Package, ShieldCheck, Store, Wrench } from 'lucide-react';
+import { ArrowRight, Bike, CarFront, CheckCircle2, ChevronDown, ClipboardCheck, Gauge, Layers3, Package, ShieldCheck, Store, Wrench } from 'lucide-react';
 import { useState } from 'react';
 import { MotionReveal } from '@/components/ui/MotionReveal';
 import {PortalAreaDialog,type PortalArea} from '@/components/portal/PortalAreaDialog';
@@ -43,12 +43,12 @@ function HomePortal(){
   <main>
    <section className="relative isolate overflow-hidden bg-[#0c1627] text-white">
     <div className="sv-ambient-orb pointer-events-none absolute -left-48 top-12 size-[540px] rounded-full bg-[#FB923C]/10 blur-3xl"/><div className="sv-ambient-orb sv-ambient-orb--reverse pointer-events-none absolute right-0 top-0 size-96 rounded-full bg-blue-500/10 blur-3xl"/>
-    <div className="relative mx-auto grid max-w-7xl items-center gap-7 px-5 py-8 sm:px-8 lg:min-h-[calc(100dvh-69px)] lg:grid-cols-[1.02fr_0.98fr] lg:gap-8 lg:py-5 xl:gap-10 xl:py-7">
+    <div className="relative mx-auto grid max-w-[1440px] items-center gap-9 px-5 py-10 sm:px-8 lg:min-h-[calc(100dvh-69px)] lg:grid-cols-[minmax(0,.78fr)_minmax(0,1.22fr)] lg:gap-9 lg:py-8 xl:gap-10 xl:py-10">
      <div><div className="sv-intro-item sv-intro-item--1 sv-glass-dark inline-flex items-center gap-2 rounded-full border border-[#FB923C]/35 bg-[#FB923C]/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-[#FDBA74]"><CheckCircle2 size={14}/> Uma plataforma. Quatro soluções.</div><h1 className="sv-intro-item sv-intro-item--2 mt-4 max-w-2xl text-[clamp(1.9rem,4.2vw,3.1rem)] font-black leading-[1.08] tracking-tight lg:text-[clamp(2rem,3.65vw,3.2rem)] xl:text-[clamp(2.5rem,3.4vw,3.5rem)]">Conectamos quem <span className="sv-accent-word text-[#FB923C]">cuida</span> de veículos a quem <span className="sv-accent-word text-[#FB923C]">vive</span> sobre rodas.</h1><p className="sv-intro-item sv-intro-item--3 mt-4 max-w-xl text-sm leading-6 text-slate-300 sm:text-[15px] sm:leading-7">Autopeças para carros e motos, oficinas mecânicas e uma garagem digital para cada motorista. Cada perfil tem seu próprio espaço e acesso seguro.</p><div className="sv-intro-item sv-intro-item--4 mt-5 flex flex-wrap gap-3"><a href="/vitrines" className="sv-action-primary sv-cta-link inline-flex items-center gap-2 rounded-xl bg-[#F97316] px-5 py-3 text-sm font-bold text-[#111827] shadow-sm hover:bg-[#EA580C]">Explorar vitrines <ArrowRight size={18}/></a><a href="/acesso?next=%2Fgaragem" className="sv-cta-link inline-flex items-center gap-2 rounded-xl border border-white/20 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">Minha garagem digital</a></div><p className="sv-intro-item sv-intro-item--5 mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-xs font-extrabold text-emerald-200"><CheckCircle2 size={15}/> Sua garagem pessoal é 100% grátis · Cadastro obrigatório</p><div className="sv-intro-item sv-intro-item--5 mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-slate-400"><span className="flex items-center gap-2"><ShieldCheck size={17} className="text-[#FDBA74]"/> Conta individual</span><span className="flex items-center gap-2"><Store size={17} className="text-[#FDBA74]"/> Empresas por CNPJ</span><span className="flex items-center gap-2"><ClipboardCheck size={17} className="text-[#FDBA74]"/> Histórico organizado</span></div></div>
-     <section aria-label="Escolha a solução profissional" className="sv-home-solutions min-w-0">
-      <div className="sv-home-solutions-heading flex items-center justify-between gap-3">
-       <span className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[.16em] text-slate-200"><span className="size-1.5 rounded-full bg-orange-400" aria-hidden="true"/> Escolha sua área</span>
-       <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] font-bold text-slate-300">03 soluções profissionais</span>
+     <section aria-label="Escolha a solução profissional" className="sv-home-solutions sv-home-solutions--premium min-w-0">
+      <div className="sv-home-solutions-heading">
+       <h2 className="sv-home-solutions-eyebrow"><span className="sv-home-solutions-marker" aria-hidden="true"/>ESCOLHA SUA ÁREA</h2>
+       <span className="sv-home-solutions-count"><Layers3 size={17} aria-hidden="true"/> <span>03 soluções profissionais</span></span>
       </div>
       <div className="sv-home-solutions-grid">
        {heroTiles.map((tile,index)=>{
@@ -57,20 +57,21 @@ function HomePortal(){
          aria-haspopup="dialog"
          aria-label={'Conhecer a solução '+tile.title}
          onClick={()=>setSelectedArea(tile.id)}
-         className={'sv-home-solution-card sv-home-solution-card--'+(index+1)+' group relative flex min-w-0 cursor-pointer flex-col justify-between overflow-hidden rounded-[20px] border border-white/20 text-left text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-orange-400'}>
+         className={'sv-home-solution-card sv-home-solution-card--'+(index+1)+' group relative flex min-w-0 cursor-pointer flex-col justify-between overflow-hidden text-left text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-orange-400'}>
           <img src={tile.image} loading={index<2?'eager':'lazy'} alt="" className="sv-home-solution-image absolute inset-0 h-full w-full object-cover"/>
-          <div className="sv-home-solution-shade pointer-events-none absolute inset-0" aria-hidden="true"/>
-          <div className="relative z-10 flex w-full items-start justify-between gap-2 p-4">
-           <span className="sv-home-solution-icon grid size-10 shrink-0 place-items-center rounded-xl border border-white/30 bg-[#0c1b30]/50 text-white backdrop-blur-md"><TileIcon size={20} aria-hidden="true"/></span>
-           <span className="rounded-full border border-white/30 bg-[#0c1b30]/50 px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[.1em] text-white backdrop-blur-md">{tile.eyebrow}</span>
-          </div>
-          <div className="sv-home-solution-info relative z-10 w-full p-4 pt-2">
-           <h2 className="sv-home-solution-title font-black tracking-tight text-white">{tile.title}</h2>
-           <p className="sv-home-solution-desc mt-1 text-xs leading-5 text-slate-100">{tile.subtitle}</p>
-           <span className="sv-home-solution-link mt-3 inline-flex items-center gap-2 text-xs font-extrabold text-orange-200">
-            Conhecer a solução <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true"/>
+          <span className="sv-home-solution-shade pointer-events-none absolute inset-0" aria-hidden="true"/>
+          <span className="sv-home-solution-reflection pointer-events-none absolute inset-0" aria-hidden="true"/>
+          <span className="sv-home-solution-top relative z-10 flex w-full items-start justify-between gap-2">
+           <span className="sv-home-solution-icon grid shrink-0 place-items-center text-white"><TileIcon size={23} aria-hidden="true"/></span>
+           <span className="sv-home-solution-category">{tile.eyebrow}</span>
+          </span>
+          <span className="sv-home-solution-info relative z-10 block w-full">
+           <span className="sv-home-solution-title block font-black tracking-tight text-white">{tile.title}</span>
+           <span className="sv-home-solution-desc block text-slate-100">{tile.subtitle}</span>
+           <span className="sv-home-solution-link inline-flex items-center justify-center gap-3 font-extrabold text-white">
+            Conhecer a solução <ArrowRight size={20} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true"/>
            </span>
-          </div>
+          </span>
          </button>;
        })}
       </div>
