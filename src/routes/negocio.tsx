@@ -60,10 +60,10 @@ function BusinessPage({segmentFilter}:{segmentFilter:BusinessSegment|undefined})
   try{
    const raw=window.sessionStorage.getItem('smartveiculos:selected-business');
    if(!raw)return;
-   const value=JSON.parse(raw) as {cnpj?:unknown;segment?:unknown};
+   const value=JSON.parse(raw) as {cnpj?:unknown;segment?:unknown;trade_name?:unknown};
    if(value.segment===segmentFilter&&typeof value.cnpj==='string'&&validateCnpj(value.cnpj)){
     setRequestedCnpj(value.cnpj);
-    setCompany(c=>({...c,cnpj:value.cnpj as string}));
+    setCompany(c=>({...c,cnpj:value.cnpj as string,trade_name:typeof value.trade_name==='string'?value.trade_name:c.trade_name}));
    }
   }catch{/* No session selection. */}
  },[segmentFilter]);
