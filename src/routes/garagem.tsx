@@ -229,7 +229,7 @@ function OwnerGarage(){
   setManagerOpen(true);
   // O histórico da garagem está em uma página própria para evitar telas infinitas.
  };
- return <div className={'sv-owner-garage sv-owner-garage--multipage text-slate-900'+(managerOpen?' sv-owner-garage--managing':'')}>
+ return <div className={'sv-owner-garage sv-theme-surface sv-owner-garage--multipage text-slate-900'+(managerOpen?' sv-owner-garage--managing':'')}>
   <header className="sv-garage-header shrink-0 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
    <div className="sv-garage-topline mx-auto flex max-w-[1180px] items-center justify-between gap-3 px-4 sm:px-6">
     <div className="flex shrink-0 items-center gap-2.5"><span className="sv-logo-mark grid size-9 place-items-center rounded-xl bg-[#121d30] text-orange-400"><CarFront size={18}/></span><div><p className="text-[15px] font-black leading-4">Smart<span className="text-orange-600">Veículos</span></p><p className="mt-0.5 text-[9px] font-bold uppercase tracking-[.14em] text-slate-500">Área do proprietário</p></div></div>
