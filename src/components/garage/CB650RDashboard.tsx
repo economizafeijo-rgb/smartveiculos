@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { Activity, ArrowLeft, ArrowUpRight, Bike, CalendarClock, CheckCircle2, CircleAlert, Cloud, Fuel, Gauge, Plus, Search, ShieldCheck, Wrench } from 'lucide-react';
 import { garage, useGarage, useHydrated } from '@/lib/garage/store';
 import { useBikeMeasurements, saveBikeMeasurements } from '@/lib/garage/cb650r-state';
-import { CB650R_NAME, CB650R_REFERENCE as SPEC, CB650R_MANUAL, CB650R_REVISIONS, CB650R_PREVENTIVE, CB650R_TECH, CB650R_LINKS, revisionDue, addMonthsToDate, type Revision } from '@/lib/garage/cb650r-reference';
+import { CB650R_NAME, CB650R_REFERENCE as SPEC, CB650R_MANUAL, CB650R_REVISIONS, CB650R_PREVENTIVE, CB650R_TECH, CB650R_LINKS, revisionDue, addMonthsToDate, nextHondaServiceKm, type Revision } from '@/lib/garage/cb650r-reference';
 import { addFillup, calculateFuelStats, fuelSpent, removeFillup, useFillups } from '@/lib/garage/fuel';
 import { formatBRL, formatDate, formatKm } from '@/lib/garage/logic';
 import { CloudSyncPanel } from '@/components/garage/CloudSyncPanel';
@@ -68,7 +68,7 @@ export function CB650RDashboard(){
  const preventiveAlerts=CB650R_PREVENTIVE.map(item=>{
    const logged=services.find(s=>s.description===item.title||s.description.startsWith(item.title+' — '));
    const lastKm=item.id==='chain-care'&&m.lastChainKm!==''?Number(m.lastChainKm):logged?.km;
-   const nextKm=item.kmInterval!==null&&lastKm!==undefined?lastKm+item.kmInterval:null;
+   const nextKm=nextHondaServiceKm(item.id,lastKm??null,item.kmInterval);
    const nextDate=item.monthInterval!==null&&logged?addMonthsToDate(logged.date,item.monthInterval):null;
    const isDue=Boolean(bike&&(nextKm!==null&&bike.currentKm>=nextKm||nextDate&&nextDate<=now));
    const isSoon=Boolean(bike&&(nextKm!==null&&nextKm-bike.currentKm<=1000||nextDate&&nextDate>now&&(Date.parse(nextDate+'T00:00:00Z')-Date.parse(now+'T00:00:00Z'))<=30*86400000));
