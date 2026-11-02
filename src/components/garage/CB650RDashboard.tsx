@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { Activity, ArrowLeft, ArrowUpRight, Bike, CalendarClock, CheckCircle2, CircleAlert, Cloud, Fuel, Gauge, Plus, Search, ShieldCheck, Wrench } from 'lucide-react';
 import { garage, useGarage, useHydrated } from '@/lib/garage/store';
 import { useBikeMeasurements, saveBikeMeasurements } from '@/lib/garage/cb650r-state';
-import { CB650R_NAME, CB650R_REFERENCE as SPEC, CB650R_MANUAL, CB650R_REVISIONS, CB650R_PREVENTIVE, CB650R_TECH, CB650R_LINKS, revisionDue, type Revision } from '@/lib/garage/cb650r-reference';
+import { CB650R_NAME, CB650R_REFERENCE as SPEC, CB650R_MANUAL, CB650R_REVISIONS, CB650R_PREVENTIVE, CB650R_TECH, CB650R_LINKS, revisionDue, addMonthsToDate, type Revision } from '@/lib/garage/cb650r-reference';
 import { addFillup, calculateFuelStats, fuelSpent, removeFillup, useFillups } from '@/lib/garage/fuel';
 import { formatBRL, formatDate, formatKm } from '@/lib/garage/logic';
 import { CloudSyncPanel } from '@/components/garage/CloudSyncPanel';
@@ -42,6 +42,7 @@ export function CB650RDashboard(){
  const [startDelivery,setStartDelivery]=useState('');
  const [odometer,setOdometer]=useState('');
  const [revising,setRevising]=useState<Revision|null>(null);
+ const [allRevisions,setAllRevisions]=useState(false);
  const [revisionDate,setRevisionDate]=useState(today());
  const [revisionKm,setRevisionKm]=useState('');
  const [revisionCost,setRevisionCost]=useState('0');
@@ -64,6 +65,15 @@ export function CB650RDashboard(){
  const next=pending[0];
  const inspection=(k:'frontDepthMm'|'rearDepthMm'|'chainSlackMm')=>{const v=m[k];return v===''?null:Number(v);};
  const frontDepth=inspection('frontDepthMm'),rearDepth=inspection('rearDepthMm'),chainSlack=inspection('chainSlackMm');
+ const preventiveAlerts=CB650R_PREVENTIVE.map(item=>{
+   const logged=services.find(s=>s.description===item.title||s.description.startsWith(item.title+' — '));
+   const lastKm=item.id==='chain-care'&&m.lastChainKm!==''?Number(m.lastChainKm):logged?.km;
+   const nextKm=item.kmInterval!==null&&lastKm!==undefined?lastKm+item.kmInterval:null;
+   const nextDate=item.monthInterval!==null&&logged?addMonthsToDate(logged.date,item.monthInterval):null;
+   const isDue=Boolean(bike&&(nextKm!==null&&bike.currentKm>=nextKm||nextDate&&nextDate<=now));
+   const isSoon=Boolean(bike&&(nextKm!==null&&nextKm-bike.currentKm<=1000||nextDate&&nextDate>now&&(Date.parse(nextDate+'T00:00:00Z')-Date.parse(now+'T00:00:00Z'))<=30*86400000));
+   return {item,nextKm,nextDate,logged,lastKm,status:isDue?'due':isSoon?'soon':'ok'};
+ });
  const danger=(frontDepth!==null&&frontDepth<=SPEC.frontMinMm)||(rearDepth!==null&&rearDepth<=SPEC.rearMinMm)||(chainSlack!==null&&chainSlack>SPEC.chainDoNotRide);
  function notify(message:string){setError('');setNotice(message);}
  function fail(message:string){setNotice('');setError(message);}
@@ -137,17 +147,19 @@ export function CB650RDashboard(){
         ['Última lubrificação',m.lastChainKm?formatKm(Number(m.lastChainKm)):'Não informada','Inspecionar e lubrificar a cada 1.000 km'],
       ].map(([label,value,hint])=><div className={panel} key={label}><p className="text-xs font-semibold text-slate-500">{label}</p><p className="mt-3 text-lg font-extrabold">{value}</p><p className="mt-2 text-xs text-slate-500">{hint}</p></div>)}</div>
       <div className="grid gap-4 sm:grid-cols-2"><button className={secondary+' justify-between p-5'} onClick={()=>{setTab('pneus');startInspection();}}>Registrar inspeção de pneus <ArrowUpRight size={16}/></button><button className={secondary+' justify-between p-5'} onClick={()=>{setTab('transmissao');startInspection();}}>Registrar inspeção da corrente <ArrowUpRight size={16}/></button></div>
+      <section className={panel}><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-extrabold">Plano preventivo inteligente</h2><p className="mt-1 text-sm text-slate-500">Previsões apenas quando existe histórico real. Sem registro, consulte o manual ou sua concessionária.</p></div><button onClick={()=>setTab('servicos')} className={secondary}>Registrar serviço</button></div><div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{preventiveAlerts.map(({item,nextKm,nextDate,logged,lastKm,status})=><div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-bold uppercase tracking-wide text-orange-700">{item.group}</p><p className="mt-1 text-sm font-bold">{item.title}</p><p className="mt-2 text-xs text-slate-600">{item.details}</p><div className="mt-3 text-xs font-semibold">{item.conditionBased?'Troca por condição e inspeção':nextKm!==null?'Próximo: '+formatKm(nextKm):item.id==='chain-care'&&!lastKm?'Informe a última lubrificação':logged?'Próximo prazo'+(nextDate?': '+formatDate(nextDate):' por condição'):'Histórico de serviço não informado'}</div>{nextDate&&<p className="mt-1 text-xs text-slate-500">Prazo temporal: {formatDate(nextDate)}</p>}{logged||lastKm!==undefined?<div className="mt-2"><Status state={status}/></div>:null}</div>)}</div></section>
     </>}
     {tab==='revisoes'&&<section className={panel}>
        <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-extrabold">Livro digital de revisões Honda</h2><p className="mt-1 text-sm text-slate-500">Prazos calculados desde a entrega da moto — por km ou por meses, o que acontecer primeiro.</p></div><a className={secondary} href={CB650R_MANUAL} target="_blank" rel="noopener noreferrer">Manual oficial <ArrowUpRight size={15}/></a></div>
        <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl bg-orange-50 p-4"><Label text="Data de entrega / início da garantia"><input className={input} type="date" value={m.deliveryDate} onChange={e=>{try{saveBikeMeasurements({deliveryDate:e.target.value})}catch{fail('Não foi possível salvar a data.')}}}/></Label><p className="max-w-md text-xs text-slate-600">Se você não sabe a data, deixe em branco. O sistema não presumirá atraso por tempo.</p></div>
-       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{milestones.map(r=><div key={r.km} className={'rounded-xl border p-4 '+(r.done?'border-emerald-200 bg-emerald-50/40':'border-slate-200 bg-white')}>
+       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{(allRevisions?milestones:milestones.slice(0,9)).map(r=><div key={r.km} className={'rounded-xl border p-4 '+(r.done?'border-emerald-200 bg-emerald-50/40':'border-slate-200 bg-white')}>
           <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="font-extrabold">{r.title}</h3><Status state={r.done?'done':r.due.state}/></div>
           <p className="mt-2 text-2xl font-extrabold">{formatKm(r.km)}</p><p className="mt-1 text-xs text-slate-500">Ou {r.months} meses da entrega</p>
           {r.due.date&&<p className="mt-2 text-xs font-semibold text-slate-700">Prazo: {formatDate(r.due.date)}</p>}
           {r.index<=2&&<p className="mt-2 text-xs text-orange-700">Mão de obra gratuita dentro das condições Honda</p>}
           {!r.done?<button disabled={!bike} type="button" className={secondary+' mt-4 w-full'} onClick={()=>openRevision(r)}>Registrar revisão realizada</button>:<p className="mt-4 text-xs font-bold text-emerald-800">Registro lançado no histórico</p>}
          </div>)}</div>
+       <button type="button" className={secondary+' mt-5'} onClick={()=>setAllRevisions(v=>!v)}>{allRevisions?'Mostrar primeiras 9 revisões':'Ver todas as '+milestones.length+' revisões'}</button>
        <p className="mt-5 rounded-xl bg-slate-50 p-4 text-xs leading-6 text-slate-600">O registro digital é pessoal e não substitui o carimbo, a assinatura e os comprovantes exigidos pela Honda para garantia. As revisões anteriores não são consideradas feitas automaticamente. Consulte sua concessionária para recuperar as ordens de serviço.</p>
       </section>}
     {(tab==='pneus'||tab==='transmissao')&&<div className="grid gap-5 lg:grid-cols-[1fr_0.9fr]"><section className={panel}>
