@@ -15,13 +15,13 @@ export const Route=createFileRoute('/')({
 
 const imagery={
  car:'https://images.unsplash.com/photo-1727893119356-1702fe921cf9?auto=format&fit=crop&w=1300&q=86',
- bike:'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1100&q=82&fit=crop',
+ bike:'https://images.unsplash.com/photo-1755378909673-d5afd0a15ee3?auto=format&fit=crop&w=1300&q=85',
  shop:'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1100&q=82&fit=crop',
  garage:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&q=82&fit=crop'
 };
 const businessCards=[
  {id:'parts_cars',label:'Autopeças para carros',subtitle:'Estoque, aplicação e gestão de peças automotivas',img:imagery.car,icon:CarFront,href:'/acesso?segment=parts_cars',alt:'Fotografia de carros reais em oficina automotiva iluminada'},
- {id:'parts_bikes',label:'Autopeças para motos',subtitle:'Catálogo de componentes e controle do estoque',img:imagery.bike,icon:Bike,href:'/acesso?segment=parts_bikes',alt:'Fotografia real de motocicleta'},
+ {id:'parts_bikes',label:'Autopeças para motos',subtitle:'Catálogo de componentes e controle do estoque',img:imagery.bike,icon:Bike,href:'/acesso?segment=parts_bikes',alt:'Fotografia real de motocicleta Honda vermelha em ambiente externo'},
  {id:'workshop',label:'Oficinas mecânicas',subtitle:'Ordens de serviço e acompanhamento de atendimentos',img:imagery.shop,icon:Wrench,href:'/acesso?segment=workshop',alt:'Fotografia real de oficina automotiva'}
 ] as const;
 const heroTiles=[
@@ -51,7 +51,7 @@ function HomePortal(){
         aria-label={'Conhecer a solução '+tile.eyebrow+', '+tile.label}
         className={'sv-hero-tile sv-hero-tile--'+(index+1)+' group relative w-full cursor-pointer overflow-hidden rounded-3xl border border-white/15 bg-slate-950 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#FB923C] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0c1627] '+(index===0?'row-span-2':'')}>
          <img src={tile.image} loading={index<2?'eager':'lazy'} alt=""
-           className={'sv-hero-photo absolute inset-0 h-full w-full object-cover '+(index===0?'sv-photo-real-cars':'')} />
+           className={'sv-hero-photo absolute inset-0 h-full w-full object-cover '+(index===0?'sv-photo-real-cars':index===1?'sv-photo-real-bike':'')} />
          <div className="sv-hero-scrim pointer-events-none absolute inset-0 bg-gradient-to-t from-[#061626]/70 via-[#061626]/0 via-[45%] to-transparent"/>
          <div className={'absolute inset-x-0 bottom-0 '+(index===0?'p-5 pt-16':'p-4 pt-10')}>
           <span className="text-[10px] font-extrabold uppercase tracking-[.12em] text-[#FDBA74]">{tile.eyebrow}</span>
