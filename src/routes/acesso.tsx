@@ -2,6 +2,7 @@ import {createFileRoute} from '@tanstack/react-router';
 import {useEffect,useState,type FormEvent} from 'react';
 import {ArrowLeft,ArrowRight,Bike,Building2,CarFront,CheckCircle2,Eye,EyeOff,LockKeyhole,ShieldCheck,Store,Wrench} from 'lucide-react';
 import {supabase} from '@/lib/supabase/client';
+import {authRedirectUrl} from '@/lib/supabase/auth-redirects';
 import {BUSINESS_SEGMENTS,cleanCnpj,formatCnpj,isBusinessSegment,validateCnpj,type BusinessSegment} from '@/lib/business/cnpj';
 
 export const Route=createFileRoute('/acesso')({
@@ -25,6 +26,8 @@ function Access(){
  const [company,setCompany]=useState('');
  const [cnpj,setCnpj]=useState('');
  const [working,setWorking]=useState(false);
+ const [resending,setResending]=useState(false);
+ const [showResend,setShowResend]=useState(false);
  const [error,setError]=useState('');
  const [message,setMessage]=useState('');
  const [account,setAccount]=useState<string|null>(null);
@@ -50,31 +53,51 @@ function Access(){
    if(mode==='register'){
     if(password.length<10)throw new Error('Use uma senha forte com pelo menos 10 caracteres.');
     if(segment&&(!validateCnpj(cnpj)||company.trim().length<3))throw new Error('Informe o nome da empresa e um CNPJ com dígitos verificadores corretos.');
-    const {data,error}=await supabase.auth.signUp({email:email.trim().toLowerCase(),password});
+    const {data,error}=await supabase.auth.signUp({email:email.trim().toLowerCase(),password,options:{emailRedirectTo:authRedirectUrl('/confirmar-email')}});
     if(error)throw error;
     if(data.session){
      if(segment){await registerCompany();window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({cnpj:cleanCnpj(cnpj),segment}));}
      window.location.assign(target);return;
     }
-    setMessage('Conta solicitada. Confira o e-mail de confirmação do Supabase; após confirmar, entre novamente e conclua o cadastro da empresa. O CNPJ ainda não foi aprovado.');
+    setMessage('Cadastro solicitado. Verifique sua caixa de entrada e clique em Confirmar e-mail. O link agora direciona para o SmartVeículos. Depois, entre com seu e-mail e senha.');
+    setShowResend(true);
     setMode('login');
    }else{
     if(segment&&!validateCnpj(cnpj))throw new Error('Informe o CNPJ da empresa com dígitos verificadores válidos.');
     const {data,error}=await supabase.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
-    if(error)throw error;
+    if(error){if(/email not confirmed/i.test(error.message))setShowResend(true);throw error;}
     if(!data.user)throw new Error('Não foi possível confirmar sua sessão.');
     // O CNPJ selecionado identifica qual unidade empresarial abrir, além do login do responsável.
     if(segment)window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({cnpj:cleanCnpj(cnpj),segment}));
     window.location.assign(target);
    }
-  }catch(e){setError(e instanceof Error?e.message:'Não foi possível concluir. Tente novamente.');}
+  }catch(e){
+   const reason=e instanceof Error?e.message:'Não foi possível concluir. Tente novamente.';
+   if(/email not confirmed/i.test(reason))setError('Seu e-mail ainda não foi confirmado. Clique no link enviado pela plataforma ou solicite um novo abaixo.');
+   else if(/invalid login credentials/i.test(reason))setError('E-mail ou senha incorretos. Confira os dados ou use Esqueci minha senha.');
+   else if(/rate limit/i.test(reason))setError('Limite temporário de envios atingido. Aguarde antes de tentar novamente.');
+   else setError(reason);
+  }
   finally{setWorking(false);}
  }
  async function resetPassword(){
   if(!supabase)return;setError('');setMessage('');
   if(!email.trim())return setError('Informe seu e-mail para recuperar a senha.');
-  const {error}=await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase());
+  const {error}=await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(),{redirectTo:authRedirectUrl('/redefinir-senha')});
   if(error)setError(error.message);else setMessage('Se a conta estiver cadastrada, você receberá instruções de recuperação por e-mail.');
+ }
+ async function resendConfirmation(){
+  if(!supabase)return;
+  if(!email.trim()){setError('Informe seu e-mail para reenviar a confirmação.');return;}
+  setResending(true);setError('');setMessage('');
+  try{
+   const {error}=await supabase.auth.resend({type:'signup',email:email.trim().toLowerCase(),options:{emailRedirectTo:authRedirectUrl('/confirmar-email')}});
+   if(error)throw error;
+   setMessage('Se a conta ainda aguardar confirmação, um novo link será enviado para o e-mail informado.');
+  }catch(e){
+   const reason=e instanceof Error?e.message:'Erro ao solicitar novo link.';
+   setError(/rate limit/i.test(reason)?'Limite de envio atingido. Aguarde antes de tentar novamente.':reason);
+  }finally{setResending(false);}
  }
  return <div className="min-h-screen bg-[#f4f6fa] text-slate-900">
   <header className="border-b border-slate-200 bg-white"><div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"><a href="/" className="flex items-center gap-2 font-black"><span className="grid size-10 place-items-center rounded-xl bg-slate-900 text-orange-400"><Store size={20}/></span>Smart<span className="text-orange-600">Veículos</span></a><a className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-slate-900" href="/"><ArrowLeft size={16}/> Início</a></div></header>
@@ -96,7 +119,8 @@ function Access(){
      {field('Senha',<div className="relative"><input className={input+' pr-12'} required minLength={mode==='register'?10:1} type={showPassword?'text':'password'} autoComplete={mode==='register'?'new-password':'current-password'} placeholder={mode==='register'?'Pelo menos 10 caracteres':'Sua senha'} value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" className="absolute right-3 top-3 text-slate-500" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?'Ocultar senha':'Mostrar senha'}>{showPassword?<EyeOff size={19}/>:<Eye size={19}/>}</button></div>)}
      <button disabled={working||Boolean(segment&&!validateCnpj(cnpj))} className="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3.5 text-sm font-black text-slate-950 hover:bg-orange-400 disabled:opacity-50">{working?'Processando...':mode==='login'?'Entrar na minha conta':'Cadastrar conta'}<ArrowRight size={17}/></button>
     </form>
-    {mode==='login'&&<button type="button" onClick={()=>void resetPassword()} className="mt-4 text-xs font-semibold text-orange-700 underline">Esqueci minha senha</button>}
+    {mode==='login'&&<div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3"><button type="button" onClick={()=>void resetPassword()} className="text-xs font-semibold text-orange-700 underline">Esqueci minha senha</button><button type="button" onClick={()=>setShowResend(true)} className="text-xs font-semibold text-slate-700 underline">Não consigo confirmar meu e-mail</button></div>}
+    {mode==='login'&&showResend&&<div className="mt-4 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm"><p className="font-bold text-orange-950">E-mail não confirmado?</p><p className="mt-1 text-xs leading-6 text-orange-900">Confirme o endereço no campo E-mail acima. O link será enviado com destino ao site SmartVeículos.</p><button type="button" disabled={resending} onClick={()=>void resendConfirmation()} className="mt-3 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-slate-950 disabled:opacity-50">{resending?'Enviando...':'Reenviar e-mail de confirmação'}</button></div>}
     {segment&&<p className="mt-6 rounded-xl bg-slate-50 p-4 text-xs leading-6 text-slate-600">CNPJ com dígitos válidos não confirma empresa ativa ou representação legal. O cadastro empresarial será analisado antes de habilitar a operação comercial. <a href="https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria/cadastros/cadastro-nacional-de-pessoas-juridicas-cnpj" rel="noopener noreferrer" target="_blank" className="font-bold underline">Receita Federal</a>.</p>}
     <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs text-slate-500">Escolheu a área errada? <a href="/" className="font-extrabold text-orange-700 underline">Voltar às soluções</a></div>
    </section>
