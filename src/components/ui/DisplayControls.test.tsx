@@ -6,9 +6,9 @@ import {DisplayControls} from './DisplayControls';
 afterEach(()=>{
  cleanup();vi.restoreAllMocks();window.localStorage.clear();
  document.documentElement.classList.remove('dark');
- delete (document.documentElement as HTMLElement & {requestFullscreen?:()=>Promise<void>}).requestFullscreen;
- delete (document as Document & {exitFullscreen?:()=>Promise<void>}).exitFullscreen;
- delete (document as Document & {fullscreenElement?:Element|null}).fullscreenElement;
+ Reflect.deleteProperty(document.documentElement,'requestFullscreen');
+ Reflect.deleteProperty(document,'exitFullscreen');
+ Reflect.deleteProperty(document,'fullscreenElement');
 });
 beforeEach(()=>{
  window.localStorage.clear();document.documentElement.classList.remove('dark');
