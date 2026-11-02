@@ -105,14 +105,15 @@ function Access(){
     if(password.length<6)throw new Error('A senha deve ter pelo menos 6 caracteres. Recomendamos combinar letras, números e símbolos.');
     if(segment&&(!validateCnpj(cnpj)||company.trim().length<3))throw new Error('Informe o nome da empresa e um CNPJ com dígitos verificadores corretos.');
     if(account?.trim().toLowerCase()===email.trim().toLowerCase()){
+     setLoginAudience(segment?'business':'personal');if(segment)setLoginSegment(segment);
      setMode('login');setMessage('Sua conta já está conectada. Use Continuar ou entre com outra conta.');return;
     }
     const {data,error}=await supabase.auth.signUp({email:email.trim().toLowerCase(),password,options:{
      emailRedirectTo:authRedirectUrl('/confirmar-email'),
      data:{intended_profile:profile}
     }});
-    if(error){if(/already registered|user already exists|email exists/i.test(error.message)){setMode('login');setMessage('Se já possui cadastro, entre ou utilize a recuperação de senha.');return;}throw error;}
-    if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){setMode('login');setMessage('Se já possui cadastro, utilize Entrar ou Esqueci minha senha. Se for um novo cadastro, confira a confirmação no e-mail.');return;}
+    if(error){if(/already registered|user already exists|email exists/i.test(error.message)){setLoginAudience(segment?'business':'personal');if(segment)setLoginSegment(segment);setMode('login');setMessage('Se já possui cadastro, entre ou utilize a recuperação de senha.');return;}throw error;}
+    if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){setLoginAudience(segment?'business':'personal');if(segment)setLoginSegment(segment);setMode('login');setMessage('Se já possui cadastro, utilize Entrar ou Esqueci minha senha. Se for um novo cadastro, confira a confirmação no e-mail.');return;}
     if(segment)window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({
      cnpj:cleanCnpj(cnpj),segment,trade_name:company.trim()
     }));
@@ -122,6 +123,7 @@ function Access(){
     }
     setMessage('Cadastro solicitado. Verifique sua caixa de entrada e clique em Confirmar e-mail. O link agora direciona para o SmartVeículos. Depois, entre com seu e-mail e senha.');
     setShowResend(true);
+    setLoginAudience(segment?'business':'personal');if(segment)setLoginSegment(segment);
     setMode('login');
    }else{
     if(segment&&!validateCnpj(cnpj))throw new Error('Informe o CNPJ da empresa com dígitos verificadores válidos.');
@@ -181,7 +183,7 @@ function Access(){
     </div>
    </aside>
    <section className={"sv-auth-card "+authVariant+" sv-intro-item sv-intro-item--3 mx-auto w-full rounded-[24px] px-4 py-4 sm:px-6 sm:py-5"} aria-label="Acesso SmartVeículos">
-    <div className="sv-auth-tabs mb-3 flex gap-1 rounded-2xl bg-slate-200/80 p-1"><button type="button" onClick={()=>{setMode('login');setError('');setMessage('');}} className={'sv-auth-tab sv-nav-action w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='login'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Entrar</button><button type="button" onClick={()=>{setMode('register');setRegistrationStep('profile');setError('');setMessage('');}} className={'sv-auth-tab w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='register'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Criar conta</button></div>
+    <div className="sv-auth-tabs mb-3 flex gap-1 rounded-2xl bg-slate-200/80 p-1"><button type="button" onClick={()=>{const selected=businessSegmentFromProfile(profile);if(mode==='register'){setLoginAudience(selected?'business':'personal');if(selected)setLoginSegment(selected);}setMode('login');setError('');setMessage('');}} className={'sv-auth-tab sv-nav-action w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='login'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Entrar</button><button type="button" onClick={()=>{if(mode==='login')setProfile(loginAudience==='business'?loginSegment:'owner');setMode('register');setRegistrationStep('profile');setError('');setMessage('');}} className={'sv-auth-tab w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='register'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Criar conta</button></div>
     {mode==='login'&&<LoginAudiencePicker audience={loginAudience} segment={loginSegment}
      onAudienceChange={area=>{setLoginAudience(area);setError('');setMessage('');}}
      onSegmentChange={area=>{setLoginSegment(area);setError('');setMessage('');}}/>}
