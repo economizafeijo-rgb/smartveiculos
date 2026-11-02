@@ -1,3 +1,4 @@
+import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Activity, ArrowLeft, ArrowUpRight, Bike, CalendarClock, CheckCircle2, CircleAlert, Cloud, Fuel, Gauge, Plus, Search, ShieldCheck, Wrench } from 'lucide-react';
@@ -211,7 +212,7 @@ export function CB650RDashboard(){
       ['frontTireKm','Pneu dianteiro instalado (km)'],['rearTireKm','Pneu traseiro instalado (km)'],['chainKitKm','Kit relação instalado (km)']
     ] as const).map(([key,label])=><Label key={key} text={label}><input type="number" min="0" step={key.endsWith('Mm')?'0.1':'1'} className={input} value={inspections[key]} onChange={e=>setInspections(s=>({...s,[key]:e.target.value}))}/></Label>)}</div><p className="text-xs text-slate-500">Deixe em branco campos não medidos. Use paquímetro/medidor adequado e apoio profissional em inspeções de segurança.</p><div className="flex gap-3"><button className={primary}>Salvar medições</button><button type="button" className={secondary} onClick={()=>setInspectionsOpen(false)}>Cancelar</button></div></form></div>}
     <CloudSyncPanel bikeProfile />
-    <footer className="border-t py-5 text-xs text-slate-500">SmartVeículos · Honda CB650R 2024 · Registros locais; backup manual disponível após login. Alertas não substituem diagnóstico profissional ou comprovantes da Honda.</footer>
+    <footer className="flex flex-wrap items-center justify-between gap-3 border-t py-5 text-xs text-slate-500"><span>SmartVeículos · Honda CB650R 2024 · Registros locais; backup manual disponível após login. Alertas não substituem diagnóstico profissional ou comprovantes da Honda.</span><DeveloperCredit compact /></footer>
   </main>
  </div>;
 }
