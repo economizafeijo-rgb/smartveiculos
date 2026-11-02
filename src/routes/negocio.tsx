@@ -22,6 +22,7 @@ const currency=(n:number)=>new Intl.NumberFormat('pt-BR',{style:'currency',curre
 function BusinessAccess(){const q=Route.useSearch();return <AuthGate next={'/negocio'+(q.segment?'?segment='+q.segment:'')}><BusinessPage segmentFilter={q.segment}/></AuthGate>}
 function BusinessPage({segmentFilter}:{segmentFilter:BusinessSegment|undefined}){
  const [accountId,setAccountId]=useState('');
+ const [requestedCnpj,setRequestedCnpj]=useState<string|null>(null);
  const [userId,setUserId]=useState('');
  const [email,setEmail]=useState('');
  const [accounts,setAccounts]=useState<Account[]>([]);
@@ -41,7 +42,7 @@ function BusinessPage({segmentFilter}:{segmentFilter:BusinessSegment|undefined})
  const isWorkshop=kind==='workshop';
  const visibleStock=stock.filter(s=>(s.name+' '+s.sku+' '+s.application).toLowerCase().includes(query.toLowerCase()));
  const visibleOrders=orders.filter(s=>(s.customer_name+' '+s.vehicle_label+' '+s.service_description).toLowerCase().includes(query.toLowerCase()));
- const filtered=accounts.filter(x=>!segmentFilter||x.segment===segmentFilter);
+ const filtered=accounts.filter(x=>(!segmentFilter||x.segment===segmentFilter)&&(!requestedCnpj||x.cnpj===requestedCnpj));
  const fetchAccounts=useCallback(async()=>{
   if(!supabase)return;
   setLoading(true);
@@ -54,6 +55,17 @@ function BusinessPage({segmentFilter}:{segmentFilter:BusinessSegment|undefined})
   setLoading(false);
  },[]);
  useEffect(()=>{void fetchAccounts();},[fetchAccounts]);
+ useEffect(()=>{
+  try{
+   const raw=window.sessionStorage.getItem('smartveiculos:selected-business');
+   if(!raw)return;
+   const value=JSON.parse(raw) as {cnpj?:unknown;segment?:unknown};
+   if(value.segment===segmentFilter&&typeof value.cnpj==='string'&&validateCnpj(value.cnpj)){
+    setRequestedCnpj(value.cnpj);
+    setCompany(c=>({...c,cnpj:value.cnpj as string}));
+   }
+  }catch{/* No session selection. */}
+ },[segmentFilter]);
  useEffect(()=>{
   if(!active||!supabase){setStock([]);setOrders([]);return;}
   let mounted=true;
@@ -155,7 +167,7 @@ function BusinessPage({segmentFilter}:{segmentFilter:BusinessSegment|undefined})
        <button className={btn+' bg-orange-500 text-slate-900 sm:col-span-2'} disabled={busy||!validateCnpj(company.cnpj)}>Cadastrar empresa <ArrowRight size={16}/></button>
       </form></div>:
     <>
-      <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex flex-wrap gap-2">{filtered.map(a=><button key={a.id} onClick={()=>{setAccountId(a.id);setTab('overview');}} className={'rounded-xl px-4 py-2 text-xs font-bold '+(a.id===active?.id?'bg-slate-900 text-white':'border bg-white text-slate-700')}>{a.trade_name}</button>)}</div><a href="/acesso?mode=register" className="text-xs font-bold text-orange-700 underline">Criar outra conta</a></div>
+      <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex flex-wrap gap-2">{requestedCnpj&&<button type="button" onClick={()=>{window.sessionStorage.removeItem('smartveiculos:selected-business');setRequestedCnpj(null);}} className="rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-bold text-orange-900">CNPJ {formatCnpj(requestedCnpj)} · Trocar empresa</button>}{filtered.map(a=><button key={a.id} onClick={()=>{setAccountId(a.id);setTab('overview');}} className={'rounded-xl px-4 py-2 text-xs font-bold '+(a.id===active?.id?'bg-slate-900 text-white':'border bg-white text-slate-700')}>{a.trade_name}</button>)}</div><a href="/acesso?mode=register" className="text-xs font-bold text-orange-700 underline">Criar outra conta</a></div>
       {active&&<><div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4"><div><p className="text-lg font-black">{active.trade_name}</p><p className="mt-1 text-xs text-slate-500">CNPJ {formatCnpj(active.cnpj)} · {active.city||'Cidade não informada'}</p></div><span className={'rounded-full px-3 py-2 text-xs font-black '+(active.review_status==='approved'?'bg-emerald-100 text-emerald-800':active.review_status==='rejected'?'bg-red-100 text-red-700':'bg-amber-100 text-amber-900')}>{active.review_status==='approved'?'Empresa aprovada':active.review_status==='pending'?'Validação empresarial pendente':'Cadastro não aprovado'}</span></div>
       {active.review_status!=='approved'&&<div className="flex gap-3 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-900"><ShieldCheck className="shrink-0" size={20}/><p>Você pode organizar seus dados internos. A aprovação pelo administrador será necessária antes de habilitar presença comercial pública ou confirmar a titularidade da empresa.</p></div>}
       <div className="grid gap-4 sm:grid-cols-3"><div className={panel}><p className="text-xs font-bold uppercase text-slate-500">{isWorkshop?'Ordens de serviço':'Produtos cadastrados'}</p><p className="mt-3 text-3xl font-black">{isWorkshop?orders.length:stock.length}</p></div><div className={panel}><p className="text-xs font-bold uppercase text-slate-500">{isWorkshop?'OS abertas':'Itens em estoque'}</p><p className="mt-3 text-3xl font-black">{isWorkshop?orders.filter(o=>o.status==='aberta').length:totalParts}</p></div><div className={panel}><p className="text-xs font-bold uppercase text-slate-500">{isWorkshop?'Valor orçado':'Valor de tabela em estoque'}</p><p className="mt-3 text-2xl font-black">{currency(isWorkshop?orders.reduce((sum,o)=>sum+Number(o.quoted_price),0):valueParts)}</p></div></div>
