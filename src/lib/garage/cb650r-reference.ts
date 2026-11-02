@@ -40,6 +40,21 @@ export const CB650R_PREVENTIVE:Preventive[]=[
  {id:'tires',title:'Condição dos pneus e calibragem',group:'Pneus',kmInterval:null,monthInterval:null,details:'Sem km fixo para troca: TWI, danos, desgaste irregular; mín. 1,5 mm frente, 2,0 mm traseira. Pressões a frio: 36/42 psi.',type:'manutencao',conditionBased:true},
  {id:'kit',title:'Kit relação (corrente, coroa e pinhão)',group:'Transmissão',kmInterval:null,monthInterval:null,details:'Sem km fixo para troca; substituir os três juntos quando gastos/danificados. Conferir elos presos, retentores e dentes.',type:'peca',conditionBased:true},
 ];
+/** Próximo marco do plano Honda, não simplesmente km da última troca + intervalo.
+ * Óleo/filtro: 1.000, 12.000, 24.000... km. Outros itens: marcos múltiplos do intervalo.
+ * Tolerância de 500 km para serviços documentados realizados pouco antes do marco.
+ */
+export function nextHondaServiceKm(id:string,lastPerformedKm:number|null,intervalKm:number|null):number|null{
+ if(intervalKm===null||lastPerformedKm===null||!Number.isFinite(lastPerformedKm)||lastPerformedKm<0)return null;
+ if(id==='chain-care')return lastPerformedKm+intervalKm;
+ const near=lastPerformedKm+500;
+ if(id==='engine-oil'||id==='oil-filter'){
+   if(near<1000)return 1000;
+   return Math.max(12000,(Math.floor(near/12000)+1)*12000);
+ }
+ return Math.max(intervalKm,(Math.floor(near/intervalKm)+1)*intervalKm);
+}
+
 export const CB650R_TECH=[
  {title:'Pneus',description:'Dianteiro 120/70 ZR17 (58W) · 36 psi, mín. 1,5 mm. Traseiro 180/55 ZR17 (73W) · 42 psi, mín. 2,0 mm. Substituir no TWI ou com danos.',link:CB650R_MANUAL+'#page=68',tag:'Segurança',image:'https://www.motorrad-bilder.at/slideshows/291/023015/185796_HondaE-ClutchCBR650R-CB650RYM241625.JPG_0.jpg'},
  {title:'Relação e corrente',description:'DID 525V11 / RK 525KRW; 118 elos; 15/42 dentes; folga 25–35 mm. Não pilotar com folga acima de 50 mm.',link:CB650R_MANUAL+'#page=84',tag:'Transmissão',image:'https://www.tech2roo.com/627552-large_default/kit-chaine-ekpbr-honda-cb650r-cbr650f-cbr650r-2014-2025-525-srx2-1542-renforce-couronne-acier-standard.jpg'},
