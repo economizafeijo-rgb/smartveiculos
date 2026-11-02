@@ -20,7 +20,7 @@ function read(): Fillup[] {
       if(!v||typeof v!=='object')return false;
       const r=v as Partial<Fillup>;
       return typeof r.id==='string'&&typeof r.vehicleId==='string'&&
-        typeof r.date==='string'&&Number.isInteger(r.km)&&r.km!>=0&&
+        typeof r.date==='string'&&Number.isInteger(r.km)&&(r.km as number)>=0&&
         typeof r.liters==='number'&&r.liters>0&&Number.isFinite(r.liters)&&
         typeof r.pricePerLiter==='number'&&Number.isFinite(r.pricePerLiter)&&r.pricePerLiter>=0&&
         (r.fuel==='gasolina'||r.fuel==='etanol')&&typeof r.fullTank==='boolean';
@@ -28,7 +28,7 @@ function read(): Fillup[] {
   }catch{return EMPTY;}
 }
 function getSnapshot(){if(!loaded&&typeof window!=='undefined'){cache=read();loaded=true;}return cache;}
-function commit(value:Fillup[]){cache=value;try{window.localStorage.setItem(STORAGE_KEY,JSON.stringify(value));}catch{throw new Error('Armazenamento local indisponível. Não foi possível salvar.');}listeners.forEach(fn=>fn());}
+function commit(value:Fillup[]){try{window.localStorage.setItem(STORAGE_KEY,JSON.stringify(value));}catch{throw new Error('Armazenamento local indisponível. Não foi possível salvar.');}cache=value;listeners.forEach(fn=>fn());}
 function subscribe(fn:()=>void){getSnapshot();listeners.add(fn);if(listeners.size===1)window.addEventListener('storage',onStorage);return()=>{listeners.delete(fn);if(!listeners.size)window.removeEventListener('storage',onStorage);};}
 function onStorage(e:StorageEvent){if(e.key!==STORAGE_KEY)return;cache=read();listeners.forEach(fn=>fn());}
 export function useFillups():Fillup[]{return useSyncExternalStore(subscribe,getSnapshot,()=>EMPTY);}
@@ -36,7 +36,7 @@ export function addFillup(input:Omit<Fillup,'id'>){
  if(!input.vehicleId||!/^\d{4}-\d\d-\d\d$/.test(input.date)||!Number.isSafeInteger(input.km)||input.km<0||
  !Number.isFinite(input.liters)||input.liters<=0||input.liters>200||
  !Number.isFinite(input.pricePerLiter)||input.pricePerLiter<=0||input.pricePerLiter>100||
- !['gasolina','etanol'].includes(input.fuel))throw new Error('Confira os dados do abastecimento.');
+ !['gasolina','etanol'].includes(input.fuel)||typeof input.fullTank!=='boolean')throw new Error('Confira os dados do abastecimento.');
  const existing=getSnapshot().filter(x=>x.vehicleId===input.vehicleId);
  if(existing.some(x=>x.km>=input.km))throw new Error('O hodômetro deve avançar em relação aos abastecimentos anteriores.');
  const result:{id:string}&Omit<Fillup,'id'>={...input,id:crypto.randomUUID()};
