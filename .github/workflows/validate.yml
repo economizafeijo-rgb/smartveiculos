@@ -16,9 +16,11 @@ jobs:
           bun-version: '1.3.3'
       - name: Install packages
         run: bun install
+      # A build executa o gerador de rotas TanStack antes do tsc.
+      # Novas páginas não devem exigir edição manual de routeTree.gen.ts.
+      - name: Production build
+        run: bun run build
       - name: Typecheck
         run: bunx tsc --noEmit
       - name: Unit tests
         run: bun run test
-      - name: Production build
-        run: bun run build
