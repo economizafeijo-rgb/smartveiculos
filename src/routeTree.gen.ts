@@ -18,13 +18,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-
 const GolG6Route = GolG6RouteImport.update({
   id: '/gol-g6',
   path: '/gol-g6',

@@ -43,7 +43,7 @@ export function GolDashboard(){
  const warnings=useMemo(()=>{
   const latest=new Map<string,typeof logs[number]>();
   for(const item of logs){
-   const name=item.description.split(' — ')[0];
+   const name=item.description.split(' — ')[0] ?? item.description;
    if(!latest.has(name)||item.km>latest.get(name)!.km)latest.set(name,item);
   }
   return [...latest.values()].filter(x=>vehicle&&x.nextKm!==null&&x.nextKm-vehicle.currentKm<=1000)
