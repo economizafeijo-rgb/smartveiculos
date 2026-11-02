@@ -5,14 +5,14 @@ import { ArrowLeft, ArrowUpRight, CarFront, CheckCircle2, CircleAlert, Fuel, Gau
 import { addFillup, calculateFuelStats, fuelSpent, removeFillup, useFillups, type FuelKind } from '@/lib/garage/fuel';
 import { garage, useGarage, useHydrated } from '@/lib/garage/store';
 import { formatBRL, formatKm, formatDate } from '@/lib/garage/logic';
-import { GOL, GOL_PROBLEMS, IMPORTANT_LINKS, MAINTENANCE_PRESETS, VEHICLE_CATALOG } from '@/lib/garage/gol-reference';
+import { GOL, GOL_PROBLEMS, IMPORTANT_LINKS, MAINTENANCE_PRESETS } from '@/lib/garage/gol-reference';
 import { CloudSyncPanel } from '@/components/garage/CloudSyncPanel';
+import { FipeValuePanel } from '@/components/garage/FipeValuePanel';
 
-type Tab='painel'|'abastecimentos'|'manutencoes'|'diagnosticos'|'catalogo';
+type Tab='painel'|'abastecimentos'|'manutencoes'|'diagnosticos';
 const tabs:{id:Tab;label:string;icon:typeof Gauge}[]=[
  {id:'painel',label:'Visão geral',icon:Gauge},{id:'abastecimentos',label:'Abastecimentos',icon:Fuel},
  {id:'manutencoes',label:'Manutenções',icon:Wrench},{id:'diagnosticos',label:'Diagnósticos e peças',icon:PackageSearch},
- {id:'catalogo',label:'Catálogo',icon:CarFront},
 ];
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');};
 const field='w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
@@ -36,7 +36,6 @@ export function GolDashboard(){
  const [maintenance,setMaintenance]=useState<Maintenance>(newMaintenance);
  const [query,setQuery]=useState('');
  const [system,setSystem]=useState('Todos');
- const [kind,setKind]=useState<'carro'|'moto'>('carro');
  const vehicle=vehicles.find(v=>v.name===GOL.name);
  const logs=useMemo(()=>records.filter(r=>r.vehicleId===vehicle?.id).sort((a,b)=>b.date.localeCompare(a.date)||b.km-a.km),[records,vehicle?.id]);
  const fills=useMemo(()=>allFillups.filter(f=>f.vehicleId===vehicle?.id).sort((a,b)=>b.km-a.km),[allFillups,vehicle?.id]);
@@ -108,9 +107,10 @@ export function GolDashboard(){
    <nav aria-label="Áreas do Gol" className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
     {tabs.map(item=><button key={item.id} type="button" onClick={()=>{setTab(item.id);setError('');setNotice('')}} className={'inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold '+(item.id===tab?'bg-slate-900 text-white':'text-slate-600 hover:bg-slate-100')}><item.icon size={17}/>{item.label}</button>)}
    </nav>
+   <FipeValuePanel vehicleId={vehicle?.id??''} kind="carro" vehicleName="Gol G6 Seleção 1.6" brandHint="VW" yearHint={2014}/>
    {error&&<div role="alert" className="flex gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><CircleAlert size={18}/>{error}</div>}
    {notice&&<div role="status" className="flex gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700"><CheckCircle2 size={18}/>{notice}</div>}
-   {!vehicle&&tab!=='diagnosticos'&&tab!=='catalogo'&&<form onSubmit={activate} className={box+' space-y-4 border-amber-200'}>
+   {!vehicle&&tab!=='diagnosticos'&&<form onSubmit={activate} className={box+' space-y-4 border-amber-200'}>
     <div><h2 className="font-bold">Ative a ficha do seu Gol prata</h2><p className="mt-1 text-sm text-slate-600">Informe a quilometragem real. Nenhum valor é inventado. Os dados serão armazenados neste navegador até a sincronização em nuvem ser ativada.</p></div>
     <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]"><label className="text-sm font-medium">Placa (opcional)<input className={field+' mt-1'} maxLength={10} value={plate} onChange={e=>setPlate(e.target.value)}/></label><label className="text-sm font-medium">Odômetro atual (km)<input className={field+' mt-1'} type="number" required min="0" max="9999999" value={startKm} onChange={e=>setStartKm(e.target.value)}/></label><button className={btn+' self-end bg-blue-600 text-white hover:bg-blue-700'}><Plus size={16}/> Ativar ficha</button></div>
    </form>}
@@ -169,7 +169,6 @@ export function GolDashboard(){
     <div className="grid gap-4 md:grid-cols-2">{problems.map(p=><article key={p.id} className={box+' overflow-hidden'}><div className="flex gap-4">{p.image?<img loading="lazy" className="size-28 shrink-0 rounded-xl border border-slate-100 bg-slate-50 object-contain" src={p.image} alt={p.imageAlt}/>:<div className="grid size-28 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-500"><PackageSearch size={30}/></div>}<div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">{p.system}</p><h3 className="mt-1 text-base font-extrabold">{p.name}</h3><p className="mt-2 text-xs text-slate-500">Orientação: {p.severity}</p></div></div><div className="mt-4 space-y-3 text-sm"><div><p className="font-bold">Sintomas a investigar</p><p className="mt-1 text-slate-600">{p.symptoms}</p></div><div><p className="font-bold">Como verificar</p><p className="mt-1 text-slate-600">{p.checks}</p></div><div><p className="font-bold">Possível solução</p><p className="mt-1 text-slate-600">{p.solution}</p></div></div><a href={p.source} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-blue-700 hover:underline">Consultar referência <ArrowUpRight size={14}/></a></article>)}</div>{!problems.length&&<p className="rounded-xl bg-white p-8 text-center text-sm text-slate-500">Nenhum item encontrado com esses filtros.</p>}
     <div className={box}><h2 className="font-bold">Fontes e consultas úteis</h2><div className="mt-4 grid gap-2 sm:grid-cols-2">{IMPORTANT_LINKS.map(x=><a key={x.url} className="flex items-center justify-between rounded-xl border p-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" href={x.url} target="_blank" rel="noopener noreferrer">{x.label}<ArrowUpRight size={16}/></a>)}</div><p className="mt-4 text-xs text-slate-500">Confirme compatibilidade de peças pelo chassi. Segurança: freios, direção, superaquecimento e correia exigem avaliação técnica adequada.</p></div>
    </section>}
-   {tab==='catalogo'&&<section className={box+' sv-tab-content'}><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold">Catálogo inicial de carros e motos</h2><p className="mt-1 text-sm text-slate-500">Modelos para futura expansão; fichas técnicas completas somente após validação por versão.</p></div><div className="flex rounded-xl bg-slate-100 p-1">{(['carro','moto'] as const).map(k=><button key={k} onClick={()=>setKind(k)} className={'rounded-lg px-4 py-2 text-sm font-bold '+(kind===k?'bg-white shadow-sm':'text-slate-600')}>{k==='carro'?'Carros':'Motos'}</button>)}</div></div><div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{VEHICLE_CATALOG.filter(v=>v.kind===kind).map(v=><div key={v.brand} className="rounded-xl border border-slate-200 p-4"><h3 className="font-extrabold">{v.brand}</h3><div className="mt-3 flex flex-wrap gap-2">{v.models.map(model=><span key={model} className="rounded-lg bg-slate-100 px-2 py-1.5 text-xs text-slate-700">{model}</span>)}</div></div>)}</div></section>}
    <CloudSyncPanel />
    <footer className="flex flex-col gap-1 border-t border-slate-200 py-5 text-xs text-slate-500 sm:flex-row sm:justify-between"><span>SmartVeículos · Perfil Gol G6 Seleção 1.6 · Prata</span><span>Dados do proprietário salvos localmente neste navegador, não sincronizados na nuvem.</span><DeveloperCredit compact /></footer>
   </main>
