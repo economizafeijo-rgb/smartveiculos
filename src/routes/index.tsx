@@ -42,10 +42,10 @@ function HomePortal(){
   const check=()=>{void client.auth.getUser().then(({data,error})=>{
    if(mounted)setAuthenticated(!error&&Boolean(data.user));
   }).catch(()=>{if(mounted)setAuthenticated(false)})};
-  const {data}=client.auth.onAuthStateChange((event)=>{
+  const {data}=client.auth.onAuthStateChange((event,session)=>{
    if(!mounted)return;
    if(event==='SIGNED_OUT')setAuthenticated(false);
-   else if(event==='SIGNED_IN'||event==='TOKEN_REFRESHED')check();
+   else if(event==='SIGNED_IN'||event==='TOKEN_REFRESHED')setAuthenticated(Boolean(session?.user));
   });
   check();
   return ()=>{mounted=false;data.subscription.unsubscribe();};
