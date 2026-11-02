@@ -104,13 +104,17 @@ export async function importLocalFillups(fillups: readonly Fillup[]): Promise<nu
 /** Backup manual do perfil de inspeções da CB650R, protegido por owner_id e FK de veículo. */
 export async function importBikeMeasurements(vehicleId:string,profile:BikeMeasurements):Promise<void>{
  const owner=await currentUser();
- const payload:Partial<BikeMeasurements>={};
+ // Preserve cloud-only fields. Values intentionally filled in locally take precedence.
+ const existing=await loadBikeMeasurements(vehicleId);
+ const payload:Partial<BikeMeasurements>={...(existing??{})};
  const allowed:(keyof BikeMeasurements)[]=['deliveryDate','frontDepthMm','rearDepthMm','chainSlackMm','frontTireKm','rearTireKm','chainKitKm','lastChainKm','notes'];
+ let changed=false;
  for(const key of allowed){
   const value=profile[key];
   if(typeof value!=='string'||value.length>(key==='notes'?600:24))throw new Error('Medições inválidas para backup.');
-  payload[key]=value;
+  if(value!==''){payload[key]=value;changed=true;}
  }
+ if(!changed)return;
  const {error}=await client().from('motorcycle_profiles').upsert({
   vehicle_id:vehicleId,owner_id:owner,profile_kind:'honda_cb650r_2024',profile_data:payload
  },{onConflict:'vehicle_id'});
