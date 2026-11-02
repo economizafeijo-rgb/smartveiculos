@@ -1,7 +1,7 @@
 import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link } from '@tanstack/react-router';
-import { Activity, ArrowLeft, ArrowUpRight, Bike, CalendarClock, CheckCircle2, CircleAlert, Cloud, Fuel, Gauge, Plus, Search, ShieldCheck, Wrench } from 'lucide-react';
+import { Activity, ArrowLeft, ArrowUpRight, Bike, CalendarClock, CheckCircle2, CircleAlert, ClipboardList, Cloud, Coins, Fuel, Gauge, Plus, Search, ShieldCheck, Video, Wrench } from 'lucide-react';
 import { garage, useGarage, useHydrated } from '@/lib/garage/store';
 import { useBikeMeasurements, saveBikeMeasurements } from '@/lib/garage/cb650r-state';
 import { CB650R_NAME, CB650R_REFERENCE as SPEC, CB650R_MANUAL, CB650R_REVISIONS, CB650R_PREVENTIVE, CB650R_TECH, CB650R_LINKS, revisionDue, addMonthsToDate, nextHondaServiceKm, type Revision } from '@/lib/garage/cb650r-reference';
@@ -114,12 +114,28 @@ export function CB650RDashboard(){
     <div className="flex gap-2"><Link to="/" className={secondary}><ArrowLeft size={15}/> Garagem</Link><Link to="/gol-g6" className={secondary+' hidden sm:inline-flex'}>Gol G6</Link></div>
   </div></header>
   <main className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-7">
+   <nav aria-label="Acesso direto às páginas de serviços" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-700/25 bg-gradient-to-r from-[#11243e] to-[#254766] p-3 text-white shadow-sm sm:p-4">
+    <div><p className="text-[10px] font-black uppercase tracking-[.16em] text-orange-300">Sua garagem organizada</p><p className="mt-1 text-xs font-semibold text-slate-100">Cada serviço agora tem uma página própria.</p></div>
+    <div className="flex flex-wrap gap-2">
+     {([
+      ['abastecimentos','Abastecimentos',Fuel],
+      ['revisoes','Revisões',CalendarClock],
+      ['fipe','Tabela FIPE',Coins],
+      ['videos','Vídeos',Video],
+      ['registros','Registros',ClipboardList],
+     ] as const).map(([pagina,label,Icon])=>
+      <Link key={pagina} to="/garagem" search={{pagina,veiculo:bike?.id??'cb650r-2024'}}
+       className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-[11px] font-extrabold text-white backdrop-blur-xl transition-colors hover:border-orange-300 hover:bg-orange-500/25"><Icon size={15}/>{label}<ArrowUpRight size={12} className="text-orange-300"/></Link>
+     )}
+    </div>
+   </nav>
+
     <section className="sv-dashboard-hero relative isolate overflow-hidden rounded-3xl bg-[#101925] text-white shadow-xl"><div className="absolute -left-10 top-0 size-80 rounded-full bg-orange-500/10 blur-3xl"/><div className="relative grid lg:grid-cols-[1fr_0.95fr]">
        <div className="px-6 py-9 sm:px-10 sm:py-12"><span className="sv-intro-item sv-intro-item--1 inline-flex rounded-full border border-orange-400/30 bg-orange-400/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-orange-300">Neo Sports Café · Minha motocicleta</span><h1 className="sv-intro-item sv-intro-item--2 mt-6 text-4xl font-extrabold tracking-tight sm:text-5xl">Honda <span className="text-orange-400">CB650R</span></h1><p className="sv-intro-item sv-intro-item--3 mt-2 text-lg font-medium text-slate-200">2024 · Vermelha · 649 cc · quatro cilindros</p><p className="sv-intro-item sv-intro-item--4 mt-5 max-w-lg text-sm leading-7 text-slate-300">Uma central exclusiva para suas revisões, pneus, corrente, custos, manutenção, combustível e histórico técnico.</p><div className="sv-intro-item sv-intro-item--5 mt-6 flex flex-wrap gap-2">{['88,4 cv','15,4 litros','6 marchas','Manual oficial Honda'].map(v=><span key={v} className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold">{v}</span>)}</div></div>
        <div className="relative min-h-64 overflow-hidden bg-gradient-to-br from-slate-600 to-slate-900">{photoError?<div className="absolute inset-0 grid place-items-center"><Bike className="text-white/50" size={110}/></div>:<img src={SPEC.photo} alt="Fotografia ilustrativa de Honda CB650R 2024 vermelha; não é a moto cadastrada" onError={()=>setPhotoError(true)} className="sv-dashboard-photo absolute inset-0 h-full w-full object-cover" loading="eager"/>}<a href={SPEC.photoLink} target="_blank" rel="noopener noreferrer" className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 px-5 pb-4 pt-12 text-xs text-white/90 underline underline-offset-2">{SPEC.photoCredit}</a></div>
      </div></section>
     <nav aria-label="Seções da moto" className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">{TABS.map(t=><button type="button" key={t.id} onClick={()=>{setTab(t.id);setError('');setNotice('')}} className={'inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition '+(tab===t.id?'bg-slate-900 text-white':'text-slate-600 hover:bg-slate-100')}><t.icon size={17}/>{t.label}</button>)}</nav>
-    <FipeValuePanel vehicleId={FIPE_FEATURED_KEYS.cb650r} kind="moto" vehicleName="Honda CB650R" brandHint="Honda" yearHint={2024}/>
+    {tab==='painel'&&<FipeValuePanel vehicleId={FIPE_FEATURED_KEYS.cb650r} kind="moto" vehicleName="Honda CB650R" brandHint="Honda" yearHint={2024}/>}
     {error&&<div role="alert" className="flex gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><CircleAlert size={18}/>{error}</div>}
     {notice&&<div role="status" className="flex gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700"><CheckCircle2 size={18}/>{notice}</div>}
     {!bike&&tab!=='biblioteca'&&<form onSubmit={activate} className={panel+' border-orange-200'}>
