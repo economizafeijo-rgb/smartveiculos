@@ -939,3 +939,27 @@ body:has(.sv-homepage)::-webkit-scrollbar {
   filter: brightness(1.10) contrast(1.015) saturate(1.035);
   object-position: center 43%;
 }
+
+/* Hero motocicletas: fotografia real, cores naturais e texto com contraste.
+   Escurecimento localizado apenas sob as legendas; preserva a luz da moto. */
+.sv-homepage .sv-hero-tile--2 {
+  background-color: #64748b;
+  border-color: rgb(255 255 255 / 26%);
+}
+.sv-homepage .sv-photo-real-bike {
+  object-position: 53% 43%;
+  filter: brightness(1.09) contrast(1.02) saturate(1.075);
+}
+.sv-homepage .sv-hero-tile--2 .sv-hero-scrim {
+  background: linear-gradient(
+    to top,
+    rgb(3 15 27 / 80%) 0%,
+    rgb(3 15 27 / 40%) 19%,
+    rgb(3 15 27 / 8%) 42%,
+    transparent 62%
+  );
+}
+.sv-homepage .sv-accordion-body .sv-solution-photo[src*="photo-1755378909673"] {
+  object-position: center 43%;
+  filter: brightness(1.075) contrast(1.02) saturate(1.075);
+}
