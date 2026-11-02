@@ -36,17 +36,21 @@ describe('biblioteca audiovisual por modelo',()=>{
  it('mostra vídeos do Gol e da Honda em bibliotecas separadas',()=>{
   expect(videoProfile(gol)).toBe('gol');
   expect(videoProfile(bike)).toBe('cb650r');
-  expect(guidesForVehicle(gol)).toHaveLength(8);
+  expect(guidesForVehicle(gol)).toHaveLength(10);
   expect(guidesForVehicle(bike)).toHaveLength(7);
   expect(guidesForVehicle({kind:'moto',name:'Yamaha Fazer 150'})).toEqual([]);
   const golIds=new Set(guidesForVehicle(gol).map(v=>v.id));
   const cbIds=new Set(guidesForVehicle(bike).map(v=>v.id));
   expect([...golIds].filter(id=>cbIds.has(id))).toHaveLength(0);
-  expect(new Set(golIds).size).toBe(8);
+  expect(new Set(golIds).size).toBe(10);
   expect(new Set(cbIds).size).toBe(7);
   expect(guidesForVehicle({kind:'carro',name:'Gol G6 Seleção 1.6 2015',modelYear:2015})).toEqual([]);
   expect(guidesForVehicle({kind:'moto',name:'Honda CB650R 2026',modelYear:2026})).toEqual([]);
   expect(guidesForVehicle({kind:'carro',name:'Gol G6 1.0 2014'})).toEqual([]);
+  // Sem ano confirmado, não herdar tutoriais de outra versão da mesma família.
+  expect(guidesForVehicle({kind:'moto',name:'Honda CB650R'})).toEqual([]);
+  expect(guidesForVehicle({kind:'carro',name:'Gol G6 Seleção 1.6'})).toEqual([]);
+
 
  });
  it('usa busca específica do próprio modelo, sem dados privados',()=>{
