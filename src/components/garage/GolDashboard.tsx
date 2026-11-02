@@ -5,6 +5,7 @@ import { addFillup, calculateFuelStats, fuelSpent, removeFillup, useFillups, typ
 import { garage, useGarage, useHydrated } from '@/lib/garage/store';
 import { formatBRL, formatKm, formatDate } from '@/lib/garage/logic';
 import { GOL, GOL_PROBLEMS, IMPORTANT_LINKS, MAINTENANCE_PRESETS, VEHICLE_CATALOG } from '@/lib/garage/gol-reference';
+import { CloudSyncPanel } from '@/components/garage/CloudSyncPanel';
 
 type Tab='painel'|'abastecimentos'|'manutencoes'|'diagnosticos'|'catalogo';
 const tabs:{id:Tab;label:string;icon:typeof Gauge}[]=[
@@ -168,6 +169,7 @@ export function GolDashboard(){
     <div className={box}><h2 className="font-bold">Fontes e consultas úteis</h2><div className="mt-4 grid gap-2 sm:grid-cols-2">{IMPORTANT_LINKS.map(x=><a key={x.url} className="flex items-center justify-between rounded-xl border p-3 text-sm font-semibold text-blue-700 hover:bg-blue-50" href={x.url} target="_blank" rel="noopener noreferrer">{x.label}<ArrowUpRight size={16}/></a>)}</div><p className="mt-4 text-xs text-slate-500">Confirme compatibilidade de peças pelo chassi. Segurança: freios, direção, superaquecimento e correia exigem avaliação técnica adequada.</p></div>
    </section>}
    {tab==='catalogo'&&<section className={box}><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold">Catálogo inicial de carros e motos</h2><p className="mt-1 text-sm text-slate-500">Modelos para futura expansão; fichas técnicas completas somente após validação por versão.</p></div><div className="flex rounded-xl bg-slate-100 p-1">{(['carro','moto'] as const).map(k=><button key={k} onClick={()=>setKind(k)} className={'rounded-lg px-4 py-2 text-sm font-bold '+(kind===k?'bg-white shadow-sm':'text-slate-600')}>{k==='carro'?'Carros':'Motos'}</button>)}</div></div><div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{VEHICLE_CATALOG.filter(v=>v.kind===kind).map(v=><div key={v.brand} className="rounded-xl border border-slate-200 p-4"><h3 className="font-extrabold">{v.brand}</h3><div className="mt-3 flex flex-wrap gap-2">{v.models.map(model=><span key={model} className="rounded-lg bg-slate-100 px-2 py-1.5 text-xs text-slate-700">{model}</span>)}</div></div>)}</div></section>}
+   <CloudSyncPanel />
    <footer className="flex flex-col gap-1 border-t border-slate-200 py-5 text-xs text-slate-500 sm:flex-row sm:justify-between"><span>SmartVeículos · Perfil Gol G6 Seleção 1.6 · Prata</span><span>Dados do proprietário salvos localmente neste navegador, não sincronizados na nuvem.</span></footer>
   </main>
  </div>;
