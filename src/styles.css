@@ -1933,3 +1933,181 @@ body:has(.sv-homepage)::-webkit-scrollbar {
   padding:13px;
  }
 }
+
+
+/* SmartVeículos • modo noturno premium / dock de visualização.
+   Não altera imagens, gráficos, dados persistidos nem status dos serviços.
+   Escopo: páginas do cliente, negócio, garagem, painéis individuais e homepage.
+*/
+html.dark {color-scheme:dark; background:#0a1424;}
+html.dark body {background:#0a1424;color:#e8f1fc;}
+html.dark .sv-theme-surface:not(.sv-homepage) {
+ color:#e8f1fc !important;
+ background: radial-gradient(ellipse at 9% 0%,rgba(49,95,152,.18),transparent 43%),
+             radial-gradient(ellipse at 95% 90%,rgba(249,115,22,.075),transparent 36%),#0b1729 !important;
+}
+html.dark .sv-homepage {background:#0b1729 !important;color:#e9f2ff;}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(
+ .bg-white,.bg-slate-50,.bg-slate-100,.bg-slate-200,
+ [class~="bg-[#f7f9fc]"],[class~="bg-[#f8fafc]"],
+ [class~="bg-[#f3f5fa]"],[class~="bg-[#f4f6fa]"]
+){
+ background-color:#172940 !important;
+ color:#e7f1fc;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(
+ .bg-orange-50,.bg-amber-50,[class~="bg-[#fff8ed]"]
+){
+ background-color:#382919 !important;
+ border-color:#754a2a !important;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.bg-red-50,.bg-rose-50) {
+ background-color:#39242b !important;border-color:#86505b !important;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.bg-emerald-50,.bg-green-50) {
+ background-color:#123d37 !important;border-color:#287461 !important;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.bg-blue-50,.bg-sky-50) {
+ background-color:#132f4b !important;border-color:#2f6288 !important;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(
+ .text-slate-950,.text-slate-900,.text-slate-800,.text-slate-700,
+ [class~="text-[#111c30]"],[class~="text-[#12203a]"],
+ [class~="text-[#12233c]"],[class~="text-[#12243b]"],
+ [class~="text-[#13253e]"],[class~="text-[#14243b]"],
+ [class~="text-[#142741]"],[class~="text-[#152740]"],
+ [class~="text-[#15283e]"],[class~="text-[#111827]"]
+){color:#eef5ff !important;}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.text-slate-600,.text-slate-500) {color:#adc0d6 !important;}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.text-orange-900,.text-orange-950,.text-orange-800,.text-orange-700,.text-amber-900,.text-amber-800) {
+ color:#ffc58d !important;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.text-red-800,.text-red-700,.text-rose-800) {color:#ffadb6 !important;}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.text-emerald-800,.text-emerald-700,.text-green-800){color:#8cf2d0 !important;}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.border-slate-100,.border-slate-200,.border-slate-300,.border-white\/70,.border-white\/85) {
+ border-color:#35516e !important;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(
+ input:not([type="checkbox"]):not([type="radio"]),
+ select,textarea
+){
+ background-color:#10233a !important;color:#f4f8ff !important;border-color:#47617d !important;
+ caret-color:#ffa343;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(input,textarea)::placeholder {color:#8fa9c6 !important;opacity:1;}
+html.dark .sv-theme-surface:not(.sv-homepage) select option {background:#10233a;color:#f4f8ff;}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(input,select,textarea,button,a):focus-visible {
+ outline:2px solid #fb923c;outline-offset:2px;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) :is(.shadow-sm,.shadow-md,.shadow-lg) {
+ box-shadow:0 10px 24px -15px rgba(0,0,0,.55);
+}
+html.dark .sv-owner-garage .sv-garage-header {
+ background:rgba(12,28,47,.93) !important;
+ border-bottom-color:#35516e !important;
+ -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+html.dark .sv-owner-garage :is(.sv-garage-manager,.sv-garage-hub,.sv-garage-empty){
+ background:#15283f !important;border-color:#35516e !important;
+}
+html.dark .sv-owner-garage .sv-garage-manager-body {background:#15283f;}
+html.dark .sv-owner-garage .sv-garage-quick-access a {
+ background:linear-gradient(145deg,rgba(36,60,90,.9),rgba(18,38,62,.95)) !important;
+ border:1px solid #365476 !important;
+ -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+html.dark .sv-owner-garage .sv-garage-services-nav a {
+ background:#1b304c;border-color:#365476;color:#dbe9fc;
+}
+html.dark .sv-owner-garage .sv-garage-services-nav a[aria-current="page"] {
+ border-color:#fb923c;color:#fff;background:#203a59;
+ box-shadow:inset 0 0 0 1px rgba(251,146,60,.13),0 0 22px rgba(251,146,60,.12);
+}
+html.dark .sv-owner-garage .sv-garage-footer {border-color:#2b445f;color:#a8bbd2;}
+html.dark .sv-dashboard-shell > header {background:#12243c !important;border-color:#32516e !important;}
+html.dark .sv-dashboard-shell > header :is(a,small) {color:#e8f2fd;}
+html.dark .sv-dashboard-shell nav.bg-white,
+html.dark .sv-dashboard-shell nav[class~="bg-white"] {
+ background:#172b45 !important;border-color:#385574;
+}
+html.dark .sv-dashboard-shell nav[class~="bg-white"] button:not([class*="bg-slate-900"]){
+ color:#d6e5f7 !important;
+}
+html.dark .sv-dashboard-shell [role="dialog"]{
+ background:#172a44 !important;color:#eef6ff !important;border-color:#3a5472;
+}
+html.dark .sv-business-shell :is(header,footer),
+html.dark .sv-service-shell :is(header,footer) {
+ border-color:#35516e;
+}
+html.dark .sv-theme-surface:not(.sv-homepage) [class~="bg-[#f8fafc]"] {background:#162a41 !important;}
+html.dark .sv-portal-dialog {
+ background:#14273f !important;color:#edf5ff !important;border-color:#47617d !important;
+}
+html.dark .sv-portal-dialog :is(.bg-white,.bg-slate-50,.bg-slate-100){
+ background:#203651 !important;color:#edf5ff !important;
+}
+html.dark .sv-portal-dialog :is(.text-slate-700,.text-slate-600,.text-slate-900,[class~="text-[#12203a]"]){
+ color:#d7e5f6 !important;
+}
+/* CTAs laranja continuam com letras escuras, mesmo sobre páginas escuras. */
+html.dark .sv-theme-surface :is(.bg-orange-500,.bg-orange-400,.bg-\[\#F97316\],.bg-\[\#f97316\]) {
+ color:#111d30 !important;
+}
+html.dark .sv-homepage .sv-glass-header {background:rgba(6,15,29,.94);border-color:rgba(117,160,207,.2);}
+
+/* Floating controls — dois botões que funcionam mesmo em modo fullscreen. */
+.sv-display-control-dock {
+ position:fixed;right:max(15px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));
+ z-index:40;max-width:calc(100vw - 22px);
+ font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;
+}
+.sv-display-control-inner {
+ display:flex;align-items:center;gap:7px;
+ border:1px solid rgba(166,195,230,.35);border-radius:18px;
+ background:linear-gradient(142deg,rgba(29,52,79,.96),rgba(10,23,43,.96));
+ box-shadow:0 15px 40px -14px rgba(2,11,25,.65),inset 0 1px rgba(255,255,255,.20);
+ padding:7px 9px;color:#f2f7ff;
+ -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+}
+.sv-display-control-caption {
+ color:#afc1d8;font-size:10px;font-weight:800;letter-spacing:.075em;text-transform:uppercase;
+ padding:0 8px 0 5px;white-space:nowrap;
+}
+.sv-display-control-divider {width:1px;height:28px;flex:none;background:rgba(182,204,230,.22);margin:0 1px;}
+.sv-display-control-button {
+ display:inline-flex;align-items:center;justify-content:center;gap:9px;
+ min-height:40px;border:1px solid transparent;border-radius:11px;
+ padding:10px 13px;background:transparent;color:#eff6ff;
+ font-size:12px;font-weight:850;white-space:nowrap;cursor:pointer;
+ transition:background-color .2s,border-color .2s,transform .2s;
+}
+.sv-display-control-button svg {color:#ffa34d;flex:none;}
+.sv-display-control-button:hover {
+ background:rgba(136,174,215,.16);border-color:rgba(166,195,230,.23);transform:translateY(-1px);
+}
+.sv-display-control-button[aria-pressed="true"] {
+ background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.38);
+}
+.sv-display-control-button:focus-visible {outline:2px solid #fb923c;outline-offset:2px;}
+.sv-display-control-button:disabled {cursor:progress;opacity:.5;}
+.sv-display-control-error {
+ max-width:360px;margin:0 0 8px auto;padding:10px 14px;border-radius:13px;
+ background:#391e25;border:1px solid #b45461;box-shadow:0 12px 24px rgba(0,0,0,.28);
+ color:#ffe3e7;font-size:12px;font-weight:650;line-height:1.4;
+}
+@media(max-width:540px){
+ .sv-display-control-inner {gap:3px;padding:6px;border-radius:15px;}
+ .sv-display-control-caption {display:none;}
+ .sv-display-control-button {min-height:38px;gap:5px;padding:8px 9px;font-size:11px;}
+ .sv-display-control-button svg {width:16px;height:16px;}
+ .sv-display-control-dock {right:10px;bottom:max(10px,env(safe-area-inset-bottom));}
+}
+@media(max-width:360px){
+ .sv-display-control-button span{display:none;}
+ .sv-display-control-button{min-width:42px;}
+}
+@media(prefers-reduced-motion:reduce){
+ .sv-display-control-button {transition:none;}
+ .sv-display-control-button:hover {transform:none;}
+}
