@@ -13,6 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as GolG6RouteImport } from './routes/gol-g6'
 import { Route as CB650RRouteImport } from './routes/cb650r'
+import { Route as GaragemRouteImport } from './routes/garagem'
+import { Route as AcessoRouteImport } from './routes/acesso'
+import { Route as NegocioRouteImport } from './routes/negocio'
+import { Route as AdminEmpresasRouteImport } from './routes/admin-empresas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,19 +42,55 @@ const CB650RRoute = CB650RRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
+const GaragemRoute = GaragemRouteImport.update({
+  id: '/garagem',
+  path: '/garagem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const AcessoRoute = AcessoRouteImport.update({
+  id: '/acesso',
+  path: '/acesso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const NegocioRoute = NegocioRouteImport.update({
+  id: '/negocio',
+  path: '/negocio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const AdminEmpresasRoute = AdminEmpresasRouteImport.update({
+  id: '/admin-empresas',
+  path: '/admin-empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
 export interface FileRoutesByFullPath {
+  '/admin-empresas': typeof AdminEmpresasRoute
+  '/negocio': typeof NegocioRoute
+  '/acesso': typeof AcessoRoute
+  '/garagem': typeof GaragemRoute
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/gol-g6': typeof GolG6Route
   '/cb650r': typeof CB650RRoute
 }
 export interface FileRoutesByTo {
+  '/admin-empresas': typeof AdminEmpresasRoute
+  '/negocio': typeof NegocioRoute
+  '/acesso': typeof AcessoRoute
+  '/garagem': typeof GaragemRoute
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/gol-g6': typeof GolG6Route
   '/cb650r': typeof CB650RRoute
 }
 export interface FileRoutesById {
+  '/admin-empresas': typeof AdminEmpresasRoute
+  '/negocio': typeof NegocioRoute
+  '/acesso': typeof AcessoRoute
+  '/garagem': typeof GaragemRoute
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
@@ -59,13 +99,17 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/gol-g6' | '/cb650r'
+  fullPaths: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/gol-g6' | '/cb650r'
-  id: '__root__' | '/' | '/admin' | '/gol-g6' | '/cb650r'
+  to: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas'
+  id: '__root__' | '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AdminEmpresasRoute: typeof AdminEmpresasRoute
+  NegocioRoute: typeof NegocioRoute
+  AcessoRoute: typeof AcessoRoute
+  GaragemRoute: typeof GaragemRoute
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   GolG6Route: typeof GolG6Route
@@ -74,6 +118,34 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/admin-empresas': {
+      id: '/admin-empresas'
+      path: '/admin-empresas'
+      fullPath: '/admin-empresas'
+      preLoaderRoute: typeof AdminEmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/negocio': {
+      id: '/negocio'
+      path: '/negocio'
+      fullPath: '/negocio'
+      preLoaderRoute: typeof NegocioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/acesso': {
+      id: '/acesso'
+      path: '/acesso'
+      fullPath: '/acesso'
+      preLoaderRoute: typeof AcessoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/garagem': {
+      id: '/garagem'
+      path: '/garagem'
+      fullPath: '/garagem'
+      preLoaderRoute: typeof GaragemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -106,6 +178,10 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  AdminEmpresasRoute: AdminEmpresasRoute,
+  NegocioRoute: NegocioRoute,
+  AcessoRoute: AcessoRoute,
+  GaragemRoute: GaragemRoute,
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   GolG6Route: GolG6Route,
