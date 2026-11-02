@@ -155,7 +155,7 @@ export function VehicleVideoLibrary({vehicle}: {vehicle:VideoVehicle}){
     </div>
     {shown.length?
      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {shown.map(guide=><VideoTile key={guide.id} guide={guide} active={selected.id===guide.id} onClick={()=>select(guide)}/>)}
+      {shown.map(guide=><VideoTile key={guide.id} guide={guide} active={selected?.id===guide.id} onClick={()=>select(guide)}/>)}
      </div>:
      <div className="rounded-2xl border border-white/15 bg-white/10 p-6 text-center text-sm text-slate-200">Nenhum vídeo desse veículo encontrado com esses filtros.</div>}
    </div>}
