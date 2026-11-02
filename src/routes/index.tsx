@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CarFront, Plus, Wrench } from "lucide-react";
+import { Bike, CarFront, Plus, Wrench } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AlertsPanel } from "@/components/garage/AlertsPanel";
@@ -56,7 +56,9 @@ function GaragePage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Link to="/gol-g6" className="inline-flex items-center gap-2 rounded-lg border border-input bg-card px-3 py-2 text-sm font-bold hover:bg-secondary"><CarFront className="size-4" /> Gol G6 Seleção</Link>
+            <Link to="/cb650r" className="inline-flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-bold text-orange-800 hover:bg-orange-100"><Bike className="size-4" /> CB650R 2024</Link>
+            <Link to="/cb650r" className="inline-flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-5 py-3 text-sm font-bold text-orange-800 hover:bg-orange-100"><Bike className="size-4" /> Minha CB650R 2024</Link>
+        <Link to="/gol-g6" className="inline-flex items-center gap-2 rounded-lg border border-input bg-card px-3 py-2 text-sm font-bold hover:bg-secondary"><CarFront className="size-4" /> Gol G6 Seleção</Link>
             <a href="/admin" className="hidden rounded-lg border border-input bg-card px-3 py-2 text-sm font-bold hover:bg-secondary sm:inline-flex">Painel admin</a>
             {selected && <Button onClick={() => setRecordDlg({ open: true })} className="shadow-pop"><Plus /> Registrar</Button>}
           </div>
