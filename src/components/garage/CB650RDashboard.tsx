@@ -5,18 +5,21 @@ import { Activity, ArrowLeft, ArrowUpRight, Bike, CalendarClock, CheckCircle2, C
 import { garage, useGarage, useHydrated } from '@/lib/garage/store';
 import { useBikeMeasurements, saveBikeMeasurements } from '@/lib/garage/cb650r-state';
 import { CB650R_NAME, CB650R_REFERENCE as SPEC, CB650R_MANUAL, CB650R_REVISIONS, CB650R_PREVENTIVE, CB650R_TECH, CB650R_LINKS, revisionDue, addMonthsToDate, nextHondaServiceKm, type Revision } from '@/lib/garage/cb650r-reference';
-import { addFillup, calculateFuelStats, fuelSpent, removeFillup, useFillups } from '@/lib/garage/fuel';
+import { calculateFuelStats, fuelSpent, useFillups } from '@/lib/garage/fuel';
 import { formatBRL, formatDate, formatKm } from '@/lib/garage/logic';
 import { CloudSyncPanel } from '@/components/garage/CloudSyncPanel';
 import { FipeValuePanel } from '@/components/garage/FipeValuePanel';
+import { VehicleFuelLedger } from '@/components/garage/VehicleFuelLedger';
+import { VehicleVideoLibrary } from '@/components/garage/VehicleVideoLibrary';
 import {FIPE_FEATURED_KEYS} from '@/lib/garage/fipe';
 
-type Tab='painel'|'revisoes'|'pneus'|'transmissao'|'abastecimentos'|'servicos'|'biblioteca';
+type Tab='painel'|'revisoes'|'pneus'|'transmissao'|'abastecimentos'|'servicos'|'biblioteca'|'videos';
 const TABS:{id:Tab;label:string;icon:typeof Gauge}[]=[
  {id:'painel',label:'Visão geral',icon:Gauge},{id:'revisoes',label:'Revisões Honda',icon:CalendarClock},
  {id:'pneus',label:'Pneus e freios',icon:ShieldCheck},{id:'transmissao',label:'Transmissão',icon:Activity},
  {id:'abastecimentos',label:'Abastecimentos',icon:Fuel},{id:'servicos',label:'Manutenções',icon:Wrench},
  {id:'biblioteca',label:'Biblioteca técnica',icon:Search},
+ {id:'videos',label:'Vídeos e reparos',icon:Wrench},
 ];
 const panel='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm';
 const input='w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100';
@@ -54,7 +57,6 @@ export function CB650RDashboard(){
  const [inspections,setInspections]=useState({frontDepthMm:'',rearDepthMm:'',chainSlackMm:'',lastChainKm:'',frontTireKm:'',rearTireKm:'',chainKitKm:'',deliveryDate:'',notes:''});
  const [inspectionsOpen,setInspectionsOpen]=useState(false);
  const [service,setService]=useState({title:CB650R_PREVENTIVE[0]?.title??'Manutenção',date:today(),km:'',cost:'0',nextKm:'',notes:''});
- const [fuel,setFuel]=useState({date:today(),km:'',liters:'',price:'',fullTank:true});
  const [photoError,setPhotoError]=useState(false);
  const [filter,setFilter]=useState('');
  const bike=vehicles.find(v=>v.kind==='moto'&&v.name===CB650R_NAME);
@@ -103,10 +105,6 @@ export function CB650RDashboard(){
   const entry=CB650R_PREVENTIVE.find(x=>x.title===service.title);
   const description=(service.title+(service.notes.trim()?' — '+service.notes.trim():'')).slice(0,300);
   try{garage.addRecord(bike.id,{kind:entry?.type??'manutencao',description,date:service.date,km,cost,nextKm});setService({title:service.title,date:today(),km:'',cost:'0',nextKm:'',notes:''});notify('Serviço adicionado ao histórico.');}catch(e){fail(e instanceof Error?e.message:'Erro ao salvar o serviço.');}
- }
- function saveFuel(e:FormEvent){e.preventDefault();if(!bike)return;const km=parseMileage(fuel.km);
-  if(km===null||km<bike.currentKm)return fail('Informe o hodômetro correto, igual ou superior ao atual.');
-  try{addFillup({vehicleId:bike.id,date:fuel.date,km,liters:Number(fuel.liters),pricePerLiter:Number(fuel.price),fuel:'gasolina',fullTank:fuel.fullTank});if(km>bike.currentKm)garage.setKm(bike.id,km);setFuel({...fuel,km:'',liters:'',price:''});notify('Abastecimento registrado. O consumo exige dois tanques cheios consecutivos.');}catch(e){fail(e instanceof Error?e.message:'Erro ao salvar abastecimento.');}
  }
  const totalSpent=services.reduce((sum,s)=>sum+s.cost,0)+fuelSpent(fillups);
  if(!hydrated)return <div className="grid min-h-screen place-items-center bg-slate-100 text-slate-600">Carregando sua CB650R...</div>;
@@ -182,15 +180,8 @@ export function CB650RDashboard(){
        ['Desgaste','Dentes deformados, elos travados, retentores ausentes e ajuste fora da faixa exigem avaliação.'],
        ['Troca do kit','Substituir corrente, coroa e pinhão em conjunto quando a inspeção indicar desgaste excessivo.'],
       ]).map(([head,desc])=><div key={head}><p className="font-bold text-slate-900">{head}</p><p className="mt-1 leading-6">{desc}</p></div>)}</div><a href={CB650R_MANUAL} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-orange-700 underline">Consultar manual Honda <ArrowUpRight size={15}/></a></section></div>}
-    {tab==='abastecimentos'&&<div className="sv-tab-content grid gap-5 lg:grid-cols-[0.9fr_1.1fr]"><section className={panel}><h2 className="text-lg font-extrabold">Abastecer CB650R</h2><p className="mt-1 text-sm text-slate-500">Motor a gasolina. O método de tanque cheio fornece médias reais.</p><form onSubmit={saveFuel} className="mt-5 grid gap-4 sm:grid-cols-2">
-      <Label text="Data"><input required type="date" className={input} value={fuel.date} onChange={e=>setFuel(f=>({...f,date:e.target.value}))}/></Label>
-      <Label text="Odômetro (km)"><input required type="number" min={bike?.currentKm??0} max="9999999" className={input} value={fuel.km} onChange={e=>setFuel(f=>({...f,km:e.target.value}))}/></Label>
-      <Label text="Litros"><input required type="number" step="0.001" min="0.001" max="100" className={input} value={fuel.liters} onChange={e=>setFuel(f=>({...f,liters:e.target.value}))}/></Label>
-      <Label text="Preço por litro (R$)"><input required type="number" step="0.001" min="0.001" max="100" className={input} value={fuel.price} onChange={e=>setFuel(f=>({...f,price:e.target.value}))}/></Label>
-      <label className="flex items-center gap-2 text-sm font-medium sm:col-span-2"><input type="checkbox" checked={fuel.fullTank} onChange={e=>setFuel(f=>({...f,fullTank:e.target.checked}))}/> Completei o tanque</label>
-      <button disabled={!bike} className={primary+' sm:col-span-2'}><Plus size={16}/> Salvar abastecimento</button></form>
-      <p className="mt-4 text-xs leading-6 text-slate-500">Consumo = distância desde o abastecimento cheio anterior ÷ litros do abastecimento cheio atual. Trechos com abastecimentos parciais não são usados.</p></section>
-      <section className={panel}><h2 className="font-extrabold">Consumo e despesas</h2><div className="mt-4 grid gap-3 sm:grid-cols-2"><Stat label="Média real" value={fuelStats?fuelStats.kmPerLiter.toFixed(2)+' km/l':'—'} hint="Após dois abastecimentos completos"/><Stat label="Custo por km" value={fuelStats?formatBRL(fuelStats.costPerKm)+'/km':'—'} hint="Estimativa baseada nos registros"/></div><h3 className="mt-6 font-bold">Abastecimentos</h3>{fillups.length?<div className="mt-3 max-h-[450px] space-y-2 overflow-y-auto">{fillups.map(f=><div key={f.id} className="flex items-center justify-between gap-3 rounded-xl border p-3 text-sm"><div><p className="font-semibold">{formatBRL(f.liters*f.pricePerLiter)} · {f.liters.toFixed(2)} L</p><p className="mt-1 text-xs text-slate-500">{formatDate(f.date)} · {formatKm(f.km)} · {f.fullTank?'Tanque cheio':'Parcial'}</p></div><button className="text-xs font-bold text-red-600" onClick={()=>{if(window.confirm('Excluir abastecimento?'))removeFillup(f.id);}}>Excluir</button></div>)}</div>:<p className="mt-4 text-sm text-slate-500">Nenhum abastecimento registrado.</p>}</section></div>}
+    {tab==='abastecimentos'&&<VehicleFuelLedger vehicleId={bike?.id??''} vehicleName={CB650R_NAME} currentKm={bike?.currentKm??null} kind="moto"/>}
+    {tab==='videos'&&<VehicleVideoLibrary vehicle={{kind:'moto',name:CB650R_NAME,modelYear:2024,modelKey:'cb650r-2024'}}/>}
     {tab==='servicos'&&<div className="sv-tab-content grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
        <section className={panel}><h2 className="text-lg font-extrabold">Registrar manutenção</h2><form onSubmit={saveService} className="mt-5 grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2"><Label text="Serviço"><select className={input} value={service.title} onChange={e=>setService(s=>({...s,title:e.target.value}))}>{CB650R_PREVENTIVE.map(item=><option key={item.id} value={item.title}>{item.title}</option>)}</select></Label></div>
