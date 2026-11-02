@@ -1,7 +1,7 @@
 import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link } from '@tanstack/react-router';
-import { ArrowLeft, ArrowUpRight, CarFront, CheckCircle2, CircleAlert, Fuel, Gauge, Info, PackageSearch, Plus, Search, Wrench } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, CalendarClock, CarFront, CheckCircle2, CircleAlert, ClipboardList, Coins, Fuel, Gauge, Info, PackageSearch, Plus, Search, Video, Wrench } from 'lucide-react';
 import { calculateFuelStats, fuelSpent, useFillups, type FuelKind } from '@/lib/garage/fuel';
 import { garage, useGarage, useHydrated } from '@/lib/garage/store';
 import { formatBRL, formatKm, formatDate } from '@/lib/garage/logic';
@@ -86,6 +86,22 @@ export function GolDashboard(){
    <div className="flex gap-2"><Link to="/" className={btn+' border border-slate-200 bg-white hover:bg-slate-50'}><ArrowLeft size={15}/> Voltar</Link><a className={btn+' bg-slate-900 text-white hover:bg-slate-700'} href="/admin">Admin</a></div>
   </div></header>
   <main className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-7 lg:py-8">
+   <nav aria-label="Acesso direto às páginas de serviços" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-700/25 bg-gradient-to-r from-[#11243e] to-[#254766] p-3 text-white shadow-sm sm:p-4">
+    <div><p className="text-[10px] font-black uppercase tracking-[.16em] text-orange-300">Sua garagem organizada</p><p className="mt-1 text-xs font-semibold text-slate-100">Cada serviço agora tem uma página própria.</p></div>
+    <div className="flex flex-wrap gap-2">
+     {([
+      ['abastecimentos','Abastecimentos',Fuel],
+      ['revisoes','Revisões',CalendarClock],
+      ['fipe','Tabela FIPE',Coins],
+      ['videos','Vídeos',Video],
+      ['registros','Registros',ClipboardList],
+     ] as const).map(([pagina,label,Icon])=>
+      <Link key={pagina} to="/garagem" search={{pagina,veiculo:vehicle?.id??'gol-g6-selecao-2014'}}
+       className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-[11px] font-extrabold text-white backdrop-blur-xl transition-colors hover:border-orange-300 hover:bg-orange-500/25"><Icon size={15}/>{label}<ArrowUpRight size={12} className="text-orange-300"/></Link>
+     )}
+    </div>
+   </nav>
+
    <section className="sv-dashboard-hero relative isolate overflow-hidden rounded-3xl bg-[#10213b] shadow-xl">
     <div className="absolute -left-20 top-0 size-96 rounded-full bg-blue-700/20 blur-3xl"/>
     <div className="relative grid lg:grid-cols-[1fr_0.9fr]">
@@ -102,7 +118,7 @@ export function GolDashboard(){
    <nav aria-label="Áreas do Gol" className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
     {tabs.map(item=><button key={item.id} type="button" onClick={()=>{setTab(item.id);setError('');setNotice('')}} className={'inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold '+(item.id===tab?'bg-slate-900 text-white':'text-slate-600 hover:bg-slate-100')}><item.icon size={17}/>{item.label}</button>)}
    </nav>
-   <FipeValuePanel vehicleId={FIPE_FEATURED_KEYS.gol} kind="carro" vehicleName="Gol G6 Seleção 1.6" brandHint="VW" yearHint={2014}/>
+   {tab==='painel'&&<FipeValuePanel vehicleId={FIPE_FEATURED_KEYS.gol} kind="carro" vehicleName="Gol G6 Seleção 1.6" brandHint="VW" yearHint={2014}/>}
    {error&&<div role="alert" className="flex gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><CircleAlert size={18}/>{error}</div>}
    {notice&&<div role="status" className="flex gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700"><CheckCircle2 size={18}/>{notice}</div>}
    {!vehicle&&tab!=='diagnosticos'&&<form onSubmit={activate} className={box+' space-y-4 border-amber-200'}>
