@@ -330,3 +330,33 @@ div:has(> a[href*="utm_source=lovable-badge"]) {
   .sv-accordion-body, .sv-tab-content {animation: none;}
   .sv-intro-item, .sv-card-load, .sv-ambient-orb {animation: none;opacity: 1;transform: none;}
 }
+
+/* Fotografia técnica: aproximação delicada sem comprometer leitura. */
+.sv-dashboard-photo {
+  transform-origin: center center;
+  transition: transform 1.1s cubic-bezier(.22, 1, .36, 1);
+}
+.sv-cta-link:focus-visible, .sv-nav-action:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 4px;
+}
+.sv-developer-name {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color .25s ease;
+}
+.sv-developer-credit:hover .sv-developer-name {
+  text-decoration-color: #fb923c;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sv-dashboard-photo {animation: sv-mosaic-in .75s .14s cubic-bezier(.22, 1, .36, 1) both;}
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .sv-dashboard-hero:hover .sv-dashboard-photo {transform: scale(1.035);}
+}
+@media (prefers-reduced-motion: reduce) {
+  .sv-dashboard-photo {transition: none !important;animation: none !important;transform: none !important;}
+  .sv-developer-name {transition: none !important;}
+}
