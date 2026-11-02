@@ -82,7 +82,7 @@ function VehicleCard({vehicle,index,onSelect}:{vehicle:PortalVehicle;index:numbe
  const url=vehicle.url;
  const inner=<>
   <div className="absolute inset-0 bg-gradient-to-b from-[#111a2e]/10 via-[#101828]/40 to-[#07101f]/95"/>
-  {!failed&&<img className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.035]" src={vehicle.photo} onError={()=>setFailed(true)} alt={'Imagem ilustrativa do veículo '+vehicle.name} loading={index<2?'eager':'lazy'}/>}
+  {!failed&&<img className="sv-card-photo absolute inset-0 h-full w-full object-cover object-center" src={vehicle.photo} onError={()=>setFailed(true)} alt={'Imagem ilustrativa do veículo '+vehicle.name} loading={index<2?'eager':'lazy'}/>}
   <div className="absolute inset-0 bg-gradient-to-t from-[#07101f] via-transparent to-[#07101f]/50"/>
   {failed&&<Icon size={100} className="absolute right-8 top-16 text-white/15"/>}
   <div className="relative z-10 flex h-full flex-col justify-between p-5 sm:p-6">
@@ -106,7 +106,7 @@ function VehicleCard({vehicle,index,onSelect}:{vehicle:PortalVehicle;index:numbe
    </div>
   </div>
  </>;
- const cls='group relative block h-[285px] w-full overflow-hidden rounded-[22px] border border-white/10 bg-gradient-to-br from-[#263a56] to-[#121e2f] text-left shadow-[0_10px_35px_-15px_rgba(7,16,31,.5)] transition-transform hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500 sm:h-[300px] md:h-[clamp(235px,39dvh,300px)]';
+ const cls='sv-vehicle-card sv-card-load sv-card-load--'+(index%4)+' group relative block h-[285px] w-full overflow-hidden rounded-[22px] border border-white/10 bg-gradient-to-br from-[#263a56] to-[#121e2f] text-left shadow-[0_10px_35px_-15px_rgba(7,16,31,.5)] transition-transform hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500 sm:h-[300px] md:h-[clamp(235px,39dvh,300px)]';
  return url?<Link className={cls} to={url}>{inner}</Link>
   :<button type="button" onClick={onSelect} className={cls}>{inner}</button>;
 }
@@ -187,7 +187,7 @@ function OwnerGarage(){
  return <div className="min-h-screen bg-[#edf1f6] text-slate-900">
   <header className="border-b border-slate-200/90 bg-white/95 backdrop-blur">
    <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-7">
-    <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-[#121d30] text-orange-400"><CarFront size={21}/></span><div><p className="text-base font-black leading-5">Smart<span className="text-orange-600">Veículos</span></p><p className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Área do proprietário</p></div></div>
+    <div className="flex items-center gap-3"><span className="sv-logo-mark grid size-10 place-items-center rounded-xl bg-[#121d30] text-orange-400"><CarFront size={21}/></span><div><p className="text-base font-black leading-5">Smart<span className="text-orange-600">Veículos</span></p><p className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Área do proprietário</p></div></div>
     <div className="flex flex-wrap items-center gap-2">
      <Link to="/" className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100"><Home size={15}/> <span className="hidden sm:inline">Início</span></Link>
      {isAdmin&&<a href="/admin" className="inline-flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-bold text-orange-900 hover:bg-orange-100"><ShieldCheck size={15}/> Administração</a>}
@@ -196,12 +196,12 @@ function OwnerGarage(){
    </div>
   </header>
   <main className="mx-auto max-w-7xl space-y-5 px-4 pb-10 pt-5 sm:px-7">
-   <section className="relative isolate overflow-hidden rounded-[24px] bg-[#121e30] text-white shadow-xl">
-    <div className="absolute inset-0 bg-cover bg-[center_43%] opacity-70" style={{backgroundImage:'url("'+photoGarage+'")'}} aria-hidden="true"/>
+   <section className="sv-garage-hero relative isolate overflow-hidden rounded-[24px] bg-[#121e30] text-white shadow-xl">
+    <div className="sv-garage-backdrop absolute inset-0 bg-cover bg-[center_43%] opacity-70" style={{backgroundImage:'url("'+photoGarage+'")'}} aria-hidden="true"/>
     <div className="absolute inset-0 bg-gradient-to-r from-[#0d182a] via-[#111e31]/95 to-[#111e31]/30" aria-hidden="true"/>
     <div className="relative flex min-h-[205px] flex-col justify-center gap-4 px-6 py-7 sm:px-9 lg:min-h-[clamp(165px,25dvh,216px)]">
-     <div><span className="inline-flex items-center gap-2 rounded-full border border-orange-400/40 bg-orange-400/10 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.18em] text-orange-300"><ShieldCheck size={13}/> Sua garagem digital</span><h1 className="mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Bem-vindo à sua <span className="text-orange-400">garagem.</span></h1><p className="mt-2 max-w-lg text-sm leading-6 text-slate-200">Escolha seu veículo para acompanhar revisões, abastecimentos e manutenção em um painel exclusivo.</p></div>
-     <div className="flex flex-wrap items-center gap-2">
+     <div><span className="sv-intro-item sv-intro-item--1 inline-flex items-center gap-2 rounded-full border border-orange-400/40 bg-orange-400/10 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.18em] text-orange-300"><ShieldCheck size={13}/> Sua garagem digital</span><h1 className="sv-intro-item sv-intro-item--2 mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Bem-vindo à sua <span className="text-orange-400">garagem.</span></h1><p className="sv-intro-item sv-intro-item--3 mt-2 max-w-lg text-sm leading-6 text-slate-200">Escolha seu veículo para acompanhar revisões, abastecimentos e manutenção em um painel exclusivo.</p></div>
+     <div className="sv-intro-item sv-intro-item--4 flex flex-wrap items-center gap-2">
       <span className="rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold backdrop-blur">{entries.length} {entries.length===1?'veículo':'veículos'} na garagem</span>
       {needsKm>0&&<span className="rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold backdrop-blur">{needsKm} {needsKm===1?'leitura pendente':'leituras pendentes'} de km</span>}
      </div>
@@ -220,12 +220,12 @@ function OwnerGarage(){
      <div className="flex items-center gap-2"><Check className="shrink-0 text-emerald-600" size={17}/><span>Seus modelos estão organizados por veículo. Histórico, consumo e revisões ficam nas fichas individuais.</span></div>
      <button type="button" onClick={()=>setManagerOpen(true)} className="inline-flex items-center gap-1.5 font-bold text-orange-700 hover:underline"><Settings2 size={15}/> Mais opções da garagem</button>
    </div>}
-   <section id="gestao-local" className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+   <section id="gestao-local" className="sv-interactive-surface rounded-2xl border border-slate-200 bg-white shadow-sm">
     <button type="button" aria-expanded={managerOpen} onClick={()=>setManagerOpen(v=>!v)} className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left sm:px-6">
      <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-slate-100 text-slate-700"><SlidersHorizontal size={19}/></span><div><h3 className="text-sm font-extrabold">Gerenciar registros e outros veículos</h3><p className="mt-1 text-xs text-slate-500">Adicionar veículo, consultar históricos locais e importar dados antigos</p></div></div>
      <ChevronDown size={19} className={'shrink-0 text-slate-500 transition-transform '+(managerOpen?'rotate-180':'')}/>
     </button>
-    {managerOpen&&<div className="border-t border-slate-100 p-5 sm:p-6">
+    {managerOpen&&<div className="sv-accordion-body border-t border-slate-100 p-5 sm:p-6">
       <div className="flex flex-wrap gap-2">
        <button onClick={()=>setVehicleDialog({open:true})} className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-slate-950"><Plus size={15}/> Adicionar veículo</button>
        <button onClick={onImportLegacy} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"><Cloud size={15}/> Importar garagem anterior</button>
