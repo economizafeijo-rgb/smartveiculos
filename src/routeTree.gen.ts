@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as GolG6RouteImport } from './routes/gol-g6'
+import { Route as CB650RRouteImport } from './routes/cb650r'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -31,34 +32,44 @@ const GolG6Route = GolG6RouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
+const CB650RRoute = CB650RRouteImport.update({
+  id: '/cb650r',
+  path: '/cb650r',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/gol-g6': typeof GolG6Route
+  '/cb650r': typeof CB650RRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/gol-g6': typeof GolG6Route
+  '/cb650r': typeof CB650RRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/gol-g6': typeof GolG6Route
+  '/cb650r': typeof CB650RRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/gol-g6'
+  fullPaths: '/' | '/admin' | '/gol-g6' | '/cb650r'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/gol-g6'
-  id: '__root__' | '/' | '/admin' | '/gol-g6'
+  to: '/' | '/admin' | '/gol-g6' | '/cb650r'
+  id: '__root__' | '/' | '/admin' | '/gol-g6' | '/cb650r'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   GolG6Route: typeof GolG6Route
+  CB650RRoute: typeof CB650RRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -77,6 +88,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cb650r': {
+      id: '/cb650r'
+      path: '/cb650r'
+      fullPath: '/cb650r'
+      preLoaderRoute: typeof CB650RRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gol-g6': {
       id: '/gol-g6'
       path: '/gol-g6'
@@ -91,6 +109,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   GolG6Route: GolG6Route,
+  CB650RRoute: CB650RRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
