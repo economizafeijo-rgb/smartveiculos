@@ -1,3 +1,4 @@
+import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import {createFileRoute} from '@tanstack/react-router';
 import {useEffect,useState,type FormEvent} from 'react';
 import {ArrowLeft,ArrowRight,Bike,Building2,CarFront,CheckCircle2,Eye,EyeOff,LockKeyhole,ShieldCheck,Store,Wrench} from 'lucide-react';
@@ -125,5 +126,6 @@ function Access(){
     <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs text-slate-500">Escolheu a área errada? <a href="/" className="font-extrabold text-orange-700 underline">Voltar às soluções</a></div>
    </section>
   </main>
+  <footer className="px-5 pb-6 text-center"><DeveloperCredit compact /></footer>
  </div>;
 }
