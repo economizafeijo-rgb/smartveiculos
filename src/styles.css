@@ -2351,3 +2351,53 @@ html.dark .sv-demo-shell .sv-demo-feature-panel .text-slate-200{
   font-weight:900;
  }
 }
+
+
+/* Mensagem pública compacta: não parece um alerta de erro nem tapa o conteúdo. */
+.sv-demo-shell .sv-demo-readonly {
+ background:#f8fafc!important;
+ border-color:#d6e0ec!important;
+ color:#465971!important;
+ box-shadow:0 2px 11px -10px rgba(17,37,62,.4);
+}
+.sv-demo-shell .sv-demo-readonly strong{
+ color:#91400f!important;
+}
+.sv-demo-shell .sv-demo-readonly>span>span{
+ color:#50627c!important;
+}
+.sv-demo-shell .sv-demo-readonly svg:not(a svg){
+ color:#c35e19!important;
+}
+.sv-demo-shell .sv-demo-readonly a{
+ background:transparent!important;
+ border:1px solid #e7bb94!important;
+ color:#9a4315!important;
+}
+.sv-demo-shell .sv-demo-readonly a:hover{
+ background:#fff0de!important;
+}
+html.dark .sv-demo-shell .sv-demo-readonly{
+ background:#15263d!important;
+ border-color:#344e6a!important;
+ color:#b8c9df!important;
+}
+html.dark .sv-demo-shell .sv-demo-readonly strong{
+ color:#ffbe81!important;
+}
+html.dark .sv-demo-shell .sv-demo-readonly>span>span{
+ color:#c4d4e8!important;
+}
+html.dark .sv-demo-shell .sv-demo-readonly a{
+ background:#24384e!important;
+ border-color:#6d5848!important;
+ color:#ffd2aa!important;
+}
+html.dark .sv-demo-shell .sv-demo-readonly a:hover{
+ background:#304a67!important;
+}
+@media(max-width:640px){
+ .sv-demo-shell .sv-demo-readonly {
+  gap:7px;padding:9px 12px!important;font-size:11px;
+ }
+}
