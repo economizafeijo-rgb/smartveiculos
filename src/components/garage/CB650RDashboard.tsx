@@ -8,6 +8,7 @@ import { CB650R_NAME, CB650R_REFERENCE as SPEC, CB650R_MANUAL, CB650R_REVISIONS,
 import { addFillup, calculateFuelStats, fuelSpent, removeFillup, useFillups } from '@/lib/garage/fuel';
 import { formatBRL, formatDate, formatKm } from '@/lib/garage/logic';
 import { CloudSyncPanel } from '@/components/garage/CloudSyncPanel';
+import { FipeValuePanel } from '@/components/garage/FipeValuePanel';
 
 type Tab='painel'|'revisoes'|'pneus'|'transmissao'|'abastecimentos'|'servicos'|'biblioteca';
 const TABS:{id:Tab;label:string;icon:typeof Gauge}[]=[
@@ -119,6 +120,7 @@ export function CB650RDashboard(){
        <div className="relative min-h-64 overflow-hidden bg-gradient-to-br from-slate-600 to-slate-900">{photoError?<div className="absolute inset-0 grid place-items-center"><Bike className="text-white/50" size={110}/></div>:<img src={SPEC.photo} alt="Fotografia ilustrativa de Honda CB650R 2024 vermelha; não é a moto cadastrada" onError={()=>setPhotoError(true)} className="sv-dashboard-photo absolute inset-0 h-full w-full object-cover" loading="eager"/>}<a href={SPEC.photoLink} target="_blank" rel="noopener noreferrer" className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 px-5 pb-4 pt-12 text-xs text-white/90 underline underline-offset-2">{SPEC.photoCredit}</a></div>
      </div></section>
     <nav aria-label="Seções da moto" className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">{TABS.map(t=><button type="button" key={t.id} onClick={()=>{setTab(t.id);setError('');setNotice('')}} className={'inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition '+(tab===t.id?'bg-slate-900 text-white':'text-slate-600 hover:bg-slate-100')}><t.icon size={17}/>{t.label}</button>)}</nav>
+    <FipeValuePanel vehicleId={bike?.id??''} kind="moto" vehicleName="Honda CB650R" brandHint="Honda" yearHint={2024}/>
     {error&&<div role="alert" className="flex gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><CircleAlert size={18}/>{error}</div>}
     {notice&&<div role="status" className="flex gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700"><CheckCircle2 size={18}/>{notice}</div>}
     {!bike&&tab!=='biblioteca'&&<form onSubmit={activate} className={panel+' border-orange-200'}>
