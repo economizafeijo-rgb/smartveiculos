@@ -5,6 +5,7 @@ import {ArrowLeft,ArrowRight,Bike,Building2,CarFront,CheckCircle2,Eye,EyeOff,Loc
 import {supabase} from '@/lib/supabase/client';
 import {authRedirectUrl} from '@/lib/supabase/auth-redirects';
 import {RegistrationProfilePicker} from '@/components/auth/RegistrationProfilePicker';
+import {LoginAudiencePicker,type LoginAudience} from '@/components/auth/LoginAudiencePicker';
 import {businessSegmentFromProfile,REGISTRATION_PROFILES,type RegistrationProfile} from '@/lib/business/registration-profiles';
 import {BUSINESS_SEGMENTS,cleanCnpj,formatCnpj,isBusinessSegment,validateCnpj,type BusinessSegment} from '@/lib/business/cnpj';
 import {businessAccessResult,type OwnedBusiness} from '@/lib/business/account-access';
@@ -25,7 +26,9 @@ function Access(){
  const [mode,setMode]=useState<'login'|'register'>(search.mode);
  const [profile,setProfile]=useState<RegistrationProfile|null>(search.segment??null);
  const [registrationStep,setRegistrationStep]=useState<'profile'|'details'>(search.segment?'details':'profile');
- const segment=mode==='register'?businessSegmentFromProfile(profile):(businessSegmentFromProfile(profile)??search.segment);
+ const [loginAudience,setLoginAudience]=useState<LoginAudience>(search.segment?'business':'personal');
+ const [loginSegment,setLoginSegment]=useState<BusinessSegment>(search.segment??'parts_cars');
+ const segment=mode==='register'?businessSegmentFromProfile(profile):loginAudience==='business'?loginSegment:undefined;
  const [email,setEmail]=useState('');
  const [password,setPassword]=useState('');
  const [showPassword,setShowPassword]=useState(false);
@@ -41,7 +44,7 @@ function Access(){
  const chosen=BUSINESS_SEGMENTS.find(x=>x.id===segment);
  const selectedProfile=REGISTRATION_PROFILES.find(x=>x.id===profile);
  const needsProfile=mode==='register'&&registrationStep==='profile';
- const authVariant=mode==='login'?'sv-auth-card--login':needsProfile?'sv-auth-card--profiles':'sv-auth-card--details';
+ const authVariant=mode==='login'?'sv-auth-card--login'+(loginAudience==='business'?' sv-auth-card--business':''):needsProfile?'sv-auth-card--profiles':'sv-auth-card--details';
  const target=segment?'/negocio?segment='+segment:(search.next??'/garagem');
  useEffect(()=>{
   if(!supabase)return;
@@ -88,7 +91,9 @@ function Access(){
   if(!supabase||!segment)return;
   const key=cleanCnpj(cnpj);
   if(!validateCnpj(key))throw new Error('Os dígitos verificadores do CNPJ não conferem.');
-  const {error}=await supabase.from('business_accounts').insert({trade_name:company.trim(),cnpj:key,segment});
+  const {data:auth,error:authError}=await supabase.auth.getUser();
+  if(authError||!auth.user)throw new Error('Faça login para vincular a empresa à sua conta.');
+  const {error}=await supabase.from('business_accounts').insert({owner_id:auth.user.id,trade_name:company.trim(),cnpj:key,segment});
   if(error)throw new Error(error.code==='23505'?'Este CNPJ já foi registrado para esse segmento. Contate o suporte para verificar a titularidade.':error.message);
  }
  async function submit(e:FormEvent){
@@ -176,8 +181,11 @@ function Access(){
     </div>
    </aside>
    <section className={"sv-auth-card "+authVariant+" sv-intro-item sv-intro-item--3 mx-auto w-full rounded-[24px] px-4 py-4 sm:px-6 sm:py-5"} aria-label="Acesso SmartVeículos">
-    <div className="sv-auth-tabs mb-3 flex gap-1 rounded-2xl bg-slate-200/80 p-1"><button type="button" onClick={()=>{setMode('login');setError('');setMessage('');}} className={'sv-auth-tab sv-nav-action w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='login'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Entrar</button><button type="button" onClick={()=>{setMode('register');setRegistrationStep(search.segment?'details':'profile');setError('');setMessage('');}} className={'sv-auth-tab w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='register'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Criar conta</button></div>
-    <p className="text-[11px] font-extrabold uppercase tracking-widest text-orange-700">{mode==='register'?needsProfile?'CADASTRO · PASSO 1 DE 2':'CADASTRO · PASSO 2 DE 2':segment?'Acesso empresarial':'Acesso pessoal'}</p><h2 className="mt-1 text-[clamp(1.5rem,3vw,2rem)] font-black leading-tight tracking-tight text-[#14213B]">{mode==='login'?segment?'Acesse sua empresa':'Acesse sua garagem':needsProfile?'Crie sua conta':'Finalize seu cadastro'}</h2><p className="mt-1 text-xs leading-5 text-slate-600 sm:text-sm">{needsProfile?'Escolha como deseja utilizar a plataforma.':segment?'CNPJ da empresa + e-mail e senha do responsável.':'Seu espaço para acompanhar carros, motos e manutenções.'}</p>
+    <div className="sv-auth-tabs mb-3 flex gap-1 rounded-2xl bg-slate-200/80 p-1"><button type="button" onClick={()=>{setMode('login');setError('');setMessage('');}} className={'sv-auth-tab sv-nav-action w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='login'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Entrar</button><button type="button" onClick={()=>{setMode('register');setRegistrationStep('profile');setError('');setMessage('');}} className={'sv-auth-tab w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='register'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Criar conta</button></div>
+    {mode==='login'&&<LoginAudiencePicker audience={loginAudience} segment={loginSegment}
+     onAudienceChange={area=>{setLoginAudience(area);setError('');setMessage('');}}
+     onSegmentChange={area=>{setLoginSegment(area);setError('');setMessage('');}}/>}
+    <p className="sv-auth-eyebrow text-[11px] font-extrabold uppercase tracking-widest text-orange-700">{mode==='register'?needsProfile?'CADASTRO · PASSO 1 DE 2':'CADASTRO · PASSO 2 DE 2':segment?'Acesso empresarial':'Acesso pessoal'}</p><h2 className="mt-1 text-[clamp(1.5rem,3vw,2rem)] font-black leading-tight tracking-tight text-[#14213B]">{mode==='login'?segment?'Acesse sua empresa':'Acesse sua garagem':needsProfile?'Crie sua conta':'Finalize seu cadastro'}</h2><p className="mt-1 text-xs leading-5 text-slate-600 sm:text-sm">{needsProfile?'Escolha como deseja utilizar a plataforma.':segment?'CNPJ da empresa + e-mail e senha do responsável.':'Seu espaço para acompanhar carros, motos e manutenções.'}</p>
     {account&&mode==='login'&&<div className="sv-auth-session mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200/70 bg-emerald-50/90 px-3.5 py-2 text-xs text-emerald-900"><span className="flex items-center gap-2"><CheckCircle2 size={17}/> Sessão: {account}</span><button type="button" disabled={working} onClick={()=>void continueSession()} className="rounded-md px-1.5 py-1 font-bold underline underline-offset-2 hover:bg-emerald-100 disabled:opacity-50">Continuar</button></div>}
     {error&&<div role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
     {message&&<div role="status" className="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">{message}</div>}
@@ -188,11 +196,11 @@ function Access(){
       <span className="min-w-0 text-xs font-semibold text-slate-700"><span className="text-orange-800">Seu ramo:</span> {selectedProfile?.label}</span>
       <button type="button" className="shrink-0 rounded-lg border border-orange-200 bg-white px-2.5 py-1.5 text-[11px] font-extrabold text-orange-800 hover:bg-orange-100" onClick={()=>setRegistrationStep('profile')}>Alterar</button>
     </div>}
-    <form key={mode+'-'+(profile??'none')} onSubmit={submit} className="sv-tab-content mt-3 space-y-2.5">
+    <form key={mode+'-'+(mode==='login'?loginAudience+'-'+loginSegment:(profile??'none'))} onSubmit={submit} className="sv-tab-content mt-3 space-y-2.5">
      {mode==='register'&&segment&&<><div>{field('Nome fantasia da empresa',<input className={input} required minLength={3} maxLength={120} placeholder="Ex.: Autopeças Central" value={company} onChange={e=>setCompany(e.target.value)}/>)}</div></>}{segment&&<><div>{field('CNPJ da empresa (numérico ou alfanumérico)',<input className={input} required maxLength={20} autoComplete="off" placeholder="00.000.000/0000-00" value={cnpj} onChange={e=>setCnpj(e.target.value.toUpperCase())}/>)}</div>{cnpj&&<div className={'text-xs font-semibold '+(validateCnpj(cnpj)?'text-emerald-700':'text-orange-700')}>{validateCnpj(cnpj)?'Dígitos verificadores válidos. A situação cadastral ainda precisará ser verificada.':'Confira o CNPJ e os dois dígitos verificadores.'}</div>}</>}
      {field('E-mail',<input className={input} required type="email" autoComplete="email" placeholder="voce@empresa.com.br" value={email} onChange={e=>setEmail(e.target.value)}/>)}
      {field('Senha',<div className="relative"><input className={input+' pr-12'} required minLength={mode==='register'?6:1} type={showPassword?'text':'password'} autoComplete={mode==='register'?'new-password':'current-password'} placeholder={mode==='register'?'Mínimo de 6 caracteres':'Sua senha'} value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" className="absolute right-3 top-3 text-slate-500" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?'Ocultar senha':'Mostrar senha'}>{showPassword?<EyeOff size={19}/>:<Eye size={19}/>}</button></div>)}
-     <button disabled={working} className="sv-auth-primary flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-extrabold disabled:opacity-50">{working?'Processando...':mode==='login'?'Entrar na minha conta':'Cadastrar conta'}<ArrowRight size={17}/></button>
+     <button disabled={working} className="sv-auth-primary flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-extrabold disabled:opacity-50">{working?'Processando...':mode==='login'?segment?'Entrar na empresa':'Entrar na minha garagem':'Cadastrar conta'}<ArrowRight size={17}/></button>
     </form>
     {mode==='login'&&<div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3"><button type="button" onClick={()=>void resetPassword()} className="text-xs font-semibold text-orange-700 underline">Esqueci minha senha</button><button type="button" onClick={()=>setShowResend(true)} className="text-xs font-semibold text-slate-700 underline">Não consigo confirmar meu e-mail</button></div>}
     {mode==='login'&&showResend&&<div className="mt-4 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm"><p className="font-bold text-orange-950">E-mail não confirmado?</p><p className="mt-1 text-xs leading-6 text-orange-900">Confirme o endereço no campo E-mail acima. O link será enviado com destino ao site SmartVeículos.</p><button type="button" disabled={resending} onClick={()=>void resendConfirmation()} className="mt-3 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-slate-950 disabled:opacity-50">{resending?'Enviando...':'Reenviar e-mail de confirmação'}</button></div>}
@@ -201,7 +209,10 @@ function Access(){
      <p className="mt-2 leading-5">Dígitos verificadores válidos não comprovam que a empresa está ativa nem que o titular da conta a representa. O cadastro passa por análise antes de liberar a operação comercial. <a href="https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria/cadastros/cadastro-nacional-de-pessoas-juridicas-cnpj" rel="noopener noreferrer" target="_blank" className="font-bold underline">Receita Federal</a>.</p>
     </details>}
     </>}
-    <div className="mt-3 border-t border-slate-100 pt-2 text-center text-xs text-slate-500">Escolheu a área errada? <a href="/" className="font-extrabold text-orange-700 underline">Voltar às soluções</a></div>
+    <div className="mt-3 border-t border-slate-100 pt-2 text-center text-xs text-slate-500">
+     {mode==='login'?'Ainda não tem conta? ':'Escolheu a área errada? '}
+     {mode==='login'?<button type="button" onClick={()=>{setMode('register');setRegistrationStep('profile');setError('');setMessage('');}} className="font-extrabold text-orange-700 underline">Cadastre-se gratuitamente</button>:<a href="/" className="font-extrabold text-orange-700 underline">Voltar às soluções</a>}
+    </div>
    </section>
   </main>
   <footer className="sv-auth-footer relative z-10 shrink-0 px-4 pb-2 text-center"><DeveloperCredit compact tone="dark" /></footer>
