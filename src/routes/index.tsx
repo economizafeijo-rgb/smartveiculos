@@ -1,128 +1,49 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bike, CarFront, Plus, Wrench } from "lucide-react";
-import { useMemo, useState } from "react";
+import { createFileRoute } from '@tanstack/react-router';
+import { ArrowRight, Bike, CarFront, CheckCircle2, ChevronDown, ClipboardCheck, Gauge, Package, ShieldCheck, Store, Wrench } from 'lucide-react';
+import { useState } from 'react';
 
-import { AlertsPanel } from "@/components/garage/AlertsPanel";
-import { OdometerCard } from "@/components/garage/OdometerCard";
-import { RecordDialog } from "@/components/garage/RecordDialog";
-import { RecordList } from "@/components/garage/RecordList";
-import { VehicleDialog } from "@/components/garage/VehicleDialog";
-import { VEHICLE_ICONS } from "@/components/garage/kind-meta";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { sortRecords, totalCost, upcomingServices } from "@/lib/garage/logic";
-import { useGarage, useHydrated } from "@/lib/garage/store";
-import type { RecordKind, ServiceRecord, Vehicle } from "@/lib/garage/types";
-import { cn } from "@/lib/utils";
-
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Garagem — controle de manutenção de carro e moto" },
-      { name: "description", content: "Registre trocas de óleo, revisões, peças, manutenções e a quilometragem do seu carro ou moto, com lembretes do próximo serviço." },
-      { property: "og:title", content: "Garagem — controle de manutenção de carro e moto" },
-      { property: "og:description", content: "Trocas de óleo, revisões, peças e km do seu veículo em um só lugar, com lembretes." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: GaragePage,
+export const Route=createFileRoute('/')({
+ head:()=>({meta:[
+ {title:'SmartVeículos — Autopeças, oficinas e garagem digital'},
+ {name:'description',content:'Uma plataforma para autopeças de carros, peças de motos, oficinas e proprietários de veículos. Acesso com conta e CNPJ para empresas.'}
+ ]}),
+ component:HomePortal,
 });
 
-type RecordDialogState = { open: boolean; record?: ServiceRecord | undefined; defaultKind?: RecordKind | undefined };
-type VehicleDialogState = { open: boolean; vehicle?: Vehicle | undefined };
-
-function GaragePage() {
-  const hydrated = useHydrated();
-  const { vehicles, records } = useGarage();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [vehicleDlg, setVehicleDlg] = useState<VehicleDialogState>({ open: false });
-  const [recordDlg, setRecordDlg] = useState<RecordDialogState>({ open: false });
-
-  // Estado derivado: se o selecionado foi excluído, cai no primeiro.
-  const selected = vehicles.find((v) => v.id === selectedId) ?? vehicles[0];
-  const vehicleRecords = useMemo(() => (selected ? sortRecords(records.filter((r) => r.vehicleId === selected.id)) : []), [records, selected]);
-  const upcoming = useMemo(() => (selected ? upcomingServices(vehicleRecords, selected.currentKm) : []), [vehicleRecords, selected]);
-
-  return (
-    <div className="min-h-screen">
-      <header className="border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-4">
-          <div className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-lg bg-ink text-primary"><Wrench className="size-5" /></span>
-            <div>
-              <h1 className="text-lg font-bold leading-none">Garagem</h1>
-              <p className="text-xs text-muted-foreground">manutenção & quilometragem</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link to="/cb650r" className="inline-flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-bold text-orange-800 hover:bg-orange-100"><Bike className="size-4" /> CB650R 2024</Link>
-            <Link to="/cb650r" className="inline-flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-5 py-3 text-sm font-bold text-orange-800 hover:bg-orange-100"><Bike className="size-4" /> Minha CB650R 2024</Link>
-        <Link to="/gol-g6" className="inline-flex items-center gap-2 rounded-lg border border-input bg-card px-3 py-2 text-sm font-bold hover:bg-secondary"><CarFront className="size-4" /> Gol G6 Seleção</Link>
-            <a href="/admin" className="hidden rounded-lg border border-input bg-card px-3 py-2 text-sm font-bold hover:bg-secondary sm:inline-flex">Painel admin</a>
-            {selected && <Button onClick={() => setRecordDlg({ open: true })} className="shadow-pop"><Plus /> Registrar</Button>}
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-5xl space-y-6 px-4 py-6">
-        {!hydrated ? (
-          <div className="space-y-4"><Skeleton className="h-10 w-64" /><Skeleton className="h-72 w-full rounded-2xl" /></div>
-        ) : vehicles.length === 0 ? (
-          <EmptyState onAdd={() => setVehicleDlg({ open: true })} />
-        ) : (
-          <>
-            <nav aria-label="Veículos" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-              {vehicles.map((v) => {
-                const Icon = VEHICLE_ICONS[v.kind];
-                const active = v.id === selected?.id;
-                return (
-                  <button key={v.id} type="button" onClick={() => setSelectedId(v.id)} aria-current={active ? "true" : undefined}
-                    className={cn("flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      active ? "border-ink bg-ink text-ink-foreground" : "bg-card hover:bg-secondary")}>
-                    <Icon className="size-4" /> {v.name}
-                  </button>
-                );
-              })}
-              <button type="button" onClick={() => setVehicleDlg({ open: true })} className="flex shrink-0 items-center gap-1.5 rounded-full border border-dashed px-4 py-2 text-sm text-muted-foreground hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                <Plus className="size-4" /> Veículo
-              </button>
-            </nav>
-
-            {selected && (
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-                <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-                  <OdometerCard key={selected.id} vehicle={selected} total={totalCost(vehicleRecords)} count={vehicleRecords.length} onEdit={() => setVehicleDlg({ open: true, vehicle: selected })} />
-                  <AlertsPanel items={upcoming} onQuickAdd={(kind) => setRecordDlg({ open: true, defaultKind: kind })} />
-                </div>
-                <RecordList key={selected.id} records={vehicleRecords} onEdit={(record) => setRecordDlg({ open: true, record })} />
-              </div>
-            )}
-          </>
-        )}
-      </main>
-
-      <VehicleDialog open={vehicleDlg.open} vehicle={vehicleDlg.vehicle} onOpenChange={(open) => setVehicleDlg((s) => ({ ...s, open }))} onSaved={setSelectedId} />
-      {selected && (
-        <RecordDialog open={recordDlg.open} vehicle={selected} record={recordDlg.record} defaultKind={recordDlg.defaultKind} onOpenChange={(open) => setRecordDlg((s) => ({ ...s, open }))} />
-      )}
+const imagery={
+ car:'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1100&q=82&fit=crop',
+ bike:'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1100&q=82&fit=crop',
+ shop:'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1100&q=82&fit=crop',
+ garage:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&q=82&fit=crop'
+};
+const businessCards=[
+ {label:'Autopeças para carros',subtitle:'Estoque, catálogo e vendas de peças automotivas',img:imagery.car,icon:CarFront,href:'/acesso?segment=parts_cars',alt:'Fotografia real de automóvel'},
+ {label:'Autopeças para motos',subtitle:'Gestão especializada em peças, pneus e transmissão',img:imagery.bike,icon:Bike,href:'/acesso?segment=parts_bikes',alt:'Fotografia real de motocicleta'},
+ {label:'Oficinas mecânicas',subtitle:'Ordens de serviço, atendimento e gestão da operação',img:imagery.shop,icon:Wrench,href:'/acesso?segment=workshop',alt:'Fotografia real de oficina automotiva'}
+];
+function HomePortal(){
+ const [partsOpen,setPartsOpen]=useState(true);
+ return <div className="min-h-screen bg-[#f5f7fb] text-[#111c30]">
+  <header className="sticky top-0 z-20 border-b border-white/10 bg-[#0c1627]/95 text-white backdrop-blur-xl">
+   <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-4 sm:px-8">
+    <a href="/" className="flex items-center gap-2.5 font-extrabold tracking-tight"><span className="grid size-10 place-items-center rounded-xl bg-orange-500 text-slate-950"><Gauge size={23}/></span><span className="text-xl">Smart<span className="text-orange-400">Veículos</span><span className="block text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400">Ecossistema automotivo</span></span></a>
+    <div className="flex items-center gap-2 sm:gap-5"><a href="#solucoes" className="hidden text-sm font-semibold text-slate-300 hover:text-white md:block">Soluções</a><a href="/acesso" className="rounded-xl border border-white/20 px-3 py-2.5 text-xs font-bold hover:bg-white/10 sm:px-5 sm:text-sm">Entrar</a><a href="/acesso?mode=register" className="rounded-xl bg-orange-500 px-3 py-2.5 text-xs font-extrabold text-slate-950 hover:bg-orange-400 sm:px-5 sm:text-sm">Criar conta</a></div>
+   </div>
+  </header>
+  <main>
+   <section className="relative isolate overflow-hidden bg-[#0c1627] text-white">
+    <div className="pointer-events-none absolute -left-48 top-12 size-[540px] rounded-full bg-orange-500/10 blur-3xl"/><div className="pointer-events-none absolute right-0 top-0 size-96 rounded-full bg-blue-500/10 blur-3xl"/>
+    <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 pb-14 pt-14 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:py-24">
+     <div><div className="inline-flex items-center gap-2 rounded-full border border-orange-500/25 bg-orange-400/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-orange-300"><CheckCircle2 size={14}/> Uma plataforma. Quatro soluções.</div><h1 className="mt-7 max-w-2xl text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl xl:text-6xl">Conectamos quem <span className="text-orange-400">cuida</span> de veículos a quem <span className="text-orange-400">vive</span> sobre rodas.</h1><p className="mt-6 max-w-xl text-base leading-8 text-slate-300">Autopeças para carros e motos, oficinas mecânicas e uma garagem digital para cada motorista. Cada perfil tem seu próprio espaço e acesso seguro.</p><div className="mt-8 flex flex-wrap gap-3"><a href="#solucoes" className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3.5 text-sm font-extrabold text-[#0b172a] hover:bg-orange-400">Explorar soluções <ArrowRight size={18}/></a><a href="/acesso?next=%2Fgaragem" className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10">Minha garagem digital</a></div><div className="mt-9 flex flex-wrap gap-5 text-xs font-semibold text-slate-400"><span className="flex items-center gap-2"><ShieldCheck size={17} className="text-orange-400"/> Conta individual</span><span className="flex items-center gap-2"><Store size={17} className="text-orange-400"/> Empresas por CNPJ</span><span className="flex items-center gap-2"><ClipboardCheck size={17} className="text-orange-400"/> Histórico organizado</span></div></div>
+     <div className="grid min-h-[370px] grid-cols-2 gap-3 sm:min-h-[480px]"><div className="relative row-span-2 overflow-hidden rounded-3xl border border-white/10"><img src={imagery.car} loading="eager" className="absolute inset-0 h-full w-full object-cover" alt="Fotografia real de carro esportivo"/><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 p-5 pt-16"><span className="text-xs font-bold uppercase tracking-wider text-orange-300">Automóveis</span><p className="text-lg font-black">Peças & gestão</p></div></div><div className="relative overflow-hidden rounded-3xl border border-white/10"><img src={imagery.bike} className="absolute inset-0 h-full w-full object-cover" loading="eager" alt="Fotografia real de motocicleta"/><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 p-4 pt-12"><p className="font-extrabold">Universo moto</p></div></div><div className="relative overflow-hidden rounded-3xl border border-white/10"><img src={imagery.shop} className="absolute inset-0 h-full w-full object-cover" loading="lazy" alt="Fotografia real de oficina com ferramentas e manutenção"/><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 p-4 pt-12"><p className="font-extrabold">Oficinas</p></div></div></div>
     </div>
-  );
-}
-
-function EmptyState({ onAdd }: { onAdd: () => void }) {
-  const Car = VEHICLE_ICONS.carro;
-  const Moto = VEHICLE_ICONS.moto;
-  return (
-    <section className="grid-paper relative overflow-hidden rounded-2xl border bg-card p-8 text-center shadow-card sm:p-14">
-      <div className="hazard-stripe absolute inset-x-0 top-0 h-1.5" aria-hidden />
-      <div className="mx-auto flex w-fit gap-3 text-primary"><Car className="size-10" /><Moto className="size-10" /></div>
-      <h2 className="mt-4 text-2xl font-bold sm:text-3xl">Comece pela sua garagem</h2>
-      <p className="mx-auto mt-2 max-w-md text-muted-foreground">Cadastre um carro ou uma moto e registre trocas de óleo, revisões, peças e a quilometragem.</p>
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-        <Button size="lg" className="shadow-pop" onClick={onAdd}><Plus /> Adicionar veículo</Button>
-        <Link to="/gol-g6" className="inline-flex items-center gap-2 rounded-xl border border-input bg-white px-5 py-3 text-sm font-bold text-foreground hover:bg-secondary"><CarFront className="size-4" /> Ficha Gol G6 Seleção prata</Link>
-      </div>
-    </section>
-  );
+   </section>
+   <section id="solucoes" className="mx-auto max-w-7xl space-y-7 px-5 py-16 sm:px-8">
+    <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600">Escolha seu perfil</p><h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Qual é a sua área?</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">Cada ambiente foi pensado para o tipo de negócio. Empresas são registradas com CNPJ e passam por validação de cadastro.</p></div>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"><button className="flex w-full items-center justify-between gap-3 text-left" aria-expanded={partsOpen} onClick={()=>setPartsOpen(v=>!v)}><span className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-orange-50 text-orange-600"><Package/></span><span><span className="block text-lg font-extrabold">Autopeças</span><span className="text-xs text-slate-500">Selecione o seu segmento para entrar na área correta</span></span></span><ChevronDown className={'transition-transform '+(partsOpen?'rotate-180':'')}/></button>{partsOpen&&<div className="mt-5 grid gap-4 border-t border-slate-100 pt-5 md:grid-cols-2">{businessCards.slice(0,2).map(c=><a href={c.href} key={c.label} className="group relative min-h-64 overflow-hidden rounded-2xl bg-slate-900 text-white"><img src={c.img} loading="lazy" alt={c.alt} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"/><div className="absolute inset-0 bg-gradient-to-t from-[#080f1c] via-black/35 to-black/10"/><div className="absolute inset-x-0 bottom-0 p-6"><c.icon size={27} className="mb-3 text-orange-400"/><h3 className="text-xl font-black">{c.label}</h3><p className="mt-1 text-sm text-slate-200">{c.subtitle}</p><span className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-orange-300">Acessar área <ArrowRight size={16}/></span></div></a>)}</div>}</div>
+    <div className="grid gap-5 md:grid-cols-2"><a href={businessCards[2]!.href} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="relative h-52 overflow-hidden"><img src={imagery.shop} alt="Fotografia real de profissional trabalhando em oficina" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy"/></div><div className="p-6"><span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-600"><Wrench size={16}/> Para profissionais</span><h3 className="mt-2 text-2xl font-black">Oficinas mecânicas</h3><p className="mt-2 text-sm leading-6 text-slate-600">Gerencie ordens de serviço, atendimento e operações da sua oficina.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold">Acessar oficina <ArrowRight size={16}/></span></div></a><a href="/acesso?next=%2Fgaragem" className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="relative h-52 overflow-hidden"><img src={imagery.garage} alt="Fotografia real de automóvel estacionado" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy"/></div><div className="p-6"><span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600"><Gauge size={16}/> Para proprietários</span><h3 className="mt-2 text-2xl font-black">Minha garagem digital</h3><p className="mt-2 text-sm leading-6 text-slate-600">Tenha seus carros e motos, revisões, combustível e histórico de custos em um só lugar.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold">Acessar veículos <ArrowRight size={16}/></span></div></a></div>
+   </section>
+   <section className="bg-[#111c30] py-14 text-white"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-5 px-5 sm:px-8 lg:flex-row lg:items-center"><div><h2 className="text-2xl font-black">Pronto para administrar tudo em um só lugar?</h2><p className="mt-2 max-w-2xl text-sm text-slate-300">Crie sua conta e escolha o ambiente ideal. Para empresas, o cadastro começa com CNPJ válido e fica pendente de verificação.</p></div><a href="/acesso?mode=register" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-6 py-3 font-extrabold text-slate-950">Começar agora <ArrowRight size={17}/></a></div></section>
+  </main><footer className="bg-[#0c1627] px-5 py-7 text-xs text-slate-400"><div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-3"><span>© 2026 SmartVeículos · Tecnologia para quem move o Brasil</span><span>Fotografias ilustrativas de veículos reais · Unsplash</span></div></footer>
+ </div>;
 }
