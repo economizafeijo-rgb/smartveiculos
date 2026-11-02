@@ -7,6 +7,7 @@ import {authRedirectUrl} from '@/lib/supabase/auth-redirects';
 import {RegistrationProfilePicker} from '@/components/auth/RegistrationProfilePicker';
 import {businessSegmentFromProfile,REGISTRATION_PROFILES,type RegistrationProfile} from '@/lib/business/registration-profiles';
 import {BUSINESS_SEGMENTS,cleanCnpj,formatCnpj,isBusinessSegment,validateCnpj,type BusinessSegment} from '@/lib/business/cnpj';
+import {businessAccessResult,type OwnedBusiness} from '@/lib/business/account-access';
 
 export const Route=createFileRoute('/acesso')({
  validateSearch:(q:Record<string,unknown>)=>({
@@ -36,6 +37,7 @@ function Access(){
  const [error,setError]=useState('');
  const [message,setMessage]=useState('');
  const [account,setAccount]=useState<string|null>(null);
+ const [accountId,setAccountId]=useState<string|null>(null);
  const chosen=BUSINESS_SEGMENTS.find(x=>x.id===segment);
  const selectedProfile=REGISTRATION_PROFILES.find(x=>x.id===profile);
  const needsProfile=mode==='register'&&registrationStep==='profile';
@@ -43,9 +45,44 @@ function Access(){
  useEffect(()=>{
   if(!supabase)return;
   let active=true;
-  void supabase.auth.getUser().then(({data})=>{if(active)setAccount(data.user?.email??null);});
+  void supabase.auth.getUser().then(({data})=>{if(active){setAccount(data.user?.email??null);setAccountId(data.user?.id??null);}});
   return()=>{active=false;};
  },[]);
+ /** O CNPJ não é credencial do Supabase: confirma empresa pertencente à conta validada.
+  * Sem empresas nesse segmento, a conta abre o cadastro empresarial pendente.
+  */
+ async function verifyCompany(userId:string,companySegment:BusinessSegment,typedCnpj:string){
+  if(!supabase)throw new Error('Autenticação indisponível.');
+  const {data,error}=await supabase.from('business_accounts')
+   .select('cnpj,segment').eq('owner_id',userId).eq('segment',companySegment);
+  if(error)throw new Error('Não foi possível verificar o vínculo do CNPJ com esta conta. Tente novamente.');
+  const state=businessAccessResult((data??[]) as OwnedBusiness[],typedCnpj,companySegment);
+  if(state==='wrong-company')throw new Error('Este CNPJ não está vinculado à sua conta neste ramo. Confira o número ou entre com o e-mail do responsável.');
+  return state;
+ }
+ async function continueSession(){
+  if(!supabase||!accountId)return;
+  setWorking(true);setError('');setMessage('');
+  try{
+   if(segment){
+    const {data,error}=await supabase.from('business_accounts')
+     .select('cnpj,segment').eq('owner_id',accountId).eq('segment',segment);
+    if(error)throw error;
+    const companies=(data??[]) as OwnedBusiness[];
+    if(companies.length>1&&!validateCnpj(cnpj)){
+     setError('Você tem mais de uma empresa neste ramo. Informe o CNPJ da unidade que deseja acessar.');return;
+    }
+    const chosenCnpj=validateCnpj(cnpj)?cleanCnpj(cnpj):companies[0]?.cnpj??'';
+    if(chosenCnpj){
+     const status=businessAccessResult(companies,chosenCnpj,segment);
+     if(status==='wrong-company')throw new Error('Este CNPJ não pertence a esta conta.');
+     window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({cnpj:cleanCnpj(chosenCnpj),segment}));
+    }
+   }
+   window.location.assign(target);
+  }catch(e){setError(e instanceof Error?e.message:'Não foi possível acessar a empresa.');}
+  finally{setWorking(false);}
+ }
  async function registerCompany(){
   if(!supabase||!segment)return;
   const key=cleanCnpj(cnpj);
@@ -85,8 +122,12 @@ function Access(){
     const {data,error}=await supabase.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
     if(error){if(/email not confirmed/i.test(error.message))setShowResend(true);throw error;}
     if(!data.user)throw new Error('Não foi possível confirmar sua sessão.');
-    // O CNPJ selecionado identifica qual unidade empresarial abrir, além do login do responsável.
-    if(segment)window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({cnpj:cleanCnpj(cnpj),segment,trade_name:company.trim()}));
+    // A identidade é autenticada pelo Supabase e a unidade deve pertencer a ela.
+    if(segment){
+     const status=await verifyCompany(data.user.id,segment,cnpj);
+     if(status==='setup')setMessage('Conta confirmada. Complete o cadastro da sua empresa para liberar os recursos comerciais.');
+     window.sessionStorage.setItem('smartveiculos:selected-business',JSON.stringify({cnpj:cleanCnpj(cnpj),segment,trade_name:company.trim()}));
+    }
     const metadataProfile=data.user.user_metadata?.['intended_profile'];
     const fallbackSegment=typeof metadataProfile==='string'&&isBusinessSegment(metadataProfile)?metadataProfile:undefined;
     window.location.assign(segment?target:search.next??(fallbackSegment?'/negocio?segment='+fallbackSegment:'/garagem'));
@@ -127,7 +168,7 @@ function Access(){
    <section className="sv-auth-card sv-intro-item sv-intro-item--3 mx-auto w-full max-w-[720px] rounded-[26px] px-4 py-4 sm:px-7 sm:py-5" aria-label="Acesso SmartVeículos">
     <div className="sv-auth-tabs mb-3 flex gap-1 rounded-2xl bg-slate-200/80 p-1"><button type="button" onClick={()=>{setMode('login');setError('');setMessage('');}} className={'sv-auth-tab sv-nav-action w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='login'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Entrar</button><button type="button" onClick={()=>{setMode('register');setRegistrationStep(search.segment?'details':'profile');setError('');setMessage('');}} className={'sv-auth-tab w-1/2 rounded-xl px-3 py-2.5 text-sm font-extrabold '+(mode==='register'?'sv-auth-tab-selected bg-white text-slate-950 shadow-sm':'text-slate-600 hover:text-slate-900')}>Criar conta</button></div>
     <p className="text-[11px] font-extrabold uppercase tracking-widest text-orange-700">{mode==='register'?'Escolha seu perfil':segment?'Acesso empresarial':'Área do cliente'}</p><h2 className="mt-1 text-[clamp(1.5rem,3vw,2rem)] font-black leading-tight tracking-tight text-[#14213B]">{mode==='login'?'Bem-vindo de volta':needsProfile?'Escolha seu ramo':'Comece com sua conta'}</h2><p className="mt-1 text-xs leading-5 text-slate-600 sm:text-sm">{needsProfile?'Selecione como pretende usar a plataforma. O próximo passo será personalizado.':segment?'O CNPJ identifica a empresa. O acesso usa o e-mail e a senha do responsável.':'Uma conta para administrar seus carros e motos.'}</p>
-    {account&&<div className="sv-auth-session mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200/70 bg-emerald-50/90 px-3.5 py-2 text-xs text-emerald-900"><span className="flex items-center gap-2"><CheckCircle2 size={17}/> Sessão: {account}</span><a href={target} className="font-bold underline">Continuar</a></div>}
+    {account&&<div className="sv-auth-session mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200/70 bg-emerald-50/90 px-3.5 py-2 text-xs text-emerald-900"><span className="flex items-center gap-2"><CheckCircle2 size={17}/> Sessão: {account}</span><button type="button" disabled={working} onClick={()=>void continueSession()} className="rounded-md px-1.5 py-1 font-bold underline underline-offset-2 hover:bg-emerald-100 disabled:opacity-50">Continuar</button></div>}
     {error&&<div role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
     {message&&<div role="status" className="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">{message}</div>}
     {needsProfile?<div className="mt-3">
