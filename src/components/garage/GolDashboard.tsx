@@ -1,3 +1,4 @@
+import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ArrowLeft, ArrowUpRight, CarFront, CheckCircle2, CircleAlert, Fuel, Gauge, Info, PackageSearch, Plus, Search, Wrench } from 'lucide-react';
@@ -170,7 +171,7 @@ export function GolDashboard(){
    </section>}
    {tab==='catalogo'&&<section className={box+' sv-tab-content'}><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold">Catálogo inicial de carros e motos</h2><p className="mt-1 text-sm text-slate-500">Modelos para futura expansão; fichas técnicas completas somente após validação por versão.</p></div><div className="flex rounded-xl bg-slate-100 p-1">{(['carro','moto'] as const).map(k=><button key={k} onClick={()=>setKind(k)} className={'rounded-lg px-4 py-2 text-sm font-bold '+(kind===k?'bg-white shadow-sm':'text-slate-600')}>{k==='carro'?'Carros':'Motos'}</button>)}</div></div><div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{VEHICLE_CATALOG.filter(v=>v.kind===kind).map(v=><div key={v.brand} className="rounded-xl border border-slate-200 p-4"><h3 className="font-extrabold">{v.brand}</h3><div className="mt-3 flex flex-wrap gap-2">{v.models.map(model=><span key={model} className="rounded-lg bg-slate-100 px-2 py-1.5 text-xs text-slate-700">{model}</span>)}</div></div>)}</div></section>}
    <CloudSyncPanel />
-   <footer className="flex flex-col gap-1 border-t border-slate-200 py-5 text-xs text-slate-500 sm:flex-row sm:justify-between"><span>SmartVeículos · Perfil Gol G6 Seleção 1.6 · Prata</span><span>Dados do proprietário salvos localmente neste navegador, não sincronizados na nuvem.</span></footer>
+   <footer className="flex flex-col gap-1 border-t border-slate-200 py-5 text-xs text-slate-500 sm:flex-row sm:justify-between"><span>SmartVeículos · Perfil Gol G6 Seleção 1.6 · Prata</span><span>Dados do proprietário salvos localmente neste navegador, não sincronizados na nuvem.</span><DeveloperCredit compact /></footer>
   </main>
  </div>;
 }
