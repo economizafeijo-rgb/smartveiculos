@@ -547,3 +547,44 @@ body:has(.sv-homepage)::-webkit-scrollbar {
     transition: none !important;
   }
 }
+
+/* Cadastro — seleção de ramo: espaço próprio entre pílula e cartão.
+ * Nenhum indicador flutuante sobreposto ao campo ou à borda do painel. */
+.sv-registration-step {
+  isolation: isolate;
+  position: relative;
+  padding-top: .2rem;
+}
+.sv-registration-step > div:first-child {
+  padding: .15rem .1rem .5rem;
+  align-items: flex-start;
+}
+.sv-registration-choice {
+  position: relative;
+  isolation: isolate;
+  box-shadow: 0 3px 13px -10px rgb(15 23 42 / 30%);
+  background-clip: padding-box;
+}
+.sv-registration-choice[aria-checked="true"] {
+  box-shadow: 0 0 0 1px rgb(249 115 22 / 16%), 0 7px 15px -13px rgb(249 115 22 / 40%);
+}
+.sv-profile-summary {
+  position: relative;
+  isolation: isolate;
+  margin-block: .9rem .45rem;
+  background-clip: padding-box;
+  box-shadow: 0 4px 15px -12px rgb(146 64 14 / 20%);
+}
+.sv-auth-card {
+  isolation: isolate;
+}
+@media (max-height: 760px) and (min-width: 1024px) {
+  .sv-auth-layout {gap: 1rem; padding-block: .45rem;}
+  .sv-auth-aside {padding-block: .9rem;}
+  .sv-auth-proof {padding-block: .35rem;}
+  .sv-auth-card {padding-block: .8rem;}
+}
+@media (max-height: 650px) and (min-width: 1024px) {
+  .sv-auth-aside {display: none;}
+  .sv-auth-layout {grid-template-columns: minmax(0, 1fr);max-width: 630px;}
+}
