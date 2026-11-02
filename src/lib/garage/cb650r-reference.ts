@@ -5,6 +5,7 @@ export const CB650R_REFERENCE={
   engine:'649 cm³ · DOHC · 4 cilindros em linha · arrefecimento líquido',
   power:'88,4 cv a 11.500 rpm',torque:'6,13 kgf.m a 8.000 rpm',
   gearbox:'6 marchas',fuel:'Gasolina',tankLiters:15.4,
+  color:'Vermelho Perolizado',
   engineOil:'SAE 10W-30 API SL ou superior, JASO MA',
   oilWithFilter:2.6,oilWithoutFilter:2.3,
   frontTire:'120/70 ZR17 M/C (58W)',rearTire:'180/55 ZR17 M/C (73W)',
@@ -13,9 +14,9 @@ export const CB650R_REFERENCE={
   chainSlack:'25 a 35 mm',chainDoNotRide:50,
   battery:'12 V · YTZ10S',brakeFluid:'DOT 4',
   warranty:'3 anos a partir da entrega, conforme condições Honda',
-  photo:'https://cdn.autopapo.com.br/box/uploads/2023/11/14110147/0i8a4940c-1920x1280.jpg',
-  photoCredit:'Foto ilustrativa: AutoPapo / divulgação Honda. Não é foto da motocicleta cadastrada.',
-  photoLink:'https://autopapo.com.br/motos/honda-cb-650r-cbr-650r-2024/'
+  photo:'https://revistacars.com.br/wp-content/uploads/2024/09/Honda-CB650R-2024-v2.webp',
+  photoCredit:'Imagem ilustrativa da CB650R 2024 vermelha · Revista Cars. Não é foto da sua moto.',
+  photoLink:'https://revistacars.com.br/honda-cb650r-2024-a-moto-naked-esportiva-da-honda/'
 } as const;
 
 export type Revision={index:number;km:number;months:number;title:string};
