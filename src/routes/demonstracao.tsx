@@ -32,9 +32,9 @@ const STORE_PAGES:DemoPage[]=['visao','estoque','pedidos','vitrine'];
 const WORKSHOP_PAGES:DemoPage[]=['visao','pedidos','servicos','vitrine'];
 const formatDate=(value:string)=>new Date(value+'T12:00:00').toLocaleDateString('pt-BR');
 const number=(n:number)=>new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}).format(n);
-const card='rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5';
-const darkCard='rounded-2xl border border-[#527196]/40 bg-[#142941] p-4 text-white shadow-sm';
-const btnOff='inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-xs font-extrabold text-slate-500 opacity-80';
+const card='sv-demo-panel rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5';
+const darkCard='sv-demo-feature-panel rounded-2xl border border-[#527196]/40 bg-[#142941] p-4 text-white shadow-sm';
+const btnOff='sv-demo-disabled inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-xs font-extrabold text-slate-500 opacity-80';
 function PageIcon({id}:{id:DemoPage}){
  const Icon:LucideIcon={
  visao:Gauge,veiculos:CarFront,abastecimentos:Fuel,revisoes:CalendarClock,
@@ -59,7 +59,7 @@ export const Route=createFileRoute('/demonstracao')({
 });
 
 function ReadonlyBanner(){
- return <div role="note" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-orange-400/30 bg-orange-500/10 px-4 py-3 text-xs text-slate-100 sm:px-5">
+ return <div role="note" className="sv-demo-readonly flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-orange-400/30 bg-orange-500/10 px-4 py-3 text-xs text-slate-100 sm:px-5">
   <span className="flex items-start gap-2"><ShieldCheck className="mt-0.5 shrink-0 text-orange-300" size={17}/>
    <span><strong className="font-black text-white">Demonstração pública — somente visualização.</strong> Dados inteiramente fictícios. Não é uma conta real; nenhuma ação desta página consulta, altera ou exclui registros de clientes.</span>
   </span>
@@ -70,7 +70,7 @@ function Metric({title,value,sub,icon:Icon}:{title:string;value:string;sub?:stri
  return <div className={card+' min-w-0'}><div className="flex items-center justify-between gap-2">
   <span className="text-xs font-bold text-slate-500">{title}</span>
   <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-orange-100 text-orange-700"><Icon size={18}/></span>
- </div><p className="mt-3 break-words text-2xl font-black text-[#152841]">{value}</p>
+ </div><p className="sv-demo-metric-value mt-3 break-words text-2xl font-black text-[#152841]">{value}</p>
   {sub&&<p className="mt-1 text-[11px] text-slate-500">{sub}</p>}
  </div>;
 }
@@ -82,7 +82,7 @@ function Status({status}:{status:DemoOrder['status']}){
 }
 function SectionTitle({title,desc,children}:{title:string;desc:string;children?:React.ReactNode}){
  return <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
-  <div><h2 className="text-lg font-black text-[#13243d] sm:text-xl">{title}</h2><p className="mt-1 text-xs leading-5 text-slate-500">{desc}</p></div>{children}
+  <div><h2 className="sv-demo-section-title text-lg font-black text-[#13243d] sm:text-xl">{title}</h2><p className="mt-1 text-xs leading-5 text-slate-500">{desc}</p></div>{children}
  </div>;
 }
 function DemoPortal(){
@@ -92,7 +92,7 @@ function DemoPortal(){
  const page=pagina&&pages.includes(pagina)?pagina:'visao';
  const Icon=config.icon;
  return <div className="sv-demo-shell sv-theme-surface min-h-screen bg-[#f3f6fb] pb-16 text-slate-900">
-  <header className="border-b border-white/10 bg-[#0d1d34] px-4 py-3 text-white sm:px-6">
+  <header className="sv-demo-header border-b border-white/10 bg-[#0d1d34] px-4 py-3 text-white sm:px-6">
    <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
     <a href="/" className="inline-flex items-center gap-2 text-lg font-black tracking-tight">
      <span className="grid size-9 place-items-center rounded-xl bg-orange-500 text-slate-950"><Gauge size={19}/></span>
@@ -105,7 +105,7 @@ function DemoPortal(){
    </div>
   </header>
   <main className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6">
-   <section className="relative overflow-hidden rounded-[25px] border border-[#5f87b6]/35 bg-gradient-to-r from-[#10223c] via-[#1d3b5d] to-[#203c57] p-5 text-white shadow-lg sm:p-7">
+   <section className="sv-demo-hero relative overflow-hidden rounded-[25px] border border-[#5f87b6]/35 bg-gradient-to-r from-[#10223c] via-[#1d3b5d] to-[#203c57] p-5 text-white shadow-lg sm:p-7">
     <div className="pointer-events-none absolute -right-14 -top-20 size-72 rounded-full bg-orange-400/10 blur-3xl"/>
     <div className="relative flex flex-wrap items-start justify-between gap-4">
      <div className="flex min-w-0 items-start gap-4">
@@ -125,7 +125,7 @@ function DemoPortal(){
     <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{CONFIG.map(c=>{
      const Component=c.icon;return <Link key={c.area} to="/demonstracao" search={{area:c.area,pagina:'visao'}}
       aria-current={area===c.area?'page':undefined}
-      className={'flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors '+(
+      className={'sv-demo-area-card flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors '+(
        area===c.area?'border-orange-400 bg-[#152942] text-white shadow-md':'border-slate-200 bg-white text-slate-900 hover:border-orange-300 hover:bg-orange-50'
       )}>
       <span className={'grid size-10 shrink-0 place-items-center rounded-xl '+(area===c.area?'bg-orange-500 text-slate-950':'bg-orange-100 text-orange-700')}><Component size={19}/></span>
@@ -133,7 +133,7 @@ function DemoPortal(){
      </Link>;
     })}</div>
    </section>
-   <nav aria-label={'Páginas de '+config.label} className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+   <nav aria-label={'Páginas de '+config.label} className="sv-demo-page-nav flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
     {pages.map(p=><Link key={p} to="/demonstracao" search={{area,pagina:p}} aria-current={page===p?'page':undefined}
      className={'inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-extrabold transition-colors sm:px-4 '+(
       page===p?'bg-[#132941] text-white':'text-slate-700 hover:bg-orange-50 hover:text-orange-800'
@@ -250,7 +250,7 @@ function VehicleCards({selected,onPick}:{selected:DemoVehicle['id'];onPick:(id:D
  return <div className="grid gap-3 sm:grid-cols-2">{DEMO_VEHICLES.map(v=>{
   const Icon=v.kind==='carro'?CarFront:Bike;
   return <button key={v.id} onClick={()=>onPick(v.id)} type="button" aria-pressed={selected===v.id}
-   className={'min-w-0 rounded-2xl border p-5 text-left transition-colors '+(selected===v.id?'border-orange-400 bg-[#172c48] text-white shadow-md':'border-slate-200 bg-white text-slate-900 hover:border-orange-300')}>
+   className={'sv-demo-vehicle-card min-w-0 rounded-2xl border p-5 text-left transition-colors '+(selected===v.id?'border-orange-400 bg-[#172c48] text-white shadow-md':'border-slate-200 bg-white text-slate-900 hover:border-orange-300')}>
    <div className="flex justify-between gap-2"><Icon size={27} className="text-orange-500"/>
     <span className={'rounded-full px-2.5 py-1 text-[11px] font-bold '+(selected===v.id?'bg-orange-500/20 text-orange-200':'bg-slate-100 text-slate-600')}>{selected===v.id?'Selecionado':'Ver ficha'}</span></div>
    <h3 className="mt-4 text-lg font-black">{v.name}</h3><p className={'mt-1 text-xs '+(selected===v.id?'text-slate-300':'text-slate-500')}>{v.year} · {number(v.km)} km</p>
