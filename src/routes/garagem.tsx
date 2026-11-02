@@ -18,6 +18,7 @@ import {RecordDialog} from '@/components/garage/RecordDialog';
 import {RecordList} from '@/components/garage/RecordList';
 import {VehicleDialog} from '@/components/garage/VehicleDialog';
 import {FipeValuePanel,FipeVehicleSummary} from '@/components/garage/FipeValuePanel';
+import {FIPE_FEATURED_KEYS} from '@/lib/garage/fipe';
 import type {Vehicle,RecordKind,ServiceRecord} from '@/lib/garage/types';
 
 export const Route=createFileRoute('/garagem')({
@@ -48,7 +49,7 @@ function toProfile(p:CloudVehicle,local:Vehicle|undefined):PortalVehicle{
  const isCb=p.model_key==='cb650r-2024';
  return {
   id:p.id,modelKey:p.model_key,kind:p.kind,name:p.display_name,
-  fipeKey:local?.id??p.id,brand:p.brand,modelYear:p.model_year,
+  fipeKey:isGol?FIPE_FEATURED_KEYS.gol:isCb?FIPE_FEATURED_KEYS.cb650r:(local?.id??p.id),brand:p.brand,modelYear:p.model_year,
   subtitle:isGol?'2014 · 1.6 Flex · Prata':isCb?'2024 · Vermelha · 649 cm³ · 4 cilindros':[
     p.model_year?p.model_year.toString():'',p.color??''
   ].filter(Boolean).join(' · '),
@@ -65,7 +66,7 @@ function fromLocal(v:Vehicle):PortalVehicle{
  const isCb=v.name===CB650R_NAME;
  return {
   id:v.id,modelKey:'local:'+v.id,kind:v.kind,name:v.name,
-  fipeKey:v.id,brand:isGol?'VW':isCb?'Honda':v.name.split(' ')[0]??'',
+  fipeKey:isGol?FIPE_FEATURED_KEYS.gol:isCb?FIPE_FEATURED_KEYS.cb650r:v.id,brand:isGol?'VW':isCb?'Honda':v.name.split(' ')[0]??'',
   modelYear:Number(v.name.match(/(?:19|20)\d{2}/)?.[0])|| (isGol?2014:isCb?2024:null),
   subtitle:isCb?'2024 · Vermelha · 649 cm³':v.kind==='carro'?'Automóvel · Meu veículo':'Motocicleta · Meu veículo',
   plate:v.plate||null,km:v.currentKm,
