@@ -8,6 +8,7 @@ import { formatBRL, formatKm, formatDate } from '@/lib/garage/logic';
 import { GOL, GOL_PROBLEMS, IMPORTANT_LINKS, MAINTENANCE_PRESETS } from '@/lib/garage/gol-reference';
 import { CloudSyncPanel } from '@/components/garage/CloudSyncPanel';
 import { FipeValuePanel } from '@/components/garage/FipeValuePanel';
+import {FIPE_FEATURED_KEYS} from '@/lib/garage/fipe';
 
 type Tab='painel'|'abastecimentos'|'manutencoes'|'diagnosticos';
 const tabs:{id:Tab;label:string;icon:typeof Gauge}[]=[
@@ -107,7 +108,7 @@ export function GolDashboard(){
    <nav aria-label="Áreas do Gol" className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
     {tabs.map(item=><button key={item.id} type="button" onClick={()=>{setTab(item.id);setError('');setNotice('')}} className={'inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold '+(item.id===tab?'bg-slate-900 text-white':'text-slate-600 hover:bg-slate-100')}><item.icon size={17}/>{item.label}</button>)}
    </nav>
-   <FipeValuePanel vehicleId={vehicle?.id??''} kind="carro" vehicleName="Gol G6 Seleção 1.6" brandHint="VW" yearHint={2014}/>
+   <FipeValuePanel vehicleId={FIPE_FEATURED_KEYS.gol} kind="carro" vehicleName="Gol G6 Seleção 1.6" brandHint="VW" yearHint={2014}/>
    {error&&<div role="alert" className="flex gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><CircleAlert size={18}/>{error}</div>}
    {notice&&<div role="status" className="flex gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700"><CheckCircle2 size={18}/>{notice}</div>}
    {!vehicle&&tab!=='diagnosticos'&&<form onSubmit={activate} className={box+' space-y-4 border-amber-200'}>
