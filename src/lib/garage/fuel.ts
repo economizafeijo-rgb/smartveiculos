@@ -1,3 +1,4 @@
+import {validateFuelSequence} from './fuel-analytics';
 import { useSyncExternalStore } from 'react';
 
 export type FuelKind = 'gasolina' | 'etanol';
@@ -59,10 +60,24 @@ export function addFillup(input:Omit<Fillup,'id'>){
  !Number.isFinite(input.liters)||input.liters<=0||input.liters>200||
  !Number.isFinite(input.pricePerLiter)||input.pricePerLiter<=0||input.pricePerLiter>100||
  !['gasolina','etanol'].includes(input.fuel)||typeof input.fullTank!=='boolean')throw new Error('Confira os dados do abastecimento.');
- const existing=getSnapshot().filter(x=>x.vehicleId===input.vehicleId);
- if(existing.some(x=>x.km>=input.km))throw new Error('O hodômetro deve avançar em relação aos abastecimentos anteriores.');
+ const validation=validateFuelSequence(getSnapshot(),input);
+ if(validation)throw new Error(validation);
  const result:{id:string}&Omit<Fillup,'id'>={...input,id:crypto.randomUUID()};
  commit([...getSnapshot(),result]);return result;
+}
+export function updateFillup(id:string,input:Omit<Fillup,'id'>):Fillup{
+ const all=getSnapshot();
+ const previous=all.find(f=>f.id===id);
+ if(!previous)throw new Error('Abastecimento não encontrado.');
+ if(previous.vehicleId!==input.vehicleId)throw new Error('Não é permitido mover o abastecimento para outro veículo.');
+ if(!input.vehicleId||!Number.isFinite(input.liters)||input.liters<=0||input.liters>200||
+ !Number.isFinite(input.pricePerLiter)||input.pricePerLiter<=0||input.pricePerLiter>100||
+ !['gasolina','etanol'].includes(input.fuel)||typeof input.fullTank!=='boolean')throw new Error('Confira os dados do abastecimento.');
+ const issue=validateFuelSequence(all,input,id);
+ if(issue)throw new Error(issue);
+ const updated:Fillup={...input,id};
+ commit(all.map(f=>f.id===id?updated:f));
+ return updated;
 }
 export function removeFillup(id:string){commit(getSnapshot().filter(x=>x.id!==id));}
 /** Restaura abastecimentos ausentes mantendo os registros existentes no navegador. */
