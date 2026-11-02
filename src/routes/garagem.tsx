@@ -199,7 +199,7 @@ function OwnerGarage(){
   return result;
  },[profiles,vehicles]);
  const selected=vehicles.find(v=>v.id===selectedId)??vehicles[0];
- const fipeEntry=entries.find(v=>v.id===requestedVehicle)??entries.find(v=>v.id===fipeEntryId)??entries[0];
+ const fipeEntry=entries.find(v=>v.id===requestedVehicle||v.localVehicleId===requestedVehicle||v.modelKey===requestedVehicle)??entries.find(v=>v.id===fipeEntryId)??entries[0];
  const activeLocal=fipeEntry?.localVehicleId?vehicles.find(v=>v.id===fipeEntry.localVehicleId):undefined;
  const vehicleRecords=useMemo(()=>selected?sortRecords(records.filter(r=>r.vehicleId===selected.id)):[],[selected?.id,records]);
  const alerts=useMemo(()=>selected?upcomingServices(vehicleRecords,selected.currentKm):[],[vehicleRecords,selected?.currentKm]);
