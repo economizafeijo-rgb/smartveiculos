@@ -12,7 +12,7 @@ const tabs:{id:Tab;label:string;icon:typeof Gauge}[]=[
  {id:'manutencoes',label:'Manutenções',icon:Wrench},{id:'diagnosticos',label:'Diagnósticos e peças',icon:PackageSearch},
  {id:'catalogo',label:'Catálogo',icon:CarFront},
 ];
-const today=()=>new Date().toLocaleDateString('en-CA');
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');};
 const field='w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
 const btn='inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition';
 const box='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm';
@@ -27,6 +27,7 @@ export function GolDashboard(){
  const [error,setError]=useState('');
  const [notice,setNotice]=useState('');
  const [plate,setPlate]=useState('');
+ const [photoError,setPhotoError]=useState(false);
  const [startKm,setStartKm]=useState('');
  const [odometer,setOdometer]=useState('');
  const [fuel,setFuel]=useState({date:today(),km:'',liters:'',price:'',kind:'gasolina' as FuelKind,full:true});
@@ -99,7 +100,7 @@ export function GolDashboard(){
       <p className="mt-5 max-w-lg text-sm leading-relaxed text-slate-300">Ficha completa para acompanhar o seu carro, abastecimentos, economia, revisões, peças e diagnósticos desde o motor até o sistema elétrico.</p>
       <div className="mt-6 flex flex-wrap gap-2">{['Motor EA111 VHT','104 cv (etanol)','Tanque 55 L','Gasolina / Etanol'].map(t=><span key={t} className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold">{t}</span>)}</div>
      </div>
-     <div className="relative min-h-64 overflow-hidden bg-slate-600"><img src={GOL.photo} alt="Fotografia ilustrativa de Volkswagen Gol 2014 prata; não é foto do carro do usuário" className="absolute inset-0 h-full w-full object-cover" loading="eager"/><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/30 px-5 pb-4 pt-12 text-xs text-white"><a href={GOL.photoSource} rel="noopener noreferrer" target="_blank" className="underline underline-offset-2">{GOL.photoCredit}</a></div></div>
+     <div className="relative min-h-64 overflow-hidden bg-slate-600">{photoError?<div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-slate-400 to-slate-700"><CarFront size={96} className="text-white/65"/><p className="absolute bottom-16 text-xs font-semibold text-white/90">Gol G6 · Prata · imagem indisponível</p></div>:<img src={GOL.photo} onError={()=>setPhotoError(true)} alt="Fotografia ilustrativa de Volkswagen Gol 2014 prata; não é foto do carro do usuário" className="absolute inset-0 h-full w-full object-cover" loading="eager"/>}<div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/30 px-5 pb-4 pt-12 text-xs text-white"><a href={GOL.photoSource} rel="noopener noreferrer" target="_blank" className="underline underline-offset-2">{GOL.photoCredit}</a></div></div>
     </div>
    </section>
    <nav aria-label="Áreas do Gol" className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
