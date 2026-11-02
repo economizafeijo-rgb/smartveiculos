@@ -37,7 +37,7 @@ type PortalVehicle={
  plate:string|null;km:number|null;url:'/gol-g6'|'/cb650r'|null;
  photo:string;photocredit:string;source:'perfil'|'local';
 };
-const photoGarage='https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1800&auto=format&fit=crop&q=85';
+const photoGarage='https://images.unsplash.com/photo-1727893153491-392fd2d1c721?auto=format&fit=crop&w=1800&q=85';
 const fallbackCar='https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=900&auto=format&fit=crop&q=80';
 const fallbackBike='https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=900&auto=format&fit=crop&q=80';
 
@@ -82,23 +82,22 @@ function VehicleCard({vehicle,index,onSelect}:{vehicle:PortalVehicle;index:numbe
  const Icon=vehicle.kind==='carro'?CarFront:Bike;
  const url=vehicle.url;
  const inner=<>
-  <div className="absolute inset-0 bg-gradient-to-b from-[#111a2e]/10 via-[#101828]/40 to-[#07101f]/95"/>
   {!failed&&<img className="sv-card-photo absolute inset-0 h-full w-full object-cover object-center" src={vehicle.photo} onError={()=>setFailed(true)} alt={'Imagem ilustrativa do veículo '+vehicle.name} loading={index<2?'eager':'lazy'}/>}
-  <div className="absolute inset-0 bg-gradient-to-t from-[#07101f] via-transparent to-[#07101f]/50"/>
+  <div className="sv-garage-card-scrim absolute inset-0" aria-hidden="true"/>
   {failed&&<Icon size={100} className="absolute right-8 top-16 text-white/15"/>}
-  <div className="relative z-10 flex h-full flex-col justify-between p-5 sm:p-6">
+  <div className="relative z-10 flex h-full flex-col justify-between p-4 sm:p-5">
    <div className="flex items-center justify-between gap-3">
     <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/35 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.13em] text-white backdrop-blur"><Icon size={15}/>{vehicle.kind==='carro'?'Meu carro':'Minha moto'}</span>
     <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-100 backdrop-blur">Ficha cadastrada</span>
    </div>
    <div>
-    <h3 className="text-2xl font-black tracking-tight text-white drop-shadow sm:text-[29px]">{vehicle.name}</h3>
-    <p className="mt-1 text-sm font-medium text-white/80">{vehicle.subtitle}</p>
-    <div className="mt-4 flex flex-wrap gap-2">
+    <h3 className="text-xl font-black tracking-tight text-white drop-shadow sm:text-[clamp(1.25rem,1.8vw,1.7rem)]">{vehicle.name}</h3>
+    <p className="mt-1 text-xs font-medium text-white/85 sm:text-sm">{vehicle.subtitle}</p>
+    <div className="mt-2 flex flex-wrap gap-2">
      <Spec icon={<Gauge size={14}/>}>{vehicle.km!==null?formatKm(vehicle.km):'KM a informar'}</Spec>
      {vehicle.plate&&<Spec icon={<CarFront size={14}/>}>{vehicle.plate}</Spec>}
     </div>
-    <div className="mt-5 flex items-center justify-between gap-3">
+    <div className="mt-3 flex items-center justify-between gap-3">
      <span className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-extrabold text-[#111827] shadow-lg transition group-hover:bg-orange-400">
       {vehicle.url?'Abrir painel completo':'Gerenciar veículo'}<ArrowRight size={17}/>
      </span>
@@ -107,7 +106,7 @@ function VehicleCard({vehicle,index,onSelect}:{vehicle:PortalVehicle;index:numbe
    </div>
   </div>
  </>;
- const cls='sv-vehicle-card sv-card-load sv-card-load--'+(index%4)+' group relative block h-[285px] w-full overflow-hidden rounded-[22px] border border-white/10 bg-gradient-to-br from-[#263a56] to-[#121e2f] text-left shadow-[0_10px_35px_-15px_rgba(7,16,31,.5)] transition-transform hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500 sm:h-[300px] md:h-[clamp(235px,39dvh,300px)]';
+ const cls='sv-vehicle-card sv-garage-vehicle-card sv-card-load sv-card-load--'+(index%4)+' group relative block h-full min-h-[240px] w-full overflow-hidden rounded-[20px] border border-white/10 bg-gradient-to-br from-[#263a56] to-[#121e2f] text-left shadow-[0_10px_35px_-15px_rgba(7,16,31,.5)] transition-transform focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500';
  return url?<Link className={cls} to={url}>{inner}</Link>
   :<button type="button" onClick={onSelect} className={cls}>{inner}</button>;
 }
@@ -183,51 +182,57 @@ function OwnerGarage(){
   }
   setSelectedId(id.replace(/^local:/,''));
   setManagerOpen(true);
-  window.setTimeout(()=>document.getElementById('gestao-local')?.scrollIntoView({behavior:'smooth',block:'start'}),80);
+  // O painel expansível fica na mesma janela; evite rolagem forçada da página.
  };
- return <div className="min-h-screen bg-[#edf1f6] text-slate-900">
-  <header className="border-b border-slate-200/90 bg-white/95 backdrop-blur">
-   <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-7">
-    <div className="flex items-center gap-3"><span className="sv-logo-mark grid size-10 place-items-center rounded-xl bg-[#121d30] text-orange-400"><CarFront size={21}/></span><div><p className="text-base font-black leading-5">Smart<span className="text-orange-600">Veículos</span></p><p className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Área do proprietário</p></div></div>
-    <div className="flex flex-wrap items-center gap-2">
-     <Link to="/" className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100"><Home size={15}/> <span className="hidden sm:inline">Início</span></Link>
-     <a href="/meus-atendimentos" className="inline-flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-bold text-orange-900 hover:bg-orange-100"><Wrench size={15}/> Meus atendimentos</a>
-     {isAdmin&&<a href="/admin" className="inline-flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-bold text-orange-900 hover:bg-orange-100"><ShieldCheck size={15}/> Administração</a>}
-     <button type="button" onClick={()=>void logout()} className="inline-flex items-center gap-1.5 rounded-lg bg-[#111e30] px-3 py-2 text-xs font-bold text-white hover:bg-[#24354e]"><LogOut size={15}/> Sair</button>
-    </div>
+ return <div className={'sv-owner-garage text-slate-900'+(managerOpen?' sv-owner-garage--managing':'')}>
+  <header className="sv-garage-header shrink-0 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
+   <div className="sv-garage-topline mx-auto flex max-w-[1180px] items-center justify-between gap-3 px-4 sm:px-6">
+    <div className="flex shrink-0 items-center gap-2.5"><span className="sv-logo-mark grid size-9 place-items-center rounded-xl bg-[#121d30] text-orange-400"><CarFront size={18}/></span><div><p className="text-[15px] font-black leading-4">Smart<span className="text-orange-600">Veículos</span></p><p className="mt-0.5 text-[9px] font-bold uppercase tracking-[.14em] text-slate-500">Área do proprietário</p></div></div>
+    <nav aria-label="Navegação da garagem" className="sv-garage-nav flex min-w-0 items-center justify-end gap-1.5">
+     <Link to="/" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 hover:bg-slate-100"><Home size={14}/> Início</Link>
+     <a href="/meus-atendimentos" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-[11px] font-bold text-orange-900 hover:bg-orange-100"><Wrench size={14}/> Meus atendimentos</a>
+     {isAdmin&&<a href="/admin" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-[11px] font-bold text-orange-900 hover:bg-orange-100"><ShieldCheck size={14}/> Administração</a>}
+     <button type="button" onClick={()=>void logout()} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#111e30] px-3 py-1.5 text-[11px] font-bold text-white hover:bg-[#24354e]"><LogOut size={14}/> Sair</button>
+    </nav>
    </div>
   </header>
-  <main className="mx-auto max-w-7xl space-y-5 px-4 pb-10 pt-5 sm:px-7">
-   <section className="sv-garage-hero relative isolate overflow-hidden rounded-[24px] bg-[#121e30] text-white shadow-xl">
-    <div className="sv-garage-backdrop absolute inset-0 bg-cover bg-[center_43%] opacity-70" style={{backgroundImage:'url("'+photoGarage+'")'}} aria-hidden="true"/>
-    <div className="absolute inset-0 bg-gradient-to-r from-[#0d182a] via-[#111e31]/95 to-[#111e31]/30" aria-hidden="true"/>
-    <div className="relative flex min-h-[205px] flex-col justify-center gap-4 px-6 py-7 sm:px-9 lg:min-h-[clamp(165px,25dvh,216px)]">
-     <div><span className="sv-intro-item sv-intro-item--1 inline-flex items-center gap-2 rounded-full border border-orange-400/40 bg-orange-400/10 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.18em] text-orange-300"><ShieldCheck size={13}/> Sua garagem digital</span><h1 className="sv-intro-item sv-intro-item--2 mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Bem-vindo à sua <span className="text-orange-400">garagem.</span></h1><p className="sv-intro-item sv-intro-item--3 mt-2 max-w-lg text-sm leading-6 text-slate-200">Escolha seu veículo para acompanhar revisões, abastecimentos e manutenção em um painel exclusivo.</p></div>
-     <div className="sv-intro-item sv-intro-item--4 flex flex-wrap items-center gap-2">
-      <span className="rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold backdrop-blur">{entries.length} {entries.length===1?'veículo':'veículos'} na garagem</span>
-      {needsKm>0&&<span className="rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold backdrop-blur">{needsKm} {needsKm===1?'leitura pendente':'leituras pendentes'} de km</span>}
+  <main className="sv-garage-main mx-auto flex min-h-0 w-full max-w-[1180px] flex-1 flex-col gap-3 px-4 py-3 sm:px-6">
+   <section className="sv-garage-hero relative isolate shrink-0 overflow-hidden rounded-[20px] bg-[#101e33] text-white shadow-lg">
+    <div className="sv-garage-backdrop absolute inset-0 bg-cover bg-center" style={{backgroundImage:'url("'+photoGarage+'")'}} aria-hidden="true"/>
+    <div className="sv-garage-hero-scrim absolute inset-0" aria-hidden="true"/>
+    <div className="sv-garage-hero-content relative z-10 grid h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 sm:px-7">
+     <div className="min-w-0">
+      <span className="sv-intro-item sv-intro-item--1 inline-flex items-center gap-1.5 rounded-full border border-orange-400/40 bg-orange-500/10 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.14em] text-orange-200"><ShieldCheck size={12}/> Sua garagem digital</span>
+      <h1 className="sv-intro-item sv-intro-item--2 mt-2 font-black tracking-tight text-white">Bem-vindo à sua <span className="text-orange-400">garagem.</span></h1>
+      <p className="sv-intro-item sv-intro-item--3 mt-1.5 max-w-[510px] text-xs leading-5 text-slate-100">Escolha seu veículo para acompanhar revisões, abastecimentos e manutenção em um painel exclusivo.</p>
+     </div>
+     <div className="sv-garage-stats grid grid-cols-2 gap-2">
+      <div className="rounded-xl border border-white/20 bg-[#0b1e36]/65 px-3 py-2.5 backdrop-blur-md">
+       <p className="text-[10px] font-semibold text-slate-200">Meus veículos</p>
+       <strong className="mt-1 block text-2xl font-black leading-none text-white">{entries.length}</strong>
+      </div>
+      <div className="rounded-xl border border-white/20 bg-[#0b1e36]/65 px-3 py-2.5 backdrop-blur-md">
+       <p className="text-[10px] font-semibold text-slate-200">KM a informar</p>
+       <strong className="mt-1 block text-2xl font-black leading-none text-white">{needsKm}</strong>
+      </div>
      </div>
     </div>
    </section>
-   <div className="flex flex-wrap items-end justify-between gap-3">
-    <div><p className="text-[11px] font-extrabold uppercase tracking-[.19em] text-orange-700">Meu espaço</p><h2 className="mt-1 text-2xl font-black tracking-tight text-[#111d30]">Escolha seu veículo</h2></div>
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm"><LockKeyhole size={14}/> Acesso individual e protegido</span>
+   <div className="sv-garage-heading flex shrink-0 flex-wrap items-center justify-between gap-2">
+    <div><p className="text-[10px] font-extrabold uppercase tracking-[.15em] text-orange-700">Meu espaço</p><h2 className="mt-0.5 text-[21px] font-black leading-tight tracking-tight text-[#111d30]">Escolha seu veículo</h2></div>
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/85 px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-sm"><LockKeyhole size={13}/> Acesso individual e protegido</span>
    </div>
    {error&&<div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><span>{error}</span><button className="font-bold underline" onClick={()=>{setLoading(true);setLoadToken(n=>n+1)}}>Tentar novamente</button></div>}
    {notice&&<p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{notice}</p>}
-   {(!hydrated||loading)&&<div aria-label="Carregando veículos" className="grid gap-4 md:grid-cols-2">{[0,1].map(i=><div key={i} className="h-[285px] animate-pulse rounded-[22px] bg-slate-200 sm:h-[300px]"/>)}</div>}
-   {hydrated&&!loading&&entries.length>0&&<div className="grid gap-4 md:grid-cols-2">{entries.map((v,i)=><VehicleCard key={v.id} vehicle={v} index={i} onSelect={()=>openLocal(v.modelKey)}/>)}</div>}
-   {hydrated&&!loading&&!entries.length&&<section className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-12"><div className="mx-auto grid size-14 place-items-center rounded-xl bg-orange-50 text-orange-600"><CarFront size={28}/></div><h3 className="mt-5 text-xl font-black">Sua garagem ainda está vazia</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Cadastre seu primeiro veículo para ter acesso às suas informações. Nenhuma quilometragem será presumida.</p><button onClick={()=>setVehicleDialog({open:true})} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-slate-950"><Plus size={16}/> Adicionar veículo</button></section>}
-   {hydrated&&!loading&&entries.length>0&&<div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600 shadow-sm">
-     <div className="flex items-center gap-2"><Check className="shrink-0 text-emerald-600" size={17}/><span>Seus modelos estão organizados por veículo. Histórico, consumo e revisões ficam nas fichas individuais.</span></div>
-     <button type="button" onClick={()=>setManagerOpen(true)} className="inline-flex items-center gap-1.5 font-bold text-orange-700 hover:underline"><Settings2 size={15}/> Mais opções da garagem</button>
-   </div>}
-   <section id="gestao-local" className="sv-interactive-surface rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <button type="button" aria-expanded={managerOpen} onClick={()=>setManagerOpen(v=>!v)} className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left sm:px-6">
-     <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-slate-100 text-slate-700"><SlidersHorizontal size={19}/></span><div><h3 className="text-sm font-extrabold">Gerenciar registros e outros veículos</h3><p className="mt-1 text-xs text-slate-500">Adicionar veículo, consultar históricos locais e importar dados antigos</p></div></div>
+   {(!hydrated||loading)&&<div aria-label="Carregando veículos" className="sv-garage-vehicle-grid grid min-h-0 flex-1 gap-3 md:grid-cols-2">{[0,1].map(i=><div key={i} className="sv-garage-skeleton min-h-[230px] animate-pulse rounded-[20px] bg-slate-200"/>)}</div>}
+   {hydrated&&!loading&&entries.length>0&&<div className="sv-garage-vehicle-grid grid min-h-0 flex-1 gap-3 md:grid-cols-2">{entries.map((v,i)=><VehicleCard key={v.id} vehicle={v} index={i} onSelect={()=>openLocal(v.modelKey)}/>)}</div>}
+   {hydrated&&!loading&&!entries.length&&<section className="sv-garage-empty flex min-h-0 flex-1 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-8"><div className="mx-auto grid size-14 place-items-center rounded-xl bg-orange-50 text-orange-600"><CarFront size={28}/></div><h3 className="mt-5 text-xl font-black">Sua garagem ainda está vazia</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Cadastre seu primeiro veículo para ter acesso às suas informações. Nenhuma quilometragem será presumida.</p><button onClick={()=>setVehicleDialog({open:true})} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-slate-950"><Plus size={16}/> Adicionar veículo</button></section>}
+   <section id="gestao-local" className="sv-garage-manager sv-interactive-surface shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white/95 shadow-sm">
+    <button type="button" aria-expanded={managerOpen} onClick={()=>setManagerOpen(v=>!v)} className="sv-garage-manager-toggle flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left sm:px-5">
+     <div className="flex items-center gap-2.5"><span className="grid size-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-700"><SlidersHorizontal size={17}/></span><div><h3 className="text-sm font-extrabold">Gerenciar registros e outros veículos</h3><p className="mt-0.5 text-[11px] leading-4 text-slate-500">Adicionar veículos, consultar registros e importar dados anteriores</p></div></div>
      <ChevronDown size={19} className={'shrink-0 text-slate-500 transition-transform '+(managerOpen?'rotate-180':'')}/>
     </button>
-    {managerOpen&&<div className="sv-accordion-body border-t border-slate-100 p-5 sm:p-6">
+    {managerOpen&&<div className="sv-garage-manager-body sv-accordion-body overflow-y-auto border-t border-slate-100 p-4 sm:p-5">
       <div className="flex flex-wrap gap-2">
        <button onClick={()=>setVehicleDialog({open:true})} className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-slate-950"><Plus size={15}/> Adicionar veículo</button>
        <button onClick={onImportLegacy} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"><Cloud size={15}/> Importar garagem anterior</button>
@@ -243,7 +248,7 @@ function OwnerGarage(){
       <p className="mt-5 text-xs text-slate-400">Dados pessoais são isolados por conta. Fotografias dos veículos são ilustrativas e não representam suas unidades reais.</p>
     </div>}
    </section>
-   <footer className="flex flex-wrap items-center justify-between gap-2 py-2 text-[11px] text-slate-500"><span>SmartVeículos · Espaço exclusivo do proprietário</span><span>{userEmail?'Conta: '+userEmail:'Seus dados estão protegidos por login'}</span><DeveloperCredit compact /></footer>
+   <footer className="sv-garage-footer flex shrink-0 flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500"><span>SmartVeículos · Espaço do proprietário</span><span className="max-w-[210px] truncate">{userEmail?'Conta: '+userEmail:'Dados protegidos por login'}</span><DeveloperCredit compact /></footer>
   </main>
   <VehicleDialog open={vehicleDialog.open} vehicle={vehicleDialog.vehicle} onOpenChange={open=>setVehicleDialog(v=>({...v,open}))} onSaved={id=>{setSelectedId(id);setManagerOpen(true)}}/>
   {selected&&<RecordDialog open={recordDialog.open} vehicle={selected} record={recordDialog.record} defaultKind={recordDialog.defaultKind} onOpenChange={open=>setRecordDialog(v=>({...v,open}))}/>}
