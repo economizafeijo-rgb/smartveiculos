@@ -41,7 +41,7 @@ function ResetPassword(){
  async function submit(e:FormEvent){
   e.preventDefault();if(!supabase||!available)return;
   setMessage('');
-  if(password.length<10){setMessage('Use uma senha com pelo menos 10 caracteres.');return;}
+  if(password.length<6){setMessage('A senha deve ter pelo menos 6 caracteres.');return;}
   if(password!==repeat){setMessage('As duas senhas não são iguais.');return;}
   setSaving(true);
   try{
@@ -59,8 +59,8 @@ function ResetPassword(){
    <h1 className="mt-5 text-2xl font-black text-slate-900">{done?'Senha redefinida':'Crie sua nova senha'}</h1>
    {message&&<p role="status" className={'mt-4 rounded-xl p-3 text-sm '+(done?'bg-emerald-50 text-emerald-800':'bg-amber-50 text-amber-900')}>{message}</p>}
    {loading?<p className="mt-5 text-sm text-slate-500">Validando link...</p>:available&&!done?<form onSubmit={submit} className="mt-6 space-y-4">
-    <label className="block text-sm font-bold text-slate-700">Nova senha<input required autoComplete="new-password" type="password" minLength={10} value={password} onChange={e=>setPassword(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 outline-none focus:border-orange-500"/></label>
-    <label className="block text-sm font-bold text-slate-700">Repita a nova senha<input required autoComplete="new-password" type="password" minLength={10} value={repeat} onChange={e=>setRepeat(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 outline-none focus:border-orange-500"/></label>
+    <label className="block text-sm font-bold text-slate-700">Nova senha<input required autoComplete="new-password" type="password" minLength={6} value={password} onChange={e=>setPassword(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 outline-none focus:border-orange-500"/></label>
+    <label className="block text-sm font-bold text-slate-700">Repita a nova senha<input required autoComplete="new-password" type="password" minLength={6} value={repeat} onChange={e=>setRepeat(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 outline-none focus:border-orange-500"/></label>
     <button disabled={saving} className="w-full rounded-xl bg-orange-500 px-4 py-3 font-bold text-slate-950 disabled:opacity-50">{saving?'Salvando...':'Salvar nova senha'}</button>
    </form>:null}
    <a href="/acesso" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-orange-700 underline"><LockKeyhole size={16}/> Ir para login</a>
