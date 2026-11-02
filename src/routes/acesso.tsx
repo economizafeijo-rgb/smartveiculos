@@ -12,7 +12,7 @@ export const Route=createFileRoute('/acesso')({
  validateSearch:(q:Record<string,unknown>)=>({
   segment:typeof q['segment']==='string'&&isBusinessSegment(q['segment'])?q['segment'] as BusinessSegment:undefined,
   mode:q['mode']==='register'?'register' as const:'login' as const,
-  next:typeof q['next']==='string'&&['/garagem','/cb650r','/gol-g6','/admin'].includes(q['next'])?q['next']:undefined
+  next:typeof q['next']==='string'&&['/garagem','/cb650r','/gol-g6','/admin','/meus-atendimentos'].includes(q['next'])?q['next']:undefined
  }),
  head:()=>({meta:[{title:'Entrar ou criar conta | SmartVeículos'}]}),
  component:Access,
