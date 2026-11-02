@@ -908,3 +908,34 @@ body:has(.sv-homepage)::-webkit-scrollbar {
   .sv-auth-cinematic .sv-auth-primary:hover,
   .sv-auth-cinematic .sv-registration-choice:hover {transform: none;}
 }
+
+/* Hero Automóveis — fotografia documental com iluminação natural.
+ * A sombra termina no terço inferior: protegemos os textos sem escurecer o carro.
+ * Não usar filtros dramáticos ou camadas pretas sobre toda a foto. */
+.sv-homepage .sv-hero-tile--1 {
+  background-color: #64748b;
+  border-color: rgb(255 255 255 / 24%);
+}
+.sv-homepage .sv-photo-real-cars {
+  object-position: 48% 40%;
+  filter: brightness(1.10) contrast(1.015) saturate(1.035);
+}
+.sv-homepage .sv-hero-tile--1 .sv-hero-scrim {
+  background: linear-gradient(
+    to top,
+    rgb(3 15 27 / 78%) 0%,
+    rgb(3 15 27 / 47%) 18%,
+    rgb(3 15 27 / 8%) 42%,
+    transparent 62%
+  );
+}
+.sv-homepage .sv-accordion-body .sv-solution-scrim {
+  background: linear-gradient(
+    to top, rgb(3 15 27 / 72%) 0%,
+    rgb(3 15 27 / 25%) 31%, transparent 66%
+  );
+}
+.sv-homepage .sv-accordion-body .sv-solution-photo[src*="photo-1727893119356"] {
+  filter: brightness(1.10) contrast(1.015) saturate(1.035);
+  object-position: center 43%;
+}
