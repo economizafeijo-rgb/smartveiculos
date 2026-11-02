@@ -15,6 +15,8 @@ import {
  * Store externo + useSyncExternalStore: seguro para SSR (snapshot vazio no servidor).
  */
 const STORAGE_KEY = "garagem:v1";
+let storageOwner: string | null = null;
+const scopedKey = () => storageOwner ? STORAGE_KEY + ":owner:" + storageOwner : STORAGE_KEY;
 const EMPTY: GarageData = { version: 1, vehicles: [], records: [] };
 
 let state: GarageData = EMPTY;
@@ -23,7 +25,7 @@ const listeners = new Set<() => void>();
 
 function readStorage(): GarageData {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(scopedKey());
     if (!raw) return EMPTY;
     const parsed = garageDataSchema.safeParse(JSON.parse(raw));
     return parsed.success ? parsed.data : EMPTY;
@@ -41,7 +43,7 @@ function ensureLoaded(): void {
 function commit(next: GarageData): void {
   state = next;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    window.localStorage.setItem(scopedKey(), JSON.stringify(next));
   } catch {
     // Armazenamento cheio ou bloqueado: mantém em memória nesta sessão.
   }
@@ -49,7 +51,7 @@ function commit(next: GarageData): void {
 }
 
 function onStorage(e: StorageEvent): void {
-  if (e.key !== STORAGE_KEY) return;
+  if (e.key !== scopedKey()) return;
   state = readStorage();
   listeners.forEach((l) => l());
 }
@@ -83,7 +85,22 @@ export function useHydrated(): boolean {
 const bumpKm = (vehicles: Vehicle[], vehicleId: string, km: number): Vehicle[] =>
   vehicles.map((v) => (v.id === vehicleId ? { ...v, currentKm: nextOdometer(v.currentKm, km) } : v));
 
+/** Define a área de dados local da pessoa autenticada. Não transfere dados entre contas. */
+export function setGarageAccount(userId:string|null):void{
+ if(storageOwner===userId)return;
+ storageOwner=userId;loaded=false;state=EMPTY;ensureLoaded();
+ listeners.forEach(fn=>fn());
+}
 export const garage = {
+  /** Migração voluntária dos dados anteriores ao login. Só importe se forem seus. */
+  importLegacy():{vehiclesAdded:number;recordsAdded:number}{
+   if(!storageOwner)throw Error('É necessário entrar na conta.');
+   let parsed:unknown;
+   try{parsed=JSON.parse(window.localStorage.getItem(STORAGE_KEY)||'null');}catch{throw Error('Arquivo local antigo inválido.');}
+   const data=garageDataSchema.safeParse(parsed);
+   if(!data.success)throw Error('Nenhum dado antigo válido encontrado neste navegador.');
+   return this.mergeCloud(data.data);
+  },
   /** Acrescenta registros ausentes, preservando a versão local de cada registro existente. */
   mergeCloud(input: GarageData): { vehiclesAdded: number; recordsAdded: number } {
     const data = garageDataSchema.parse(input);
