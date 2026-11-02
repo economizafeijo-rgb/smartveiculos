@@ -47,7 +47,7 @@ function CustomerServices(){
   return()=>{if(ch)void supabase?.removeChannel(ch);};
  },[load]);
  const chosen=services.find(c=>c.id===selected);
- return <div className="min-h-screen bg-[#f4f6fa] text-slate-900">
+ return <div className="sv-theme-surface sv-service-shell min-h-screen bg-[#f4f6fa] text-slate-900">
   <header className="border-b bg-[#111d30] text-white">
    <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
     <a href="/" className="flex items-center gap-2 text-base font-black"><CarFront size={22} className="text-orange-400"/> Smart<span className="text-orange-400">Veículos</span></a>
