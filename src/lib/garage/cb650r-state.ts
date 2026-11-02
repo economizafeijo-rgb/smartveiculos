@@ -38,3 +38,18 @@ export function saveBikeMeasurements(update:Partial<BikeMeasurements>){
  try{window.localStorage.setItem(KEY,JSON.stringify(next));}catch{throw Error('Não foi possível salvar as medições neste navegador.');}
  snapshot=next;notify();
 }
+
+/** Recupera da nuvem apenas valores que ainda estão vazios localmente. */
+export function mergeBikeMeasurements(remote:Partial<BikeMeasurements>):number{
+ hydrate();
+ const next={...snapshot};
+ let count=0;
+ for(const key of Object.keys(DEFAULT) as (keyof BikeMeasurements)[]){
+  const value=remote[key];
+  if(next[key]===''&&typeof value==='string'&&value.length<=(key==='notes'?600:24)&&value!==''){
+   next[key]=value;count++;
+  }
+ }
+ if(count)saveBikeMeasurements(next);
+ return count;
+}
