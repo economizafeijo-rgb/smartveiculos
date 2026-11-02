@@ -72,7 +72,8 @@ export function CB650RDashboard(){
    const nextDate=item.monthInterval!==null&&logged?addMonthsToDate(logged.date,item.monthInterval):null;
    const isDue=Boolean(bike&&(nextKm!==null&&bike.currentKm>=nextKm||nextDate&&nextDate<=now));
    const isSoon=Boolean(bike&&(nextKm!==null&&nextKm-bike.currentKm<=1000||nextDate&&nextDate>now&&(Date.parse(nextDate+'T00:00:00Z')-Date.parse(now+'T00:00:00Z'))<=30*86400000));
-   return {item,nextKm,nextDate,logged,lastKm,status:isDue?'due':isSoon?'soon':'ok'};
+   const status:'ok'|'soon'|'due'=isDue?'due':isSoon?'soon':'ok';
+   return {item,nextKm,nextDate,logged,lastKm,status};
  });
  const danger=(frontDepth!==null&&frontDepth<=SPEC.frontMinMm)||(rearDepth!==null&&rearDepth<=SPEC.rearMinMm)||(chainSlack!==null&&chainSlack>SPEC.chainDoNotRide);
  function notify(message:string){setError('');setNotice(message);}
