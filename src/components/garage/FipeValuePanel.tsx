@@ -1,8 +1,8 @@
 import {useEffect,useState,type FormEvent} from 'react';
 import {ArrowRight,CalendarDays,CheckCircle2,ChevronDown,ExternalLink,RefreshCw,TrendingUp} from 'lucide-react';
 import {
-  fipeBrands,fipeModels,fipePrice,fipeYears,getMonthStamp,needsFipeRefresh,
-  readFipe,writeFipe,type FipeKind,type FipeOption,type FipeSaved,type FipeSelection,
+  displayedFipe,fipeBrands,fipeModels,fipePrice,fipeYears,needsFipeRefresh,
+  refreshFipe,writeFipe,type FipeKind,type FipeOption,type FipeSaved,type FipeSelection,
 } from '@/lib/garage/fipe';
 
 const optionClass='w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 disabled:opacity-55';
@@ -36,14 +36,13 @@ export function FipeValuePanel({vehicleId,kind,vehicleName,brandHint='',yearHint
  useEffect(()=>{
   if(!vehicleId){setSaved(null);return;}
   let active=true;
-  const cached=readFipe(vehicleId);
+  const cached=displayedFipe(vehicleId);
   setSaved(cached);
   setError('');setMessage('');
   if(cached&&needsFipeRefresh(cached,new Date())){
    setFetching(true);
-   void fipePrice(kind,cached.selection).then(quote=>{
+   void refreshFipe(vehicleId,kind,cached).then(updated=>{
     if(!active)return;
-    const updated={selection:cached.selection,quote,checkedAt:new Date().toISOString()};
     writeFipe(vehicleId,updated);setSaved(updated);
    }).catch(e=>{if(active)setError('Não foi possível atualizar a referência automaticamente: '+getMessage(e));})
    .finally(()=>{if(active)setFetching(false);});
@@ -92,9 +91,9 @@ export function FipeValuePanel({vehicleId,kind,vehicleName,brandHint='',yearHint
 
  function startEditing(){
   setError('');setMessage('');
-  setBrandId(saved?.selection.brandId??'');
-  setModelId(saved?.selection.modelId??'');
-  setYearId(saved?.selection.yearId??'');
+  setBrandId(saved?.selection?.brandId??'');
+  setModelId(saved?.selection?.modelId??'');
+  setYearId(saved?.selection?.yearId??'');
   setEditing(true);
  }
  async function save(event:FormEvent){
@@ -113,7 +112,7 @@ export function FipeValuePanel({vehicleId,kind,vehicleName,brandHint='',yearHint
   };
   try{
    const quote=await fipePrice(kind,selection);
-   const record:FipeSaved={selection,quote,checkedAt:new Date().toISOString()};
+   const record:FipeSaved={selection,quote,checkedAt:new Date().toISOString(),source:'api'};
    writeFipe(vehicleId,record);
    setSaved(record);setEditing(false);
    setMessage('Versão FIPE vinculada ao seu veículo. A nova referência será consultada automaticamente em cada mês, quando você abrir a ficha.');
@@ -124,10 +123,9 @@ export function FipeValuePanel({vehicleId,kind,vehicleName,brandHint='',yearHint
   if(!saved||!vehicleId)return;
   setError('');setMessage('');setFetching(true);
   try{
-   const quote=await fipePrice(kind,saved.selection);
-   const updated={selection:saved.selection,quote,checkedAt:new Date().toISOString()};
+   const updated=await refreshFipe(vehicleId,kind,saved);
    writeFipe(vehicleId,updated);setSaved(updated);
-   setMessage('Consulta concluída. Referência publicada: '+quote.referenceMonth+'.');
+   setMessage('Valor atualizado em reais. Referência publicada: '+updated.quote.referenceMonth+'.');
   }catch(e){setError(getMessage(e));}
   finally{setFetching(false);}
  }
@@ -153,10 +151,11 @@ export function FipeValuePanel({vehicleId,kind,vehicleName,brandHint='',yearHint
       'Selecione a versão exata para consultar o preço real.'}
      </p>
      {saved&&<p className="mt-2 max-w-2xl text-xs leading-5 text-slate-500">{saved.quote.brand} · {saved.quote.model} · {saved.quote.modelYear} · {saved.quote.fuel} · Código FIPE {saved.quote.codeFipe}</p>}
-     {saved&&!recent&&<p className="mt-2 text-xs text-amber-800">A fonte ainda apresenta essa referência; não há confirmação de valor para o mês atual.</p>}
+     {saved&&!recent&&<p className="mt-2 text-xs text-amber-800">O último valor confirmado é de {saved.quote.referenceMonth}. Clique em Atualizar FIPE para tentar consultar a referência mais recente.</p>}
+     {saved?.source==='published-reference'&&<p className="mt-2 text-xs text-slate-500">Valor de referência pesquisado em fontes públicas em 02/11/2026; atualização em tempo real disponível pelo botão.</p>}
     </div>
     <div className="flex shrink-0 flex-wrap gap-2">
-     {saved&&<button disabled={fetching} type="button" onClick={()=>void refresh()} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-800 hover:bg-slate-50 disabled:opacity-50"><RefreshCw size={15} className={fetching?'animate-spin':''}/> Atualizar</button>}
+     {saved&&<button disabled={fetching} type="button" onClick={()=>void refresh()} className="inline-flex items-center gap-2 rounded-xl border border-orange-400 bg-[#152944] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm hover:bg-[#243d61] disabled:opacity-60"><RefreshCw size={15} className={fetching?'animate-spin':''}/> {fetching?'Consultando...':'Atualizar FIPE'}</button>}
      <button type="button" onClick={()=>editing?setEditing(false):startEditing()} className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-extrabold text-slate-950 hover:bg-orange-400">{saved?(editing?'Fechar seleção':'Alterar versão FIPE'):(editing?'Fechar seleção':'Configurar Tabela FIPE')}<ArrowRight size={15}/></button>
     </div>
    </div>}
@@ -188,7 +187,7 @@ export function FipeValuePanel({vehicleId,kind,vehicleName,brandHint='',yearHint
     </div>
    </form>}
    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-slate-100 pt-3 text-[11px] leading-5 text-slate-500">
-    <span>Fonte: Tabela FIPE via API Fipe/Parallelum · Atualização automática quando a ficha é aberta em um novo mês.</span>
+    <span>Fonte dos valores ao atualizar: API independente FIPE/Parallelum. Referência e ano são informados pela fonte consultada; atualização automática ao abrir a ficha no mês seguinte.</span>
     <a className="inline-flex items-center gap-1 font-bold text-orange-700 hover:underline" target="_blank" rel="noopener noreferrer" href="https://veiculos.fipe.org.br/">Consultar FIPE <ExternalLink size={12}/></a>
    </div>
   </div>
@@ -199,7 +198,7 @@ export function FipeValuePanel({vehicleId,kind,vehicleName,brandHint='',yearHint
 export function FipeVehicleSummary({vehicleId}:{vehicleId:string}){
  const [entry,setEntry]=useState<FipeSaved|null>(null);
  useEffect(()=>{
-  const sync=()=>setEntry(readFipe(vehicleId));
+  const sync=()=>setEntry(displayedFipe(vehicleId));
   sync();
   const onUpdated=(e:Event)=>{
    if((e as CustomEvent<string>).detail===vehicleId)sync();
