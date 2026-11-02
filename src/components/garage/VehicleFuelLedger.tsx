@@ -80,7 +80,7 @@ export function VehicleFuelLedger({vehicleId,vehicleName,currentKm,kind}:Props){
   catch(e){setError(e instanceof Error?e.message:'Erro ao excluir registro.');}
  }
  function setRange(next:FuelPeriod){setPeriod(next);setPage(0);}
- function setYear(next:string){setYear(next);setPage(0);}
+ function changeYear(next:string){setYear(next);setPage(0);}
  return <section className="sv-fuel-ledger overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
   <header className="flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-[#10223c] via-[#183456] to-[#243c5e] px-5 py-5 text-white sm:px-6">
    <div className="flex min-w-0 items-center gap-3">
@@ -125,7 +125,7 @@ export function VehicleFuelLedger({vehicleId,vehicleName,currentKm,kind}:Props){
      {([['week','Semanas'],['month','Meses'],['year','Anos']] as const).map(([v,label])=><button type="button" key={v} aria-pressed={period===v} onClick={()=>setRange(v)} className={'rounded-lg px-3 py-2 text-xs font-black '+(period===v?'bg-[#172a44] text-white shadow-sm':'text-slate-600 hover:bg-white')}>{label}</button>)}
     </div>
     <div className="flex flex-wrap gap-2">
-     {period!=='year'&&<label className="inline-flex items-center gap-2 text-xs font-bold text-slate-600"><CalendarDays size={15}/> Ano<select aria-label="Filtrar ano" value={year} onChange={e=>setYear(e.target.value)} className={formInput+' !w-auto'}><option value="all">Todos</option>{years.map(y=><option key={y} value={y}>{y}</option>)}</select></label>}
+     {period!=='year'&&<label className="inline-flex items-center gap-2 text-xs font-bold text-slate-600"><CalendarDays size={15}/> Ano<select aria-label="Filtrar ano" value={year} onChange={e=>changeYear(e.target.value)} className={formInput+' !w-auto'}><option value="all">Todos</option>{years.map(y=><option key={y} value={y}>{y}</option>)}</select></label>}
      <label className="relative"><span className="sr-only">Buscar abastecimento</span><Search size={15} className="absolute left-3 top-3 text-slate-400"/><input className={formInput+' !w-44 !pl-9'} placeholder="Buscar registro" value={term} onChange={e=>{setTerm(e.target.value);setPage(0);}}/></label>
     </div>
    </div>
