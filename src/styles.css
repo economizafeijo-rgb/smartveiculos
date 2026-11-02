@@ -428,3 +428,18 @@ body:has(.sv-homepage)::-webkit-scrollbar {
   select:disabled, input:disabled) {
   cursor: not-allowed;
 }
+
+/* Botão final da homepage — fallback explícito contra classes utilitárias inválidas. */
+.sv-homepage .sv-final-cta {
+  background-color: #AC5937;
+  color: #FFFFFF;
+  border-color: #C88A66;
+}
+.sv-homepage .sv-final-cta:hover {
+  background-color: #93492B;
+  border-color: #B77450;
+}
+.sv-homepage .sv-final-cta:focus-visible {
+  outline: 2px solid #E6A57C;
+  outline-offset: 3px;
+}
