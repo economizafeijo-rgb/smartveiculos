@@ -1,6 +1,7 @@
 import { supabase } from './client';
 import { garageDataSchema, type GarageData } from '../garage/types';
 import type { Fillup } from '../garage/fuel';
+import type { BikeMeasurements } from '../garage/cb650r-state';
 
 function client() {
   if (!supabase) throw new Error('Configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY.');
@@ -98,4 +99,32 @@ export async function importLocalFillups(fillups: readonly Fillup[]): Promise<nu
   if(error)throw error;
  }
  return rows.length;
+}
+
+/** Backup manual do perfil de inspeções da CB650R, protegido por owner_id e FK de veículo. */
+export async function importBikeMeasurements(vehicleId:string,profile:BikeMeasurements):Promise<void>{
+ const owner=await currentUser();
+ const payload:Partial<BikeMeasurements>={};
+ const allowed:(keyof BikeMeasurements)[]=['deliveryDate','frontDepthMm','rearDepthMm','chainSlackMm','frontTireKm','rearTireKm','chainKitKm','lastChainKm','notes'];
+ for(const key of allowed){
+  const value=profile[key];
+  if(typeof value!=='string'||value.length>(key==='notes'?600:24))throw new Error('Medições inválidas para backup.');
+  payload[key]=value;
+ }
+ const {error}=await client().from('motorcycle_profiles').upsert({
+  vehicle_id:vehicleId,owner_id:owner,profile_kind:'honda_cb650r_2024',profile_data:payload
+ },{onConflict:'vehicle_id'});
+ if(error)throw error;
+}
+export async function loadBikeMeasurements(vehicleId:string):Promise<Partial<BikeMeasurements>|null>{
+ await currentUser();
+ const {data,error}=await client().from('motorcycle_profiles').select('profile_data')
+  .eq('vehicle_id',vehicleId).eq('profile_kind','honda_cb650r_2024').maybeSingle();
+ if(error)throw error;
+ const value=data?.profile_data;
+ if(!value||typeof value!=='object'||Array.isArray(value))return null;
+ const obj=value as Record<string,unknown>,result:Partial<BikeMeasurements>={};
+ const allowed:(keyof BikeMeasurements)[]=['deliveryDate','frontDepthMm','rearDepthMm','chainSlackMm','frontTireKm','rearTireKm','chainKitKm','lastChainKm','notes'];
+ for(const key of allowed){const v=obj[key];if(typeof v==='string'&&v.length<=(key==='notes'?600:24))result[key]=v;}
+ return result;
 }
