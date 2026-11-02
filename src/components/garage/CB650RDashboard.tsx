@@ -27,7 +27,7 @@ function Status({state}:{state:'ok'|'soon'|'due'|'done'}){const v={
  ok:['Programada','bg-slate-100 text-slate-700'],
  soon:['Em breve','bg-amber-100 text-amber-800'],
  due:['Conferir histórico','bg-rose-100 text-rose-800'],
- done:['Comprovada','bg-emerald-100 text-emerald-800'],
+ done:['Registrada','bg-emerald-100 text-emerald-800'],
 }[state];return <span className={'rounded-full px-2.5 py-1 text-xs font-bold '+v[1]}>{v[0]}</span>}
 export function CB650RDashboard(){
  const hydrated=useHydrated();
