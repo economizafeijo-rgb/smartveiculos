@@ -360,3 +360,42 @@ div:has(> a[href*="utm_source=lovable-badge"]) {
   .sv-dashboard-photo {transition: none !important;animation: none !important;transform: none !important;}
   .sv-developer-name {transition: none !important;}
 }
+
+
+/* Homepage — barra invisível, navegação por roda/toque/teclado preservada.
+   Não aplicar a garagem, login, páginas de negócios nem ao modal. */
+html:has(.sv-homepage),
+body:has(.sv-homepage) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html:has(.sv-homepage)::-webkit-scrollbar,
+body:has(.sv-homepage)::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* Clipping apenas horizontal para evitar barra lateral por animações. */
+.sv-homepage { overflow-x: clip; }
+/* Algumas imagens já chegam escuras; o gradiente agora protege só os rótulos. */
+.sv-homepage .sv-hero-photo {
+  filter: brightness(1.23) contrast(1.035) saturate(1.035);
+}
+.sv-homepage .sv-solution-photo {
+  filter: brightness(1.13) contrast(1.025) saturate(1.035);
+}
+/* Identidade bronze-cobre suave: a legibilidade dos CTAs continua prioritária. */
+.sv-homepage .sv-accent-word::after {
+  background-color: #c98e69;
+  opacity: .48;
+}
+.sv-homepage .sv-hero-tile:hover,
+.sv-homepage .sv-interactive-surface:hover {
+  border-color: rgb(180 109 71 / 46%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sv-homepage .sv-hero-photo,
+  .sv-homepage .sv-solution-photo {
+    transition: none !important;
+  }
+}
