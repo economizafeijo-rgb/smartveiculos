@@ -2,18 +2,22 @@ import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ArrowLeft, ArrowUpRight, CarFront, CheckCircle2, CircleAlert, Fuel, Gauge, Info, PackageSearch, Plus, Search, Wrench } from 'lucide-react';
-import { addFillup, calculateFuelStats, fuelSpent, removeFillup, useFillups, type FuelKind } from '@/lib/garage/fuel';
+import { calculateFuelStats, fuelSpent, useFillups, type FuelKind } from '@/lib/garage/fuel';
 import { garage, useGarage, useHydrated } from '@/lib/garage/store';
 import { formatBRL, formatKm, formatDate } from '@/lib/garage/logic';
 import { GOL, GOL_PROBLEMS, IMPORTANT_LINKS, MAINTENANCE_PRESETS } from '@/lib/garage/gol-reference';
 import { CloudSyncPanel } from '@/components/garage/CloudSyncPanel';
 import { FipeValuePanel } from '@/components/garage/FipeValuePanel';
+import { VehicleFuelLedger } from '@/components/garage/VehicleFuelLedger';
+import { VehicleVideoLibrary } from '@/components/garage/VehicleVideoLibrary';
+import { VehicleMaintenanceLedger } from '@/components/garage/VehicleMaintenanceLedger';
 import {FIPE_FEATURED_KEYS} from '@/lib/garage/fipe';
 
-type Tab='painel'|'abastecimentos'|'manutencoes'|'diagnosticos';
+type Tab='painel'|'abastecimentos'|'manutencoes'|'diagnosticos'|'revisoes'|'videos';
 const tabs:{id:Tab;label:string;icon:typeof Gauge}[]=[
  {id:'painel',label:'Visão geral',icon:Gauge},{id:'abastecimentos',label:'Abastecimentos',icon:Fuel},
  {id:'manutencoes',label:'Manutenções',icon:Wrench},{id:'diagnosticos',label:'Diagnósticos e peças',icon:PackageSearch},
+ {id:'revisoes',label:'Plano VW',icon:CheckCircle2},{id:'videos',label:'Vídeos e reparos',icon:Info},
 ];
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');};
 const field='w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
@@ -33,7 +37,6 @@ export function GolDashboard(){
  const [photoError,setPhotoError]=useState(false);
  const [startKm,setStartKm]=useState('');
  const [odometer,setOdometer]=useState('');
- const [fuel,setFuel]=useState({date:today(),km:'',liters:'',price:'',kind:'gasolina' as FuelKind,full:true});
  const [maintenance,setMaintenance]=useState<Maintenance>(newMaintenance);
  const [query,setQuery]=useState('');
  const [system,setSystem]=useState('Todos');
@@ -61,15 +64,6 @@ export function GolDashboard(){
  const saveOdometer=(event:FormEvent)=>{event.preventDefault();if(!vehicle)return;const km=Number(odometer);
   if(!Number.isSafeInteger(km)||km<vehicle.currentKm||km>9999999){setError('O novo odômetro não pode ser inferior ao atual.');return;}
   garage.setKm(vehicle.id,km);setOdometer('');notify('Odômetro atualizado com sucesso.');
- };
- const saveFuel=(event:FormEvent)=>{event.preventDefault();if(!vehicle)return;
-  const km=Number(fuel.km);
-  if(km<vehicle.currentKm){setError('O novo abastecimento precisa ter hodômetro igual ou maior que o registrado.');return;}
-  try{
-   addFillup({vehicleId:vehicle.id,date:fuel.date,km,liters:Number(fuel.liters),pricePerLiter:Number(fuel.price),fuel:fuel.kind,fullTank:fuel.full});
-   if(km>vehicle.currentKm)garage.setKm(vehicle.id,km);
-   setFuel(f=>({...f,km:'',liters:'',price:''}));notify('Abastecimento salvo. Para obter o consumo, registre dois tanques cheios consecutivos do mesmo combustível.');
-  }catch(e){setError(e instanceof Error?e.message:'Não foi possível salvar o abastecimento.');}
  };
  const saveMaintenance=(event:FormEvent)=>{event.preventDefault();if(!vehicle)return;
   const km=Number(maintenance.km),cost=Number(maintenance.cost),next=maintenance.nextKm?Number(maintenance.nextKm):null;
@@ -134,24 +128,9 @@ export function GolDashboard(){
     </div>
     <section className={box}><h2 className="text-lg font-bold">Referência de consumo do modelo</h2><p className="mt-1 text-sm text-slate-500">Valores de referência para a versão manual. O consumo real depende do uso e do estado do veículo.</p><div className="mt-4 overflow-x-auto"><table className="w-full min-w-[440px] text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="py-2">Combustível</th><th>Cidade</th><th>Estrada</th></tr></thead><tbody><tr className="border-b"><td className="py-3 font-semibold">Gasolina</td><td>10,7 km/l</td><td>13,7 km/l</td></tr><tr><td className="py-3 font-semibold">Etanol</td><td>7,3 km/l</td><td>9,4 km/l</td></tr></tbody></table></div></section>
    </div>}
-   {tab==='abastecimentos'&&<div className="sv-tab-content grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-    <section className={box}><h2 className="text-lg font-bold">Novo abastecimento</h2><p className="mt-1 text-sm text-slate-500">Use o método tanque cheio para calcular o consumo confiável.</p>
-     <form onSubmit={saveFuel} className="mt-5 grid gap-4 sm:grid-cols-2">
-      <label className="text-sm font-semibold">Data<input required type="date" className={field+' mt-1'} value={fuel.date} onChange={e=>setFuel(f=>({...f,date:e.target.value}))}/></label>
-      <label className="text-sm font-semibold">Combustível<select className={field+' mt-1'} value={fuel.kind} onChange={e=>setFuel(f=>({...f,kind:e.target.value as FuelKind}))}><option value="gasolina">Gasolina</option><option value="etanol">Etanol</option></select></label>
-      <label className="text-sm font-semibold">Odômetro (km)<input required type="number" min={vehicle?.currentKm||0} max="9999999" className={field+' mt-1'} value={fuel.km} onChange={e=>setFuel(f=>({...f,km:e.target.value}))}/></label>
-      <label className="text-sm font-semibold">Litros<input required type="number" min="0.01" max="200" step="0.001" className={field+' mt-1'} value={fuel.liters} onChange={e=>setFuel(f=>({...f,liters:e.target.value}))}/></label>
-      <label className="text-sm font-semibold">Preço por litro (R$)<input required type="number" min="0.01" max="100" step="0.001" className={field+' mt-1'} value={fuel.price} onChange={e=>setFuel(f=>({...f,price:e.target.value}))}/></label>
-      <label className="flex items-center gap-2 self-end rounded-xl border border-slate-200 p-3 text-sm"><input type="checkbox" checked={fuel.full} onChange={e=>setFuel(f=>({...f,full:e.target.checked}))}/> Tanque cheio</label>
-      <button disabled={!vehicle} className={btn+' bg-blue-600 text-white disabled:opacity-50 sm:col-span-2'}><Plus size={16}/> Salvar abastecimento</button>
-     </form>
-     <p className="mt-4 rounded-xl bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">Cálculo: distância entre dois abastecimentos cheios consecutivos do mesmo combustível ÷ litros do segundo abastecimento. Sem histórico suficiente, o painel mostra “—”.</p>
-    </section>
-    <section className={box}><h2 className="text-lg font-bold">Controle flex</h2><div className="mt-4 grid gap-3 sm:grid-cols-2">{(['gasolina','etanol'] as const).map(f=><div key={f} className="rounded-xl bg-slate-50 p-4"><p className="text-sm font-medium capitalize">{f}</p><p className="mt-2 text-2xl font-extrabold">{value(f)?value(f)!.kmPerLiter.toFixed(2)+' km/l':'—'}</p><p className="mt-1 text-xs text-slate-500">{value(f)?formatBRL(value(f)!.costPerKm)+'/km':'Aguardando medições'}</p></div>)}</div>
-     <h3 className="mt-6 font-semibold">Histórico</h3>
-     {!fills.length?<p className="mt-4 text-sm text-slate-500">Nenhum abastecimento registrado.</p>:<div className="mt-3 max-h-[420px] space-y-2 overflow-y-auto">{fills.map(f=><div key={f.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 p-3 text-sm"><div><p className="font-semibold capitalize">{f.fuel} · {formatBRL(f.liters*f.pricePerLiter)}</p><p className="mt-1 text-xs text-slate-500">{formatDate(f.date)} · {formatKm(f.km)} · {f.liters.toFixed(2)} L · {f.fullTank?'tanque cheio':'parcial'}</p></div><button aria-label="Remover abastecimento" className="rounded-lg px-2 py-1 text-xs text-red-600 hover:bg-red-50" onClick={()=>{if(window.confirm('Remover este abastecimento?'))removeFillup(f.id);}}>Excluir</button></div>)}</div>}
-    </section>
-   </div>}
+   {tab==='abastecimentos'&&<VehicleFuelLedger vehicleId={vehicle?.id??''} vehicleName={GOL.name} currentKm={vehicle?.currentKm??null} kind="carro"/>}
+   {tab==='revisoes'&&<VehicleMaintenanceLedger vehicle={{kind:'carro',name:GOL.name,modelYear:2014,modelKey:'gol-g6-selecao-2014'}} vehicleId={vehicle?.id??''} currentKm={vehicle?.currentKm??null}/>}
+   {tab==='videos'&&<VehicleVideoLibrary vehicle={{kind:'carro',name:GOL.name,modelYear:2014,modelKey:'gol-g6-selecao-2014'}}/>}
    {tab==='manutencoes'&&<div className="sv-tab-content grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
     <section className={box}><h2 className="text-lg font-bold">Registrar serviço</h2><p className="mt-1 text-sm text-slate-500">Óleo, filtros, correia dentada, peças e revisões.</p><form onSubmit={saveMaintenance} className="mt-5 grid gap-4 sm:grid-cols-2">
      <label className="text-sm font-semibold sm:col-span-2">Serviço<select className={field+' mt-1'} value={maintenance.name} onChange={e=>setMaintenance(m=>({...m,name:e.target.value}))}>{MAINTENANCE_PRESETS.map(s=><option key={s}>{s}</option>)}</select></label>
