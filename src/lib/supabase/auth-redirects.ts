@@ -16,6 +16,6 @@ export function authRedirectUrl(path:'/confirmar-email'|'/redefinir-senha'):stri
  return new URL(path,origin).toString();
 }
 export function safeAuthTarget(next:string|null):string{
- const allowed=['/garagem','/gol-g6','/cb650r','/admin'];
+ const allowed=['/garagem','/gol-g6','/cb650r','/admin','/meus-atendimentos'];
  return next&&allowed.includes(next)?next:'/garagem';
 }
