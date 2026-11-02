@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Plus, Wrench } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { CarFront, Plus, Wrench } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AlertsPanel } from "@/components/garage/AlertsPanel";
@@ -55,9 +55,11 @@ function GaragePage() {
               <p className="text-xs text-muted-foreground">manutenção & quilometragem</p>
             </div>
           </div>
-          {selected && (
-            <Button onClick={() => setRecordDlg({ open: true })} className="shadow-pop"><Plus /> Registrar</Button>
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            <Link to="/gol-g6" className="inline-flex items-center gap-2 rounded-lg border border-input bg-card px-3 py-2 text-sm font-bold hover:bg-secondary"><CarFront className="size-4" /> Gol G6 Seleção</Link>
+            <a href="/admin" className="hidden rounded-lg border border-input bg-card px-3 py-2 text-sm font-bold hover:bg-secondary sm:inline-flex">Painel admin</a>
+            {selected && <Button onClick={() => setRecordDlg({ open: true })} className="shadow-pop"><Plus /> Registrar</Button>}
+          </div>
         </div>
       </header>
 
@@ -115,7 +117,10 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
       <div className="mx-auto flex w-fit gap-3 text-primary"><Car className="size-10" /><Moto className="size-10" /></div>
       <h2 className="mt-4 text-2xl font-bold sm:text-3xl">Comece pela sua garagem</h2>
       <p className="mx-auto mt-2 max-w-md text-muted-foreground">Cadastre um carro ou uma moto e registre trocas de óleo, revisões, peças e a quilometragem.</p>
-      <Button size="lg" className="mt-6 shadow-pop" onClick={onAdd}><Plus /> Adicionar veículo</Button>
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <Button size="lg" className="shadow-pop" onClick={onAdd}><Plus /> Adicionar veículo</Button>
+        <Link to="/gol-g6" className="inline-flex items-center gap-2 rounded-xl border border-input bg-white px-5 py-3 text-sm font-bold text-foreground hover:bg-secondary"><CarFront className="size-4" /> Ficha Gol G6 Seleção prata</Link>
+      </div>
     </section>
   );
 }
