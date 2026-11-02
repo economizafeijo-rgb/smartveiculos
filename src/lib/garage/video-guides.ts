@@ -43,6 +43,14 @@ export const GOL_VIDEO_GUIDES:VideoGuide[]=[
   channel:'DigoMK4',category:'motor',topic:'Luz de óleo e sensores',
   description:'Demonstra a substituição do interruptor de pressão do óleo da família EA111.',
   compatibility:'Motor VW EA111 1.0 e 1.6; diagnóstico da pressão real é obrigatório antes de trocar.',risk:'profissional'},
+ {id:'WNtG4NilVyw',title:'Troca de óleo e filtro do Gol G6 em casa (parte 1)',
+  channel:'MARCOS LAENDER',category:'preventiva',topic:'Óleo e filtro do motor',
+  description:'Demonstra a troca de óleo e filtro de óleo no Gol G6.',
+  compatibility:'Gol G6; confira especificação do óleo, quantidade e motor do 1.6 2014.',risk:'rotina'},
+ {id:'EotSu6zTOm0',title:'Fluido da direção hidráulica do Gol G6',
+  channel:'O que Der na Telha',category:'motor',topic:'Direção hidráulica e vazamentos',
+  description:'Mostra o preenchimento do sistema de direção hidráulica. Não é um procedimento de troca completa.',
+  compatibility:'Gol G6 equipado com direção hidráulica; baixa de fluido requer investigação de vazamentos.',risk:'profissional'},
 ];
 export const CB650R_VIDEO_GUIDES:VideoGuide[]=[
  {id:'YVn_aOsHE2U',title:'Troca de óleo e filtro da Honda CB650R',
