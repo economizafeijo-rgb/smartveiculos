@@ -197,7 +197,7 @@ export function CB650RDashboard(){
       ['frontDepthMm','Sulco dianteiro (mm)'],['rearDepthMm','Sulco traseiro (mm)'],['chainSlackMm','Folga da corrente (mm)'],['lastChainKm','Última lubrificação (km)'],
       ['frontTireKm','Pneu dianteiro instalado (km)'],['rearTireKm','Pneu traseiro instalado (km)'],['chainKitKm','Kit relação instalado (km)']
     ] as const).map(([key,label])=><Label key={key} text={label}><input type="number" min="0" step={key.endsWith('Mm')?'0.1':'1'} className={input} value={inspections[key]} onChange={e=>setInspections(s=>({...s,[key]:e.target.value}))}/></Label>)}</div><p className="text-xs text-slate-500">Deixe em branco campos não medidos. Use paquímetro/medidor adequado e apoio profissional em inspeções de segurança.</p><div className="flex gap-3"><button className={primary}>Salvar medições</button><button type="button" className={secondary} onClick={()=>setInspectionsOpen(false)}>Cancelar</button></div></form></div>}
-    <CloudSyncPanel />
+    <CloudSyncPanel bikeProfile />
     <footer className="border-t py-5 text-xs text-slate-500">SmartVeículos · Honda CB650R 2024 · Registros locais; backup manual disponível após login. Alertas não substituem diagnóstico profissional ou comprovantes da Honda.</footer>
   </main>
  </div>;
