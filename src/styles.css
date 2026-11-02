@@ -1812,3 +1812,36 @@ body:has(.sv-homepage)::-webkit-scrollbar {
     animation: none !important;
   }
 }
+
+
+/* Garagem - central de cuidados: o conteúdo detalhado rola somente quando aberto,
+   preservando o cabeçalho e impedindo que a central fique cortada no desktop. */
+.sv-owner-garage .sv-garage-hub {
+  border-color: rgba(148, 163, 184, .34);
+  box-shadow: 0 10px 32px -28px rgba(10, 26, 48, .45);
+}
+.sv-owner-garage .sv-garage-hub > button:focus-visible {
+  outline: 3px solid #f97316;
+  outline-offset: -3px;
+}
+.sv-owner-garage .sv-fuel-ledger,
+.sv-owner-garage .sv-videoguide {
+  max-width: 100%;
+}
+@media (min-width: 1024px) and (min-height: 640px) {
+  .sv-owner-garage--hub-open .sv-garage-main {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100,116,139,.45) transparent;
+  }
+  .sv-owner-garage--hub-open .sv-garage-vehicle-grid {
+    min-height: 225px;
+    flex: 0 0 auto;
+    grid-auto-rows: minmax(225px, 1fr);
+  }
+}
+.sv-owner-garage .sv-videoguide iframe {
+  background: #000;
+}
