@@ -385,13 +385,13 @@ body:has(.sv-homepage)::-webkit-scrollbar {
   filter: brightness(1.13) contrast(1.025) saturate(1.035);
 }
 /* Identidade bronze-cobre suave: a legibilidade dos CTAs continua prioritária. */
-.sv-homepage .sv-accent-word::after {
-  background-color: #c98e69;
-  opacity: .48;
+ .sv-homepage .sv-accent-word::after {
+  background-color: #FB923C;
+  opacity: .52;
 }
 .sv-homepage .sv-hero-tile:hover,
 .sv-homepage .sv-interactive-surface:hover {
-  border-color: rgb(180 109 71 / 46%);
+  border-color: rgb(251 146 60 / 42%);
 }
 @media (prefers-reduced-motion: reduce) {
   .sv-homepage .sv-hero-photo,
@@ -431,15 +431,119 @@ body:has(.sv-homepage)::-webkit-scrollbar {
 
 /* Botão final da homepage — fallback explícito contra classes utilitárias inválidas. */
 .sv-homepage .sv-final-cta {
-  background-color: #AC5937;
-  color: #FFFFFF;
-  border-color: #C88A66;
+  background-color: #F97316;
+  color: #111827;
+  border-color: #FDBA74;
 }
 .sv-homepage .sv-final-cta:hover {
-  background-color: #93492B;
-  border-color: #B77450;
+  background-color: #EA580C;
+  border-color: #F97316;
 }
 .sv-homepage .sv-final-cta:focus-visible {
-  outline: 2px solid #E6A57C;
+  outline: 2px solid #FDBA74;
   outline-offset: 3px;
+}
+
+/* SmartVeículos — laranja original, com contrastes e transparências equilibrados. */
+:root {
+  --sv-brand-orange: #F97316;
+  --sv-brand-orange-hover: #EA580C;
+  --sv-brand-ink: #111827;
+  --sv-brand-soft: #FFF7ED;
+}
+.sv-action-primary,
+.sv-homepage .sv-final-cta {
+  background-color: var(--sv-brand-orange);
+  color: var(--sv-brand-ink);
+  border-color: rgb(253 186 116 / 70%);
+  box-shadow: 0 10px 22px -12px rgb(249 115 22 / 52%);
+}
+.sv-action-primary:hover,
+.sv-homepage .sv-final-cta:hover {
+  background-color: var(--sv-brand-orange-hover);
+  color: var(--sv-brand-ink);
+  border-color: #FDBA74;
+  box-shadow: 0 13px 25px -12px rgb(234 88 12 / 56%);
+}
+.sv-action-primary:focus-visible,
+.sv-homepage .sv-final-cta:focus-visible {
+  outline: 2px solid #FB923C;
+  outline-offset: 3px;
+}
+.sv-glass-header {
+  background: rgb(12 22 39 / 87%);
+  border-color: rgb(255 255 255 / 13%);
+  box-shadow: 0 3px 20px -14px rgb(7 16 32 / 45%);
+  -webkit-backdrop-filter: blur(18px) saturate(128%);
+  backdrop-filter: blur(18px) saturate(128%);
+}
+.sv-glass-dark {
+  background: rgb(255 255 255 / 7%);
+  border-color: rgb(255 255 255 / 19%);
+  -webkit-backdrop-filter: blur(13px) saturate(115%);
+  backdrop-filter: blur(13px) saturate(115%);
+}
+.sv-glass-light {
+  background: rgb(255 255 255 / 88%);
+  border-color: rgb(226 232 240 / 82%);
+  box-shadow: 0 10px 32px -24px rgb(15 23 42 / 25%);
+  -webkit-backdrop-filter: blur(14px) saturate(110%);
+  backdrop-filter: blur(14px) saturate(110%);
+}
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .sv-glass-header { background: #0C1627; }
+  .sv-glass-dark { background: rgb(36 47 66 / 94%); }
+  .sv-glass-light { background: #FFFFFF; }
+}
+/* Fotos mais nítidas: iluminação uniforme sem lavá-las. */
+.sv-homepage .sv-hero-photo {
+  filter: brightness(1.12) contrast(1.025) saturate(1.06);
+}
+.sv-homepage .sv-solution-photo {
+  filter: brightness(1.07) contrast(1.02) saturate(1.04);
+}
+/* Formulário na altura da tela, sem navegação presa em scrollbar. */
+.sv-auth-page {
+  height: 100dvh;
+  min-height: 0;
+  overflow: clip;
+}
+.sv-auth-card {
+  background: rgb(255 255 255 / 94%);
+  border: 1px solid rgb(255 255 255 / 74%);
+  box-shadow: 0 18px 55px -25px rgb(15 23 42 / 27%);
+  -webkit-backdrop-filter: blur(17px) saturate(112%);
+  backdrop-filter: blur(17px) saturate(112%);
+}
+.sv-auth-aside {
+  background-size: cover;
+  background-position: center;
+}
+.sv-auth-aside::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(120deg,rgb(9 20 37 / 94%) 3%,rgb(9 20 37 / 71%) 65%,rgb(9 20 37 / 52%));
+}
+.sv-auth-aside-glass {
+  background: rgb(255 255 255 / 10%);
+  border: 1px solid rgb(255 255 255 / 16%);
+  -webkit-backdrop-filter: blur(11px) saturate(120%);
+  backdrop-filter: blur(11px) saturate(120%);
+}
+@media (max-height: 680px) {
+  .sv-auth-card { padding-top: 1rem; padding-bottom: 1rem; }
+  .sv-auth-aside .sv-auth-proof { padding-top: .45rem; padding-bottom: .45rem; }
+}
+@media (max-height: 560px) {
+  .sv-auth-aside { display: none; }
+  .sv-auth-layout { grid-template-columns: minmax(0, 1fr); }
+  .sv-auth-card { padding-top: .7rem; padding-bottom: .7rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sv-action-primary, .sv-glass-header, .sv-glass-light, .sv-glass-dark {
+    transition: none !important;
+  }
 }
