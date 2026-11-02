@@ -399,3 +399,32 @@ body:has(.sv-homepage)::-webkit-scrollbar {
     transition: none !important;
   }
 }
+
+/* SmartVeículos: cursor de interação global */
+/* Aplica a mãozinha a ações reais em todas as rotas, incluindo o X dos modais,
+   menus, cards clicáveis e controles Radix. Não altera cursor de campos de texto. */
+:is(
+  a[href]:not([aria-disabled="true"]),
+  button:not(:disabled):not([aria-disabled="true"]),
+  [role="button"]:not([aria-disabled="true"]):not([data-disabled]),
+  [role="tab"]:not([aria-disabled="true"]):not([data-disabled]),
+  [role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]),
+  [role="option"]:not([aria-disabled="true"]):not([data-disabled]),
+  summary,
+  select:not(:disabled),
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  label[for]
+) {
+  cursor: pointer;
+}
+
+/* Um botão indisponível não deve sugerir que pode ser acionado. */
+:is(button:disabled, button[aria-disabled="true"], [role="button"][aria-disabled="true"],
+  [role="tab"][aria-disabled="true"], [data-disabled][role="menuitem"],
+  select:disabled, input:disabled) {
+  cursor: not-allowed;
+}
