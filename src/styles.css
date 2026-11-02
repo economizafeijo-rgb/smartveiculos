@@ -1185,3 +1185,111 @@ body:has(.sv-homepage)::-webkit-scrollbar {
   .sv-owner-garage .sv-garage-backdrop,
   .sv-owner-garage .sv-garage-vehicle-card {transition: none !important;animation: none !important;}
 }
+
+/* Campanha gratuita — apenas a área de proprietários.
+   Componente responsivo com interação por tipo de veículo e recursos. */
+.sv-free-campaign {
+  scroll-margin-top: 80px;
+  background:
+    radial-gradient(ellipse 42% 65% at 100% 2%, rgb(249 115 22 / 10%), transparent 84%),
+    radial-gradient(ellipse 50% 75% at 0% 100%, rgb(59 130 246 / 8%), transparent 90%),
+    #edf2f8;
+}
+.sv-free-campaign-pattern {
+  opacity: .45;
+  background-image:
+    linear-gradient(rgb(144 158 178 / 12%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(144 158 178 / 12%) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: linear-gradient(90deg, transparent, black 25%, black 76%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 25%, black 76%, transparent);
+}
+.sv-free-campaign .sv-free-accent {
+  display: inline;
+  background: linear-gradient(100deg, #ea580c 4%, #b9380b 82%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.sv-free-campaign .sv-free-offer {
+  max-width: 570px;
+  border-color: rgb(253 186 116 / 77%);
+  box-shadow: 0 15px 38px -25px rgb(101 51 16 / 22%);
+}
+.sv-free-campaign .sv-free-price {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.05em;
+}
+.sv-free-campaign .sv-free-cta {
+  background: linear-gradient(110deg, #ea580c, #c2410c);
+  color: #fff;
+  box-shadow: 0 12px 28px -16px rgb(154 52 18 / 75%);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.sv-free-campaign .sv-free-cta:hover {
+  background: linear-gradient(110deg, #c2410c, #9a3412);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 25px -13px rgb(154 52 18 / 58%);
+}
+.sv-free-campaign .sv-free-preview {
+  background: linear-gradient(150deg, rgb(255 255 255 / 99%), rgb(248 250 252 / 96%));
+}
+.sv-free-campaign .sv-free-choice,
+.sv-free-campaign .sv-free-feature {
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.sv-free-campaign .sv-free-choice:focus-visible,
+.sv-free-campaign .sv-free-feature:focus-visible,
+.sv-free-campaign .sv-free-cta:focus-visible {
+  outline: 3px solid #fb923c;
+  outline-offset: 2px;
+}
+.sv-free-campaign .sv-free-feature[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px rgb(249 115 22 / 12%);
+}
+.sv-free-campaign .sv-free-feature:hover {
+  transform: translateY(-1px);
+}
+.sv-free-campaign .sv-free-image-card {
+  height: clamp(210px, 25vw, 275px);
+}
+.sv-free-campaign .sv-free-visual {
+  object-position: center 49%;
+  filter: brightness(1.08) saturate(1.05);
+  animation: sv-free-visual-in .42s ease-out both;
+}
+.sv-free-campaign .sv-free-image-overlay {
+  background: linear-gradient(to top,
+    rgb(5 15 30 / 85%) 0%,
+    rgb(5 15 30 / 52%) 24%,
+    rgb(5 15 30 / 7%) 62%,
+    rgb(5 15 30 / 23%) 100%);
+}
+.sv-free-campaign .sv-free-feature-detail {
+  animation: sv-free-detail-in .24s ease-out;
+}
+@keyframes sv-free-visual-in {
+  from {opacity: .65;transform: scale(1.035);}
+  to {opacity: 1;transform: scale(1);}
+}
+@keyframes sv-free-detail-in {
+  from {opacity: .7;transform: translateY(3px);}
+  to {opacity: 1;transform: translateY(0);}
+}
+@media (max-width: 639px) {
+  .sv-free-campaign .sv-free-image-card {height: 220px;}
+  .sv-free-campaign .sv-free-preview {border-radius: 18px;}
+  .sv-free-campaign .sv-free-offer {gap: 12px;}
+}
+@media (prefers-reduced-motion: reduce) {
+  .sv-free-campaign *,
+  .sv-free-campaign *::before,
+  .sv-free-campaign *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+}
