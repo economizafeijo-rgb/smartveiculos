@@ -178,3 +178,19 @@
     linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
   background-size: 28px 28px;
 }
+
+/*
+ * Oculta o selo flutuante de edição quando injetado no DOM do aplicativo.
+ * Lovable também controla o emblema pela configuração de publicação;
+ * a remoção definitiva deve ser feita em Project settings > Publishing.
+ */
+#lovable-badge,
+[data-lovable-badge],
+a[aria-label="Edit with Lovable"],
+a[href*="utm_source=lovable-badge"],
+a[href*="utm_source=lovable-badge"] + button,
+div:has(> a[href*="utm_source=lovable-badge"]) {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
