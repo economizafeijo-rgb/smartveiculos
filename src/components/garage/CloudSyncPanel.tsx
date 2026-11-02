@@ -64,7 +64,7 @@ export function CloudSyncPanel({bikeProfile=false}:{bikeProfile?:boolean}) {
       const count=await importLocalFillups(fillups);
       const ownBike=data.vehicles.find(v=>v.kind==='moto'&&v.name===CB650R_NAME);
       if(bikeProfile&&ownBike)await importBikeMeasurements(ownBike.id,bikeState);
-      setMessage('Backup concluído: '+done.vehicles+' veículos, '+done.records+' manutenções e '+count+' abastecimentos processados.'+(bikeProfile&&ownBike?' Inspeções da CB650R incluídas.':'')+' Registros remotos existentes foram preservados.');
+      setMessage('Backup concluído: '+done.vehicles+' veículos, '+done.records+' manutenções e '+count+' abastecimentos processados.'+(bikeProfile&&ownBike?' Inspeções da CB650R incluídas.':'')+' Veículos, manutenções e abastecimentos remotos existentes foram preservados; medições da moto preenchidas localmente atualizam os campos correspondentes no backup.');
     }catch(e){setError(e instanceof Error?e.message:'O backup falhou. Seus dados locais foram preservados.');}
     finally{setBusy(null);}
   }
@@ -103,7 +103,7 @@ export function CloudSyncPanel({bikeProfile=false}:{bikeProfile?:boolean}) {
         <button disabled={Boolean(busy)} onClick={()=>void backup()} className={actionClass+' bg-blue-600 text-white hover:bg-blue-700'}><CloudUpload size={17}/>{busy==='backup'?'Enviando…':'Enviar backup'}</button>
         <button disabled={Boolean(busy)} onClick={()=>void restore()} className={actionClass+' border border-slate-200 bg-white text-slate-800 hover:bg-slate-50'}><CloudDownload size={17}/>{busy==='restore'?'Restaurando…':'Restaurar deste backup'}</button>
       </div>
-      <p className="mt-3 text-xs leading-relaxed text-slate-500">O backup envia apenas os registros que ainda não existem na nuvem. A restauração acrescenta dados ausentes sem sobrescrever os registros deste navegador. Alterações e exclusões entre dispositivos ainda não são sincronizadas automaticamente.</p>
+      <p className="mt-3 text-xs leading-relaxed text-slate-500">O backup não substitui veículos, manutenções ou abastecimentos já existentes na nuvem. Para a CB650R, os campos de inspeção preenchidos neste navegador atualizam os respectivos campos remotos. A restauração acrescenta dados ausentes sem sobrescrever valores locais. Exclusões e conflitos entre dispositivos não são sincronizados automaticamente.</p>
     </div>}
     {error&&<p role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
     {message&&<p role="status" className="mt-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">{message}</p>}
