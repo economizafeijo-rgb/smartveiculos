@@ -46,7 +46,7 @@ const sectionInfo:Record<Exclude<GaragePage,'inicio'>,{label:string;description:
 };
 
 export const Route=createFileRoute('/garagem')({
- validateSearch:(search:Record<string,unknown>):{pagina?:GaragePage;veiculo?:string}=>({
+ validateSearch:(search:Record<string,unknown>):{pagina?:GaragePage|undefined;veiculo?:string|undefined}=>({
   pagina:validPage(search['pagina'])?search['pagina']:undefined,
   veiculo:typeof search['veiculo']==='string'&&search['veiculo'].length<120?search['veiculo']:undefined,
  }),
