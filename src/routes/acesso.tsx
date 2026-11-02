@@ -52,7 +52,7 @@ function Access(){
   setWorking(true);setError('');setMessage('');
   try{
    if(mode==='register'){
-    if(password.length<10)throw new Error('Use uma senha forte com pelo menos 10 caracteres.');
+    if(password.length<6)throw new Error('A senha deve ter pelo menos 6 caracteres. Recomendamos combinar letras, números e símbolos.');
     if(segment&&(!validateCnpj(cnpj)||company.trim().length<3))throw new Error('Informe o nome da empresa e um CNPJ com dígitos verificadores corretos.');
     if(account?.trim().toLowerCase()===email.trim().toLowerCase()){
      setMode('login');setMessage('Sua conta já está conectada. Use Continuar ou entre com outra conta.');return;
@@ -80,6 +80,7 @@ function Access(){
    const reason=e instanceof Error?e.message:'Não foi possível concluir. Tente novamente.';
    if(/email not confirmed/i.test(reason))setError('Seu e-mail ainda não foi confirmado. Clique no link enviado pela plataforma ou solicite um novo abaixo.');
    else if(/invalid login credentials/i.test(reason))setError('E-mail ou senha incorretos. Confira os dados ou use Esqueci minha senha.');
+   else if(/password.*(at least|characters|weak|minimum)|weak_password/i.test(reason))setError('A senha não atende às regras de segurança do servidor. Use ao menos 6 caracteres e, se solicitado, inclua letras, números e símbolos.');
    else if(/rate limit/i.test(reason))setError('Limite temporário de envios atingido. Aguarde antes de tentar novamente.');
    else setError(reason);
   }
@@ -121,7 +122,7 @@ function Access(){
     <form key={mode} onSubmit={submit} className="sv-tab-content mt-3 space-y-2.5">
      {mode==='register'&&segment&&<><div>{field('Nome fantasia da empresa',<input className={input} required minLength={3} maxLength={120} placeholder="Ex.: Autopeças Central" value={company} onChange={e=>setCompany(e.target.value)}/>)}</div></>}{segment&&<><div>{field('CNPJ numérico ou alfanumérico',<input className={input} required maxLength={20} autoComplete="off" placeholder="00.000.000/0000-00" value={cnpj} onChange={e=>setCnpj(e.target.value.toUpperCase())}/>)}</div>{cnpj&&<div className={'text-xs font-semibold '+(validateCnpj(cnpj)?'text-emerald-700':'text-orange-700')}>{validateCnpj(cnpj)?'Dígitos verificadores válidos. A situação cadastral ainda precisará ser verificada.':'Confira o CNPJ e os dois dígitos verificadores.'}</div>}</>}
      {field('E-mail',<input className={input} required type="email" autoComplete="email" placeholder="voce@empresa.com.br" value={email} onChange={e=>setEmail(e.target.value)}/>)}
-     {field('Senha',<div className="relative"><input className={input+' pr-12'} required minLength={mode==='register'?10:1} type={showPassword?'text':'password'} autoComplete={mode==='register'?'new-password':'current-password'} placeholder={mode==='register'?'Pelo menos 10 caracteres':'Sua senha'} value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" className="absolute right-3 top-3 text-slate-500" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?'Ocultar senha':'Mostrar senha'}>{showPassword?<EyeOff size={19}/>:<Eye size={19}/>}</button></div>)}
+     {field('Senha',<div className="relative"><input className={input+' pr-12'} required minLength={mode==='register'?6:1} type={showPassword?'text':'password'} autoComplete={mode==='register'?'new-password':'current-password'} placeholder={mode==='register'?'Mínimo de 6 caracteres':'Sua senha'} value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" className="absolute right-3 top-3 text-slate-500" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?'Ocultar senha':'Mostrar senha'}>{showPassword?<EyeOff size={19}/>:<Eye size={19}/>}</button></div>)}
      <button disabled={working||Boolean(segment&&!validateCnpj(cnpj))} className="sv-action-primary flex w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-extrabold disabled:opacity-50">{working?'Processando...':mode==='login'?'Entrar na minha conta':'Cadastrar conta'}<ArrowRight size={17}/></button>
     </form>
     {mode==='login'&&<div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3"><button type="button" onClick={()=>void resetPassword()} className="text-xs font-semibold text-orange-700 underline">Esqueci minha senha</button><button type="button" onClick={()=>setShowResend(true)} className="text-xs font-semibold text-slate-700 underline">Não consigo confirmar meu e-mail</button></div>}
