@@ -6,6 +6,8 @@ export type Fillup = {
   pricePerLiter: number; fuel: FuelKind; fullTank: boolean;
 };
 const STORAGE_KEY='smartveiculos:abastecimentos:v1';
+let storageOwner:string|null=null;
+const scopedKey=()=>storageOwner?STORAGE_KEY+':owner:'+storageOwner:STORAGE_KEY;
 const EMPTY: Fillup[]=[];
 let cache:Fillup[]=EMPTY;
 let loaded=false;
@@ -14,7 +16,7 @@ const listeners=new Set<()=>void>();
 function read(): Fillup[] {
   if(typeof window==='undefined') return EMPTY;
   try {
-    const raw=JSON.parse(window.localStorage.getItem(STORAGE_KEY)||'[]');
+    const raw=JSON.parse(window.localStorage.getItem(scopedKey())||'[]');
     if(!Array.isArray(raw))return EMPTY;
     return raw.filter((v:unknown):v is Fillup=>{
       if(!v||typeof v!=='object')return false;
@@ -28,9 +30,29 @@ function read(): Fillup[] {
   }catch{return EMPTY;}
 }
 function getSnapshot(){if(!loaded&&typeof window!=='undefined'){cache=read();loaded=true;}return cache;}
-function commit(value:Fillup[]){try{window.localStorage.setItem(STORAGE_KEY,JSON.stringify(value));}catch{throw new Error('Armazenamento local indisponível. Não foi possível salvar.');}cache=value;listeners.forEach(fn=>fn());}
+function commit(value:Fillup[]){try{window.localStorage.setItem(scopedKey(),JSON.stringify(value));}catch{throw new Error('Armazenamento local indisponível. Não foi possível salvar.');}cache=value;listeners.forEach(fn=>fn());}
 function subscribe(fn:()=>void){getSnapshot();listeners.add(fn);if(listeners.size===1)window.addEventListener('storage',onStorage);return()=>{listeners.delete(fn);if(!listeners.size)window.removeEventListener('storage',onStorage);};}
-function onStorage(e:StorageEvent){if(e.key!==STORAGE_KEY)return;cache=read();listeners.forEach(fn=>fn());}
+function onStorage(e:StorageEvent){if(e.key!==scopedKey())return;cache=read();listeners.forEach(fn=>fn());}
+export function setFuelAccount(userId:string|null):void{
+ if(storageOwner===userId)return;
+ storageOwner=userId;cache=EMPTY;loaded=false;getSnapshot();
+ listeners.forEach(fn=>fn());
+}
+export function importLegacyFillups():number{
+ if(!storageOwner)throw Error('Entre na conta.');
+ let records:unknown;
+ try{records=JSON.parse(window.localStorage.getItem(STORAGE_KEY)||'[]');}catch{throw Error('Histórico anterior inválido.');}
+ if(!Array.isArray(records))throw Error('Histórico anterior inválido.');
+ const valid=records.filter((v:unknown):v is Fillup=>{
+  if(!v||typeof v!=='object')return false;
+  const f=v as Partial<Fillup>;
+  return typeof f.id==='string'&&typeof f.vehicleId==='string'&&typeof f.date==='string'&&
+  Number.isSafeInteger(f.km)&&Number(f.km)>=0&&typeof f.liters==='number'&&f.liters>0&&
+  typeof f.pricePerLiter==='number'&&f.pricePerLiter>=0&&typeof f.fullTank==='boolean'&&
+  (f.fuel==='gasolina'||f.fuel==='etanol');
+ });
+ return mergeCloudFillups(valid);
+}
 export function useFillups():Fillup[]{return useSyncExternalStore(subscribe,getSnapshot,()=>EMPTY);}
 export function addFillup(input:Omit<Fillup,'id'>){
  if(!input.vehicleId||!/^\d{4}-\d\d-\d\d$/.test(input.date)||!Number.isSafeInteger(input.km)||input.km<0||
