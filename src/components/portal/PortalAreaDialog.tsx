@@ -144,7 +144,7 @@ export function PortalAreaDialog({area,onOpenChange}:{
        </p>
        <div className="flex flex-wrap items-center gap-2">
         <DialogPrimitive.Close className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-[#AC5937]">Fechar</DialogPrimitive.Close>
-        <a href={data.href} className="sv-cta-link inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#AC5937] px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#93492B] focus-visible:outline-2 focus-visible:outline-[#AC5937] sm:text-sm">
+        <a href={'/demonstracao?area='+(area==='garage'?'garage':area??'garage')} className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-orange-300 bg-orange-50 px-3 py-2.5 text-xs font-extrabold text-orange-800 hover:bg-orange-100">Ver demonstração <ArrowRight size={15}/></a><a href={data.href} className="sv-cta-link inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#AC5937] px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#93492B] focus-visible:outline-2 focus-visible:outline-[#AC5937] sm:text-sm">
          {data.buttonLabel}<ArrowRight size={17} aria-hidden="true"/>
         </a>
        </div>
