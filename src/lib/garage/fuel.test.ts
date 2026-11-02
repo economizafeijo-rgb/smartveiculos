@@ -10,8 +10,8 @@ describe('calculadora de combustível',()=>{
  it('usa o segundo tanque cheio para a distância desde o primeiro',()=>{
   const result=calculateFuelStats([fill('a',1000,30),fill('b',1450,30)]);
   expect(result).toHaveLength(1);
-  expect(result[0].kmPerLiter).toBe(15);
-  expect(result[0].costPerKm).toBeCloseTo(0.4);
+  expect(result[0]!.kmPerLiter).toBe(15);
+  expect(result[0]!.costPerKm).toBeCloseTo(0.4);
  });
  it('não usa trechos de combustíveis diferentes ou tanques parciais',()=>{
   expect(calculateFuelStats([
