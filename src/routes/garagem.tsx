@@ -106,7 +106,7 @@ function VehicleCard({vehicle,index,onSelect}:{vehicle:PortalVehicle;index:numbe
    </div>
   </div>
  </>;
- const cls='group relative block h-[285px] w-full overflow-hidden rounded-[22px] border border-white/10 bg-gradient-to-br from-[#263a56] to-[#121e2f] text-left shadow-[0_10px_35px_-15px_rgba(7,16,31,.5)] transition-transform hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500 sm:h-[300px]';
+ const cls='group relative block h-[285px] w-full overflow-hidden rounded-[22px] border border-white/10 bg-gradient-to-br from-[#263a56] to-[#121e2f] text-left shadow-[0_10px_35px_-15px_rgba(7,16,31,.5)] transition-transform hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500 sm:h-[300px] md:h-[clamp(235px,39dvh,300px)]';
  return url?<Link className={cls} to={url}>{inner}</Link>
   :<button type="button" onClick={onSelect} className={cls}>{inner}</button>;
 }
@@ -159,9 +159,7 @@ function OwnerGarage(){
  const selected=vehicles.find(v=>v.id===selectedId)??vehicles[0];
  const vehicleRecords=useMemo(()=>selected?sortRecords(records.filter(r=>r.vehicleId===selected.id)):[],[selected?.id,records]);
  const alerts=useMemo(()=>selected?upcomingServices(vehicleRecords,selected.currentKm):[],[vehicleRecords,selected?.currentKm]);
- const totalSpent=totalCost(records);
- const numberFormat=new Intl.NumberFormat('pt-BR');
- const needsKm=entries.filter(v=>v.km===null).length;
+  const needsKm=entries.filter(v=>v.km===null).length;
  const onImportLegacy=()=>{
   if(!window.confirm('Importar os dados da garagem antiga deste navegador para a conta atual? Faça isso somente se os veículos forem seus.'))return;
   try{
@@ -201,7 +199,7 @@ function OwnerGarage(){
    <section className="relative isolate overflow-hidden rounded-[24px] bg-[#121e30] text-white shadow-xl">
     <div className="absolute inset-0 bg-cover bg-[center_43%] opacity-70" style={{backgroundImage:'url("'+photoGarage+'")'}} aria-hidden="true"/>
     <div className="absolute inset-0 bg-gradient-to-r from-[#0d182a] via-[#111e31]/95 to-[#111e31]/30" aria-hidden="true"/>
-    <div className="relative flex min-h-[205px] flex-col justify-center gap-4 px-6 py-7 sm:px-9 lg:min-h-[216px]">
+    <div className="relative flex min-h-[205px] flex-col justify-center gap-4 px-6 py-7 sm:px-9 lg:min-h-[clamp(165px,25dvh,216px)]">
      <div><span className="inline-flex items-center gap-2 rounded-full border border-orange-400/40 bg-orange-400/10 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.18em] text-orange-300"><ShieldCheck size={13}/> Sua garagem digital</span><h1 className="mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Bem-vindo à sua <span className="text-orange-400">garagem.</span></h1><p className="mt-2 max-w-lg text-sm leading-6 text-slate-200">Escolha seu veículo para acompanhar revisões, abastecimentos e manutenção em um painel exclusivo.</p></div>
      <div className="flex flex-wrap items-center gap-2">
       <span className="rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold backdrop-blur">{entries.length} {entries.length===1?'veículo':'veículos'} na garagem</span>
