@@ -21,7 +21,7 @@ import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as ConfirmarEmailRouteImport } from './routes/confirmar-email'
 
 const IndexRoute = IndexRouteImport.update({
-  id: '/', | '/confirmar-email' | '/redefinir-senha'
+  id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -122,7 +122,7 @@ export interface FileRouteTypes {
   fullPaths: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/confirmar-email' | '/redefinir-senha'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/confirmar-email' | '/redefinir-senha'
-  id: '__root__' | '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas'
+  id: '__root__' | '/' | '/admin' | '/gol-g6' | '/cb650r' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/garagem' | '/acesso' | '/negocio' | '/admin-empresas' | '/confirmar-email' | '/redefinir-senha'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
