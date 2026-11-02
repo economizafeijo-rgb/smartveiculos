@@ -80,9 +80,9 @@ export function PortalAreaDialog({area,onOpenChange}:{
     {data&&Icon&&<>
      <div className="shrink-0 border-b border-slate-100 px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
       <div className="flex items-start gap-3.5 pr-8 sm:gap-4">
-       <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-orange-100 text-orange-600 sm:size-12"><Icon size={24} aria-hidden="true"/></div>
+       <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#F5E7DC] text-[#AD6543] sm:size-12"><Icon size={24} aria-hidden="true"/></div>
        <div className="min-w-0 flex-1">
-        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-orange-700">{data.eyebrow}</p>
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-[#985232]">{data.eyebrow}</p>
         <DialogPrimitive.Title className="mt-1 text-[clamp(1.25rem,3.3vw,1.75rem)] font-black leading-tight tracking-tight">{data.title}</DialogPrimitive.Title>
         <DialogPrimitive.Description className="mt-1.5 max-w-2xl text-[12px] leading-[1.45] text-slate-600 sm:text-sm">
          {data.summary}
@@ -91,7 +91,7 @@ export function PortalAreaDialog({area,onOpenChange}:{
       </div>
       <DialogPrimitive.Close
        aria-label="Fechar apresentação"
-       className="absolute right-3 top-3 grid size-9 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 sm:right-5 sm:top-5">
+       className="absolute right-3 top-3 grid size-9 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#AC5937] sm:right-5 sm:top-5">
        <X size={18} aria-hidden="true"/>
       </DialogPrimitive.Close>
      </div>
@@ -102,7 +102,7 @@ export function PortalAreaDialog({area,onOpenChange}:{
         aria-selected={selected===section.id}
         aria-controls={'sv-panel-'+section.id}
         onClick={()=>setSelected(section.id)}
-        className={'rounded-lg px-1.5 py-2 text-[11px] font-extrabold transition-colors focus-visible:outline-2 focus-visible:outline-orange-500 '+(selected===section.id?'bg-white text-orange-700 shadow-sm':'text-slate-600 hover:bg-white/60')}>
+        className={'rounded-lg px-1.5 py-2 text-[11px] font-extrabold transition-colors focus-visible:outline-2 focus-visible:outline-[#AC5937] '+(selected===section.id?'bg-white text-[#985232] shadow-sm':'text-slate-600 hover:bg-white/60')}>
         {section.title}
        </button>)}
       </div>
@@ -115,20 +115,20 @@ export function PortalAreaDialog({area,onOpenChange}:{
          id={'sv-panel-'+section.id}
          aria-labelledby={'sv-tab-'+section.id}
          role="tabpanel"
-         className={'rounded-2xl border p-3.5 sm:p-4 '+(isCurrent?'border-orange-200 bg-orange-50/50':'border-slate-200 bg-[#f8fafc]')+(selected!==section.id?' hidden sm:block':'')}>
+         className={'rounded-2xl border p-3.5 sm:p-4 '+(isCurrent?'border-[#E7C7B3] bg-[#FCF3ED]':'border-slate-200 bg-[#f8fafc]')+(selected!==section.id?' hidden sm:block':'')}>
          <div className="flex items-center gap-2">
-          <span className={'grid size-8 shrink-0 place-items-center rounded-lg '+(isCurrent?'bg-orange-100 text-orange-700':'bg-slate-200/65 text-slate-700')}>
+          <span className={'grid size-8 shrink-0 place-items-center rounded-lg '+(isCurrent?'bg-[#F5E7DC] text-[#985232]':'bg-slate-200/65 text-slate-700')}>
            <FeatureIcon size={17} aria-hidden="true"/>
           </span>
           <div className="min-w-0">
            <h3 className="text-[13px] font-extrabold leading-tight text-slate-900">{section.title}</h3>
-           <p className={'mt-0.5 text-[10px] font-bold '+(isCurrent?'text-emerald-700':'text-orange-700')}>{section.subtitle}</p>
+           <p className={'mt-0.5 text-[10px] font-bold '+(isCurrent?'text-emerald-700':'text-[#985232]')}>{section.subtitle}</p>
           </div>
          </div>
          <ul className="mt-3 space-y-2.5">
           {items.map(item=><li key={item} className="flex items-start gap-2 text-xs leading-[1.4] text-slate-700 sm:text-[12px]">
            {isCurrent?<CheckCircle2 size={15} className="mt-0.5 shrink-0 text-emerald-600" aria-hidden="true"/>:
-            <Clock3 size={15} className="mt-0.5 shrink-0 text-orange-600" aria-hidden="true"/>}
+            <Clock3 size={15} className="mt-0.5 shrink-0 text-[#AD6543]" aria-hidden="true"/>}
            <span>{item}</span>
           </li>)}
          </ul>
@@ -143,8 +143,8 @@ export function PortalAreaDialog({area,onOpenChange}:{
         {data.business?'Login e CNPJ para empresas':'Acesso pessoal protegido'}
        </p>
        <div className="flex flex-wrap items-center gap-2">
-        <DialogPrimitive.Close className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-orange-500">Fechar</DialogPrimitive.Close>
-        <a href={data.href} className="sv-cta-link inline-flex items-center justify-center gap-1.5 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-black text-slate-950 hover:bg-orange-400 focus-visible:outline-2 focus-visible:outline-orange-500 sm:text-sm">
+        <DialogPrimitive.Close className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-[#AC5937]">Fechar</DialogPrimitive.Close>
+        <a href={data.href} className="sv-cta-link inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#AC5937] px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#93492B] focus-visible:outline-2 focus-visible:outline-[#AC5937] sm:text-sm">
          {data.buttonLabel}<ArrowRight size={17} aria-hidden="true"/>
         </a>
        </div>
