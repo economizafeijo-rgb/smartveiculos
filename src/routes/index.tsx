@@ -33,7 +33,7 @@ const heroTiles=[
 function HomePortal(){
  const [partsOpen,setPartsOpen]=useState(true);
  const [selectedArea,setSelectedArea]=useState<PortalArea|null>(null);
- return <div className="sv-homepage min-h-screen overflow-x-clip bg-[#f5f7fb] text-[#111c30]">
+ return <div className="sv-homepage sv-theme-surface min-h-screen overflow-x-clip bg-[#f5f7fb] text-[#111c30]">
   <header className="sv-glass-header sticky top-0 z-20 border-b border-white/15 text-white">
    <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
     <a href="/" className="flex items-center gap-2.5 font-extrabold tracking-tight"><span className="sv-logo-mark grid size-10 place-items-center rounded-xl bg-[#F97316] text-[#111827] shadow-[0_6px_18px_-8px_rgba(249,115,22,.8)]"><Gauge size={23}/></span><span className="text-xl">Smart<span className="text-[#FDBA74]">Veículos</span><span className="block text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400">Ecossistema automotivo</span></span></a>
