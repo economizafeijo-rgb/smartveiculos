@@ -135,7 +135,7 @@ function OwnerGarage(){
  const [managerOpen,setManagerOpen]=useState(false);
  const [selectedId,setSelectedId]=useState<string|null>(null);
  const [fipeEntryId,setFipeEntryId]=useState<string|null>(null);
- const [hubOpen,setHubOpen]=useState(false);
+ const [hubOpen,setHubOpen]=useState(true);
  const [hubTab,setHubTab]=useState<'fuel'|'maintenance'|'videos'>('fuel');
  const [vehicleDialog,setVehicleDialog]=useState<{open:boolean;vehicle?:Vehicle}>({open:false});
  const [recordDialog,setRecordDialog]=useState<{open:boolean;record?:ServiceRecord;defaultKind?:RecordKind}>({open:false});
@@ -236,6 +236,90 @@ function OwnerGarage(){
      </div>
     </div>
    </section>
+   <nav aria-label="Acesso rápido às ferramentas do cliente" className="sv-garage-feature-nav grid shrink-0 grid-cols-2 gap-2 sm:grid-cols-4">
+    {([
+     ['fuel','Abastecimentos','Gastos em R
+    <div><p className="text-[10px] font-extrabold uppercase tracking-[.15em] text-orange-700">Meu espaço</p><h2 className="mt-0.5 text-[21px] font-black leading-tight tracking-tight text-[#111d30]">Escolha seu veículo</h2></div>
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/85 px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-sm"><LockKeyhole size={13}/> Acesso individual e protegido</span>
+   </div>
+   {error&&<div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><span>{error}</span><button className="font-bold underline" onClick={()=>{setLoading(true);setLoadToken(n=>n+1)}}>Tentar novamente</button></div>}
+   {notice&&<p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{notice}</p>}
+   {(!hydrated||loading)&&<div aria-label="Carregando veículos" className="sv-garage-vehicle-grid grid min-h-0 flex-1 gap-3 md:grid-cols-2">{[0,1].map(i=><div key={i} className="sv-garage-skeleton min-h-[230px] animate-pulse rounded-[20px] bg-slate-200"/>)}</div>}
+   {hydrated&&!loading&&entries.length>0&&<div className="sv-garage-vehicle-grid grid min-h-0 flex-1 gap-3 md:grid-cols-2">{entries.map((v,i)=><VehicleCard key={v.id} vehicle={v} index={i} onSelect={()=>openLocal(v.modelKey)}/>)}</div>}
+   {hydrated&&!loading&&!entries.length&&<section className="sv-garage-empty flex min-h-0 flex-1 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-8"><div className="mx-auto grid size-14 place-items-center rounded-xl bg-orange-50 text-orange-600"><CarFront size={28}/></div><h3 className="mt-5 text-xl font-black">Sua garagem ainda está vazia</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Cadastre seu primeiro veículo para ter acesso às suas informações. Nenhuma quilometragem será presumida.</p><button onClick={()=>setVehicleDialog({open:true})} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-slate-950"><Plus size={16}/> Adicionar veículo</button></section>}
+   {hydrated&&!loading&&fipeEntry&&<div id="sv-garage-fipe" className="sv-garage-fipe-zone shrink-0 space-y-3">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+     <div><p className="text-[10px] font-bold uppercase tracking-[.15em] text-orange-700">Valor atualizado da Tabela FIPE</p><h2 className="text-lg font-black text-[#14243b]">Cotação por carro ou moto cadastrada</h2></div>
+     {entries.length>1&&<label className="flex items-center gap-2 text-xs font-bold text-slate-600">Veículo
+      <select aria-label="Selecionar veículo para consultar FIPE" value={fipeEntry.id} onChange={e=>setFipeEntryId(e.target.value)} className="min-w-[190px] max-w-[260px] rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-900">
+       {entries.map(v=><option key={v.id} value={v.id}>{v.kind==='carro'?'Carro':'Moto'} · {v.name}</option>)}
+      </select>
+     </label>}
+    </div>
+    <FipeValuePanel key={fipeEntry.fipeKey} vehicleId={fipeEntry.fipeKey} kind={fipeEntry.kind} vehicleName={fipeEntry.name} brandHint={fipeEntry.brand} yearHint={fipeEntry.modelYear??undefined}/>
+   </div>}
+   {hydrated&&!loading&&fipeEntry&&<section id="sv-garage-hub" className="sv-garage-hub shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white/95 shadow-sm">
+    <button type="button" aria-expanded={hubOpen} onClick={()=>setHubOpen(v=>!v)} className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left sm:px-5">
+     <span className="flex items-center gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#132943] text-orange-300"><Wrench size={19}/></span><span><strong className="block text-sm font-black text-[#16243b]">Central de cuidados e despesas</strong><span className="mt-1 block text-[11px] text-slate-600">Abastecimentos por período, revisões pelo manual e vídeos de consertos</span></span></span>
+     <ChevronDown size={20} className={'shrink-0 text-slate-600 transition-transform '+(hubOpen?'rotate-180':'')}/>
+    </button>
+    {hubOpen&&<div className="border-t border-slate-200 px-3 pb-4 pt-4 sm:px-5">
+     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap gap-1.5 rounded-xl bg-slate-100 p-1">
+       {([['fuel','Abastecimentos',Fuel],['maintenance','Revisões',CalendarClock],['videos','Vídeos de reparos',Video]] as const).map(([key,label,Icon])=><button key={key} type="button" aria-pressed={hubTab===key} onClick={()=>setHubTab(key)} className={'inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-black '+(hubTab===key?'bg-[#142941] text-white':'text-slate-700 hover:bg-white')}><Icon size={15}/>{label}</button>)}
+      </div>
+      {!activeLocal&&fipeEntry.url&&<Link to={fipeEntry.url} className="text-xs font-bold text-orange-700 hover:underline">Ativar ficha para registrar despesas <ArrowRight size={13} className="inline"/></Link>}
+     </div>
+     {hubTab==='fuel'&&<VehicleFuelLedger key={'fuel:'+fipeEntry.id} vehicleId={activeLocal?.id??''} vehicleName={fipeEntry.name} currentKm={activeLocal?.currentKm??fipeEntry.km??null} kind={fipeEntry.kind}/>}
+     {hubTab==='maintenance'&&<VehicleMaintenanceLedger key={'maintenance:'+fipeEntry.id} vehicle={{kind:fipeEntry.kind,name:fipeEntry.name,modelYear:fipeEntry.modelYear,modelKey:fipeEntry.modelKey}} vehicleId={activeLocal?.id??''} currentKm={activeLocal?.currentKm??fipeEntry.km??null}/>}
+     {hubTab==='videos'&&<VehicleVideoLibrary key={'videos:'+fipeEntry.id} vehicle={{kind:fipeEntry.kind,name:fipeEntry.name,modelYear:fipeEntry.modelYear,modelKey:fipeEntry.modelKey}}/>}
+    </div>}
+   </section>}
+   <section id="gestao-local" className="sv-garage-manager sv-interactive-surface shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white/95 shadow-sm">
+    <button type="button" aria-expanded={managerOpen} onClick={()=>setManagerOpen(v=>!v)} className="sv-garage-manager-toggle flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left sm:px-5">
+     <div className="flex items-center gap-2.5"><span className="grid size-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-700"><SlidersHorizontal size={17}/></span><div><h3 className="text-sm font-extrabold">Gerenciar registros e outros veículos</h3><p className="mt-0.5 text-[11px] leading-4 text-slate-500">Adicionar veículos, consultar registros e importar dados anteriores</p></div></div>
+     <ChevronDown size={19} className={'shrink-0 text-slate-500 transition-transform '+(managerOpen?'rotate-180':'')}/>
+    </button>
+    {managerOpen&&<div className="sv-garage-manager-body sv-accordion-body overflow-y-auto border-t border-slate-100 p-4 sm:p-5">
+      <div className="flex flex-wrap gap-2">
+       <button onClick={()=>setVehicleDialog({open:true})} className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-slate-950"><Plus size={15}/> Adicionar veículo</button>
+       <button onClick={onImportLegacy} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"><Cloud size={15}/> Importar garagem anterior</button>
+      </div>
+      {vehicles.length>0&&<>
+       <div className="mt-5 flex flex-wrap gap-2">{vehicles.map(v=><button key={v.id} onClick={()=>setSelectedId(v.id)} className={'rounded-full border px-4 py-2 text-xs font-bold '+(v.id===selected?.id?'border-slate-900 bg-slate-900 text-white':'bg-white text-slate-600 hover:bg-slate-50')}>{v.kind==='carro'?'Carro':'Moto'} · {v.name}</button>)}</div>
+       {selected&&<div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+         <div className="space-y-4"><OdometerCard key={selected.id} vehicle={selected} total={totalCost(vehicleRecords)} count={vehicleRecords.length} onEdit={()=>setVehicleDialog({open:true,vehicle:selected})}/><AlertsPanel items={alerts} onQuickAdd={kind=>setRecordDialog({open:true,defaultKind:kind})}/><button onClick={()=>setRecordDialog({open:true})} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#111e30] px-4 py-3 text-sm font-bold text-white"><Plus size={16}/> Registrar manutenção</button></div>
+         <RecordList key={selected.id} records={vehicleRecords} onEdit={record=>setRecordDialog({open:true,record})}/>
+       </div>}
+      </>}
+      {vehicles.length===0&&<p className="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-600">As fichas do Gol e da CB650R estão prontas para uso. Informe o km real dentro de cada painel para iniciar o histórico. Os controles gerais deste navegador aparecerão aqui quando existirem registros locais.</p>}
+      <p className="mt-5 text-xs text-slate-400">Dados pessoais são isolados por conta. Fotografias dos veículos são ilustrativas e não representam suas unidades reais.</p>
+    </div>}
+   </section>
+   <footer className="sv-garage-footer flex shrink-0 flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500"><span>SmartVeículos · Espaço do proprietário</span><span className="max-w-[210px] truncate">{userEmail?'Conta: '+userEmail:'Dados protegidos por login'}</span><DeveloperCredit compact /></footer>
+  </main>
+  <VehicleDialog open={vehicleDialog.open} vehicle={vehicleDialog.vehicle} onOpenChange={open=>setVehicleDialog(v=>({...v,open}))} onSaved={id=>{setSelectedId(id);setManagerOpen(true)}}/>
+  {selected&&<RecordDialog open={recordDialog.open} vehicle={selected} record={recordDialog.record} defaultKind={recordDialog.defaultKind} onOpenChange={open=>setRecordDialog(v=>({...v,open}))}/>}
+ </div>;
+}
+,Fuel],
+     ['maintenance','Revisões','Manual da montadora',CalendarClock],
+     ['videos','Vídeos de reparos','YouTube por veículo',Video],
+    ] as const).map(([tab,title,detail,Icon])=>
+     <button key={tab} type="button" aria-label={'Abrir '+title} onClick={()=>{
+      setHubTab(tab);setHubOpen(true);
+      document.getElementById('sv-garage-hub')?.scrollIntoView({behavior:'smooth',block:'start'});
+     }} className={'sv-garage-feature-shortcut flex min-w-0 items-center gap-3 rounded-2xl border p-3 text-left shadow-sm transition-colors '+(hubTab===tab?'border-orange-400 bg-[#142a46] text-white':'border-slate-200 bg-white text-slate-900 hover:border-orange-400 hover:bg-orange-50')}>
+      <span className={'grid size-10 shrink-0 place-items-center rounded-xl '+(hubTab===tab?'bg-orange-500 text-[#142941]':'bg-orange-100 text-orange-700')}><Icon size={20}/></span>
+      <span className="min-w-0"><strong className="block text-xs font-black sm:text-sm">{title}</strong><span className={'mt-1 block text-[10px] '+(hubTab===tab?'text-slate-200':'text-slate-600')}>{detail}</span></span>
+     </button>
+    )}
+    <button type="button" aria-label="Abrir a Tabela FIPE" onClick={()=>document.getElementById('sv-garage-fipe')?.scrollIntoView({behavior:'smooth',block:'start'})}
+     className="sv-garage-feature-shortcut flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left text-slate-900 shadow-sm transition-colors hover:border-orange-400 hover:bg-orange-50">
+     <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-orange-100 text-orange-700"><Coins size={20}/></span>
+     <span className="min-w-0"><strong className="block text-xs font-black sm:text-sm">Tabela FIPE</strong><span className="mt-1 block text-[10px] text-slate-600">Valores em reais</span></span>
+    </button>
+   </nav>
    <div className="sv-garage-heading flex shrink-0 flex-wrap items-center justify-between gap-2">
     <div><p className="text-[10px] font-extrabold uppercase tracking-[.15em] text-orange-700">Meu espaço</p><h2 className="mt-0.5 text-[21px] font-black leading-tight tracking-tight text-[#111d30]">Escolha seu veículo</h2></div>
     <span className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/85 px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-sm"><LockKeyhole size={13}/> Acesso individual e protegido</span>
