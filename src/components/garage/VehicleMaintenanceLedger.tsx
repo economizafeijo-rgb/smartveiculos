@@ -1,4 +1,6 @@
 import {useMemo,useState,type FormEvent} from 'react';
+import {servicesForRevision} from '@/lib/garage/manufacturer-service-guide';
+import {readRevisionChecks,writeRevisionChecks} from '@/lib/garage/revision-checks';
 import {
  ArrowUpRight,BookOpen,CalendarClock,CheckCircle2,ChevronDown,ChevronUp,
  ClipboardCheck,ClipboardList,Gauge,PenLine,Plus,Save,Search,ShieldCheck,Trash2,Wrench
@@ -48,6 +50,8 @@ export function VehicleMaintenanceLedger({vehicle,vehicleId,currentKm=null,deliv
  const [kmDraft,setKmDraft]=useState(currentKm===null?'':String(currentKm));
  const [kmEditing,setKmEditing]=useState(false);
  const [expanded,setExpanded]=useState(false);
+ const [guideKm,setGuideKm]=useState<number|null>(null);
+ const [checkedTasks,setCheckedTasks]=useState<string[]>([]);
  const [mode,setMode]=useState<Mode|null>(null);
  const [milestone,setMilestone]=useState<number|null>(null);
  const [editingId,setEditingId]=useState<string|null>(null);
@@ -59,6 +63,8 @@ export function VehicleMaintenanceLedger({vehicle,vehicleId,currentKm=null,deliv
  const [notice,setNotice]=useState('');
  const [error,setError]=useState('');
  const reviewEntries=plan?revisionsAroundOdometer(plan,vehicle,own,effectiveKm,expanded):[];
+ const guide=guideKm===null?null:servicesForRevision(vehicle,guideKm);
+ const checkedCount=guide?guide.items.filter(x=>checkedTasks.includes(x.id)).length:0;
  const nextReview=plan?nextRevisionsForOdometer(plan,vehicle,own,effectiveKm):null;
  const lastReview=own.filter(x=>x.kind==='revisao').sort((a,b)=>b.date.localeCompare(a.date))[0];
  const totals=maintenanceTotals(own);
@@ -82,6 +88,15 @@ export function VehicleMaintenanceLedger({vehicle,vehicleId,currentKm=null,deliv
  function startService(itemId='oil'){
   setForm({...initialForm(vehicle.kind,effectiveKm),itemId});
   setMode('servico');setMilestone(null);setEditingId(null);setError('');setNotice('');
+ }
+ function openGuide(km:number){
+  if(guideKm===km){setGuideKm(null);return;}
+  setGuideKm(km);setCheckedTasks(readRevisionChecks(vehicleId,km));
+ }
+ function toggleGuideTask(id:string){
+  if(guideKm===null)return;
+  const next=checkedTasks.includes(id)?checkedTasks.filter(item=>item!==id):[...checkedTasks,id];
+  setCheckedTasks(next);writeRevisionChecks(vehicleId,guideKm,next);
  }
  function startReview(km:number){
   setForm(initialForm(vehicle.kind,effectiveKm));setMode('revisao');setMilestone(km);
@@ -268,9 +283,74 @@ export function VehicleMaintenanceLedger({vehicle,vehicleId,currentKm=null,deliv
       <div className="flex flex-wrap items-center justify-between gap-1"><p className="text-xs font-black text-slate-900">{revision.label}</p><span className={'rounded-full px-2 py-1 text-[10px] font-extrabold '+(completed?'bg-emerald-100 text-emerald-800':past?'bg-slate-200 text-slate-700':'bg-orange-100 text-orange-800')}>{completed?'Registrada':past?'Histórico a conferir':'Programada'}</span></div>
       <p className="mt-2 text-lg font-black text-[#142741]">{formatKm(revision.km)}</p>
       <p className="mt-1 text-[11px] text-slate-500">{revision.months} meses de referência desde a entrega</p>
-      {!completed&&<button type="button" onClick={()=>startReview(revision.km)} className="mt-3 w-full rounded-lg border border-orange-200 bg-white px-2 py-2 text-[11px] font-bold text-orange-800 hover:bg-orange-50"><Plus size={12} className="mr-1 inline"/>Registrar revisão realizada</button>}
+      <button type="button" onClick={()=>openGuide(revision.km)} aria-expanded={guideKm===revision.km}
+       className={'mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-extrabold transition-colors '+(guideKm===revision.km?'bg-[#122842] text-white':'border border-[#b9cde4] bg-white text-[#152c48] hover:border-orange-400 hover:bg-orange-50')}>
+       <BookOpen size={13}/> O que a montadora recomenda {guideKm===revision.km?<ChevronUp size={13}/>:<ChevronDown size={13}/>}
+      </button>
+      {!completed&&<button type="button" onClick={()=>startReview(revision.km)} className="mt-2 w-full rounded-lg border border-orange-200 bg-white px-2 py-2 text-[11px] font-bold text-orange-800 hover:bg-orange-50"><Plus size={12} className="mr-1 inline"/>Registrar revisão realizada</button>}
      </article>;
     })}</div>
+    {guide&&<section id="revision-manual-detail" aria-label={'Recomendações da montadora aos '+guideKm+' km'}
+     className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-[#f8fafc]">
+     <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 bg-[#152c47] p-4 text-white sm:p-5">
+      <div className="max-w-3xl">
+       <p className="text-[10px] font-black uppercase tracking-[.17em] text-orange-300">Guia de manutenção pesquisado • {guide.manufacturer}</p>
+       <h4 className="mt-1 text-lg font-black text-white">Revisão de {formatKm(guide.revisionKm)}: o que conferir?</h4>
+       <p className="mt-1 text-xs leading-5 text-slate-200">{guide.model} · {guide.level==='especifico'?'Informações da tabela oficial para este modelo e ano':'Orientações gerais; lista exata ainda não confirmada pelo chassi'}</p>
+      </div>
+      <button type="button" className="inline-flex items-center gap-1.5 rounded-xl border border-white/30 bg-white/10 px-3 py-2 text-xs font-bold text-white hover:bg-white/20"
+       onClick={()=>setGuideKm(null)}>Fechar <ChevronUp size={14}/></button>
+     </header>
+     <div className="space-y-4 p-4 sm:p-5">
+      <div className={'rounded-xl border p-3 text-xs leading-6 '+(guide.level==='especifico'?'border-blue-200 bg-blue-50 text-blue-900':'border-amber-300 bg-amber-50 text-amber-950')}>
+       <strong>{guide.level==='especifico'?'Manual específico confirmado. ':'Orientações gerais — confirmação necessária. '}</strong>{guide.notice}
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+       <div><h5 className="text-sm font-black text-slate-900">Lista de serviços e verificações</h5>
+        <p className="mt-1 text-[11px] leading-5 text-slate-600">{guide.items.length} orientações · {checkedCount} conferidas neste navegador. Conferir não é o mesmo que executar.</p></div>
+       <a href={guide.source} target="_blank" rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-white px-3 py-2 text-xs font-bold text-orange-800 hover:bg-orange-50">
+        <BookOpen size={15}/> Consultar fonte da montadora <ArrowUpRight size={13}/>
+       </a>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+       {guide.items.map(item=><label key={item.id} className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 hover:border-orange-300">
+        <input type="checkbox" className="mt-1.5 size-4 shrink-0 accent-orange-600"
+         aria-label={'Conferido pelo cliente: '+item.title}
+         checked={checkedTasks.includes(item.id)}
+         disabled={!vehicleId}
+         onChange={()=>toggleGuideTask(item.id)}/>
+        <span className="min-w-0 flex-1">
+         <span className="flex flex-wrap items-center gap-2">
+          <strong className="text-xs font-black text-slate-900">{item.title}</strong>
+          <span className={'rounded-full px-2 py-0.5 text-[10px] font-extrabold '+(item.action==='trocar'?'bg-orange-100 text-orange-900':item.action==='ajustar'?'bg-sky-100 text-sky-900':item.action==='condicional'?'bg-amber-100 text-amber-900':'bg-slate-100 text-slate-700')}>
+           {item.action==='trocar'?'Substituição':item.action==='ajustar'?'Verificar/ajustar':item.action==='condicional'?'Se necessário':'Inspeção'}
+          </span>
+         </span>
+         <span className="mt-1 block text-[11px] font-bold text-slate-600">{item.interval} · {item.page}</span>
+         <span className="mt-1 block text-xs leading-5 text-slate-600">{item.why}</span>
+        </span>
+       </label>)}
+      </div>
+      {guide.timeItems.length>0&&<div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+       <h5 className="text-sm font-black text-blue-900">Atenção aos prazos por tempo — mesmo rodando pouco</h5>
+       <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        {guide.timeItems.map(item=><div key={item.id} className="rounded-lg border border-blue-100 bg-white p-3">
+         <p className="text-xs font-black text-slate-900">{item.title}</p>
+         <p className="mt-1 text-xs font-bold text-orange-800">{item.interval}</p>
+         <p className="mt-1 text-[11px] leading-5 text-slate-600">{item.why}</p>
+        </div>)}
+       </div>
+      </div>}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-3">
+       <p className="max-w-xl text-[11px] leading-5 text-slate-600">A marcação apenas acompanha sua conferência. Ela não altera a quilometragem, não conclui uma revisão e não substitui nota fiscal ou carimbo. A revisão só será considerada realizada depois do registro no livro digital.</p>
+       <button type="button" onClick={()=>startReview(guide.revisionKm)}
+        className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-3 text-xs font-black text-[#15283e] hover:bg-orange-400">
+        <Plus size={15}/> Registrar revisão realmente realizada
+       </button>
+      </div>
+     </div>
+    </section>}
    </div>:<p className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs leading-5 text-blue-900">Para este modelo ainda não há um plano de fábrica verificado. Você pode registrar serviços reais normalmente, sem prazos inventados.</p>}
    <section className="overflow-hidden rounded-2xl border border-slate-200">
     <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-[#f8fafc] px-4 py-3">
