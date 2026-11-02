@@ -27,7 +27,7 @@ export function needsFipeRefresh(entry:FipeSaved,now:Date):boolean {
   if(!Number.isFinite(checked.getTime()))return true;
   const expected=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(now);
   const clean=(value:string)=>value.toLocaleLowerCase('pt-BR').normalize('NFD')
-    .replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ').trim();
+    .replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
   // Uma consulta mensal é suficiente quando a referência já é a atual.
   if(getMonthStamp(checked)===getMonthStamp(now)&&
      clean(entry.quote.referenceMonth)===clean(expected))return false;
