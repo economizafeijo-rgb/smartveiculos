@@ -25,10 +25,16 @@ export function getMonthStamp(date:Date):string {
 export function needsFipeRefresh(entry:FipeSaved,now:Date):boolean {
   const checked=new Date(entry.checkedAt);
   if(!Number.isFinite(checked.getTime()))return true;
-  // Não faz requisições em cada render: ao mudar o mês busca uma vez ao dia.
-  if(getMonthStamp(checked)===getMonthStamp(now))return false;
-  const nowDate=now.toISOString().slice(0,10);
-  return checked.toISOString().slice(0,10)!==nowDate;
+  const expected=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(now);
+  const clean=(value:string)=>value.toLocaleLowerCase('pt-BR').normalize('NFD')
+    .replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ').trim();
+  // Uma consulta mensal é suficiente quando a referência já é a atual.
+  if(getMonthStamp(checked)===getMonthStamp(now)&&
+     clean(entry.quote.referenceMonth)===clean(expected))return false;
+  // Se a publicação da FIPE atrasar, tenta novamente no dia seguinte.
+  const localDay=(date:Date)=>date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+
+    '-'+String(date.getDate()).padStart(2,'0');
+  return localDay(checked)!==localDay(now);
 }
 export function readFipe(vehicleId:string):FipeSaved|null {
   if(!vehicleId||typeof window==='undefined')return null;
