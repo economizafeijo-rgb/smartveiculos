@@ -1845,3 +1845,91 @@ body:has(.sv-homepage)::-webkit-scrollbar {
 .sv-owner-garage .sv-videoguide iframe {
   background: #000;
 }
+
+
+/* Garagem multipágina — a tela inicial mostra só atalhos e veículos,
+   os livros e históricos vivem em páginas próprias (search URL navegável). */
+.sv-owner-garage--multipage{
+ min-height:100dvh;
+ height:auto;
+ overflow:visible;
+}
+.sv-owner-garage--multipage .sv-garage-main{
+ flex:1 0 auto;
+ min-height:0;
+ height:auto;
+ overflow:visible;
+ gap:16px;
+ padding-top:18px;
+ padding-bottom:24px;
+}
+.sv-owner-garage--multipage .sv-garage-vehicle-grid{
+ flex:0 0 auto;
+ min-height:0;
+ max-height:none;
+ overflow:visible;
+ grid-auto-rows:minmax(245px,1fr);
+}
+.sv-owner-garage--multipage .sv-garage-vehicle-card{
+ min-height:245px;
+}
+.sv-owner-garage--multipage .sv-garage-services-nav{
+ scrollbar-width:thin;
+ scrollbar-color:rgba(251,146,60,.36) transparent;
+}
+.sv-owner-garage--multipage .sv-garage-services-nav a:focus-visible,
+.sv-owner-garage--multipage .sv-garage-quick-access a:focus-visible{
+ outline:3px solid #fb923c;
+ outline-offset:2px;
+}
+.sv-owner-garage--multipage .sv-garage-manager-body{
+ max-height:none;
+ overflow:visible;
+}
+.sv-owner-garage--multipage .sv-garage-manager{
+ flex:0 0 auto;
+}
+.sv-owner-garage--multipage .sv-garage-hero{
+ min-height:155px;
+}
+.sv-owner-garage--multipage .sv-garage-quick-access a{
+ -webkit-backdrop-filter:blur(15px);
+ backdrop-filter:blur(15px);
+}
+@media(min-width:1024px) and (min-height:640px){
+ .sv-owner-garage--multipage{
+  height:auto;
+  overflow:visible;
+ }
+ .sv-owner-garage--multipage .sv-garage-main{
+  flex:1 0 auto;
+  min-height:0;
+  overflow:visible;
+  height:auto;
+ }
+ .sv-owner-garage--multipage .sv-garage-vehicle-grid{
+  min-height:0;
+  max-height:none;
+  flex:0 0 auto;
+  overflow:visible;
+ }
+ .sv-owner-garage--multipage .sv-garage-manager-body{
+  max-height:none;
+  overflow:visible;
+ }
+}
+@media(max-width:639px){
+ .sv-owner-garage--multipage .sv-garage-quick-access .grid{
+  grid-template-columns:1fr;
+ }
+ .sv-owner-garage--multipage .sv-garage-services-nav{
+  gap:6px;
+ }
+ .sv-owner-garage--multipage .sv-garage-services-nav>a{
+  font-size:11px;
+  padding:9px 10px;
+ }
+ .sv-owner-garage--multipage .sv-garage-quick-access a{
+  padding:13px;
+ }
+}
