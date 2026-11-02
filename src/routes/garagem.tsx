@@ -45,14 +45,14 @@ function toProfile(p:CloudVehicle,local:Vehicle|undefined):PortalVehicle{
  const isCb=p.model_key==='cb650r-2024';
  return {
   id:p.id,modelKey:p.model_key,kind:p.kind,name:p.display_name,
-  subtitle:isGol?'2014 · 1.6 Flex · Prata':isCb?'2024 · 649 cm³ · 4 cilindros':[
+  subtitle:isGol?'2014 · 1.6 Flex · Prata':isCb?'2024 · Vermelha · 649 cm³ · 4 cilindros':[
     p.model_year?p.model_year.toString():'',p.color??''
   ].filter(Boolean).join(' · '),
   plate:local?.plate||p.plate||null,
   km:local?.currentKm??p.odometer_km,
   url:isGol?'/gol-g6':isCb?'/cb650r':null,
   photo:isGol?GOL.photo:isCb?CB650R_REFERENCE.photo:p.kind==='carro'?fallbackCar:fallbackBike,
-  photocredit:isGol?'Imagem ilustrativa de Gol 2014':isCb?'Imagem ilustrativa de CB650R 2024':'Foto ilustrativa',
+  photocredit:isGol?'Imagem ilustrativa de Gol 2014':isCb?'Imagem ilustrativa da CB650R vermelha':'Foto ilustrativa',
   source:'perfil',
  };
 }
@@ -61,7 +61,7 @@ function fromLocal(v:Vehicle):PortalVehicle{
  const isCb=v.name===CB650R_NAME;
  return {
   id:v.id,modelKey:'local:'+v.id,kind:v.kind,name:v.name,
-  subtitle:v.kind==='carro'?'Automóvel · Meu veículo':'Motocicleta · Meu veículo',
+  subtitle:isCb?'2024 · Vermelha · 649 cm³':v.kind==='carro'?'Automóvel · Meu veículo':'Motocicleta · Meu veículo',
   plate:v.plate||null,km:v.currentKm,
   url:isGol?'/gol-g6':isCb?'/cb650r':null,
   photo:isGol?GOL.photo:isCb?CB650R_REFERENCE.photo:v.kind==='carro'?fallbackCar:fallbackBike,
