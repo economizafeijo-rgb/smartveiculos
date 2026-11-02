@@ -57,7 +57,7 @@ export function clearFipe(vehicleId:string):void{
   window.dispatchEvent(new CustomEvent('smartveiculos:fipe:updated',{detail:vehicleId}));
 }
 async function request(path:string,signal?:AbortSignal):Promise<unknown>{
-  const response=await fetch(API_BASE+path,{signal,headers:{Accept:'application/json'}});
+  const response=await fetch(API_BASE+path,{signal:signal??null,headers:{Accept:'application/json'}});
   if(response.status===429)throw new Error('Limite temporário da consulta FIPE. Tente novamente mais tarde.');
   if(!response.ok)throw new Error('Consulta FIPE indisponível (HTTP '+response.status+').');
   return response.json();
@@ -84,14 +84,14 @@ export async function fipePrice(kind:FipeKind,selection:FipeSelection,signal?:Ab
   if(!data||typeof data!=='object')throw new Error('Resposta inválida da consulta FIPE.');
   const d=data as Record<string,unknown>;
   const fields=['price','referenceMonth','codeFipe','brand','model','fuel'] as const;
-  if(fields.some(k=>typeof d[k]!=='string')||!Number.isFinite(d.modelYear)||
-      !/^R\$\s*[\d.]+,\d{2}$/.test(String(d.price))||
-      !/^\d{6}-\d$/.test(String(d.codeFipe))) {
+  if(fields.some(k=>typeof d[k]!=='string')||!Number.isFinite(d['modelYear'])||
+      !/^R\$\s*[\d.]+,\d{2}$/.test(String(d['price']))||
+      !/^\d{6}-\d$/.test(String(d['codeFipe']))) {
     throw new Error('Preço FIPE não confirmado. Tente novamente.');
   }
   return {
-    price:String(d.price),referenceMonth:String(d.referenceMonth),
-    codeFipe:String(d.codeFipe),brand:String(d.brand),
-    model:String(d.model),modelYear:Number(d.modelYear),fuel:String(d.fuel),
+    price:String(d['price']),referenceMonth:String(d['referenceMonth']),
+    codeFipe:String(d['codeFipe']),brand:String(d['brand']),
+    model:String(d['model']),modelYear:Number(d['modelYear']),fuel:String(d['fuel']),
   };
 }
