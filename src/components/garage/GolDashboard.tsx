@@ -80,7 +80,7 @@ export function GolDashboard(){
  const systems=['Todos',...new Set(GOL_PROBLEMS.map(x=>x.system))];
  const problems=GOL_PROBLEMS.filter(x=>(system==='Todos'||x.system===system)&&[x.system,x.name,x.symptoms].join(' ').toLowerCase().includes(query.toLowerCase()));
  if(!hydrated)return <div className="grid min-h-screen place-items-center bg-slate-50 text-slate-600">Carregando a garagem...</div>;
- return <div className="min-h-screen bg-[#f3f6fb] text-slate-900">
+ return <div className="sv-theme-surface sv-dashboard-shell min-h-screen bg-[#f3f6fb] text-slate-900">
   <header className="border-b border-slate-200 bg-white"><div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-7">
    <Link to="/" className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-slate-900 text-white"><Wrench/></span><span className="font-extrabold">Smart<span className="text-blue-600">Veículos</span><small className="block text-xs font-normal text-slate-500">Garagem inteligente</small></span></Link>
    <div className="flex gap-2"><Link to="/" className={btn+' border border-slate-200 bg-white hover:bg-slate-50'}><ArrowLeft size={15}/> Voltar</Link><a className={btn+' bg-slate-900 text-white hover:bg-slate-700'} href="/admin">Admin</a></div>
