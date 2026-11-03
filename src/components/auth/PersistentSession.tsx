@@ -17,6 +17,9 @@ type AuthSession={user:User|null;ready:boolean};
 const SessionContext=createContext<AuthSession>({user:null,ready:false});
 
 export function usePersistentSession():AuthSession{return useContext(SessionContext);}
+function scopeAccount(userId:string|null){
+ setGarageAccount(userId);setFuelAccount(userId);setBikeAccount(userId);
+}
 
 /** Supabase persistSession mantém a sessão mesmo ao sair de /garagem para /.
  * A navegação jamais invoca signOut. Só a confirmação explícita do usuário
@@ -34,18 +37,19 @@ export function PersistentSessionProvider({children}:{children:ReactNode}){
   const {data:listener}=client.auth.onAuthStateChange((event,session)=>{
    if(!active)return;
    epoch++;
+   scopeAccount(session?.user?.id??null);
    setUser(session?.user??null);
    setReady(true);
-   if(event==='SIGNED_OUT'){
-    setGarageAccount(null);setFuelAccount(null);setBikeAccount(null);
-    clearReturnNavigation();
-   }
+   if(event==='SIGNED_OUT')clearReturnNavigation();
   });
   const startingEpoch=epoch;
   void client.auth.getSession().then(({data,error})=>{
    if(!active||epoch!==startingEpoch)return;
    // A falha ao consultar a sessão não equivale a uma ordem de logout.
-   if(!error)setUser(data.session?.user??null);
+   if(!error){
+    scopeAccount(data.session?.user?.id??null);
+    setUser(data.session?.user??null);
+   }
    setReady(true);
   }).catch(()=>{if(active&&epoch===startingEpoch)setReady(true);});
   return()=>{active=false;listener.subscription.unsubscribe();};
@@ -133,7 +137,7 @@ export function GlobalSessionActions(){
  const {user,ready}=usePersistentSession();
  const location=useLocation();
  if(!ready||!user)return null;
- const isPublic=location.pathname==='/'||location.pathname==='/demonstracao'||location.pathname==='/vitrines'||location.pathname==='/acesso';
+ const isPublic=location.pathname==='/demonstracao'||location.pathname==='/vitrines'||location.pathname==='/acesso';
  return <nav className="sv-session-dock" aria-label="Sua sessão autenticada">
   <span className="sv-session-identity" title={user.email??'Conta conectada'}>
    <span className="sv-session-status" aria-hidden="true"/><span className="sv-session-label">Conectado</span>
