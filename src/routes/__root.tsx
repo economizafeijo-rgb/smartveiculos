@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { DisplayControls } from "@/components/ui/DisplayControls";
+import { PersistentSessionProvider, GlobalSessionActions } from "@/components/auth/PersistentSession";
 
 function NotFoundComponent() {
   return (
@@ -126,10 +127,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-      <DisplayControls />
-      <Toaster richColors position="top-center" />
+      <PersistentSessionProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <GlobalSessionActions />
+        <DisplayControls />
+        <Toaster richColors position="top-center" />
+      </PersistentSessionProvider>
     </QueryClientProvider>
   );
 }
