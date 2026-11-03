@@ -298,7 +298,7 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
    <span>{cartNotice}</span>
    <Link to="/demonstracao" search={{area,pagina:'simular'}} onClick={()=>setCartNotice('')}
     className="inline-flex items-center gap-1 rounded-lg border border-orange-300 px-3 py-2 font-black">Abrir simulação <ArrowRight size={13}/></Link>
-  </div>
+  </div>}
   {page==='visao'&&<>
    <SectionTitle title="Painel de gestão demonstrativo" desc={isShop?'Controle ilustrativo de peças, estoque e solicitações.':'Ordens de serviço e etapas de atendimento em uma oficina fictícia.'}/>
    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
