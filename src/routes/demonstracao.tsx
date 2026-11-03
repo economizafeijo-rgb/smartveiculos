@@ -1,8 +1,10 @@
 import {createFileRoute,Link} from '@tanstack/react-router';
+import {DemoQRCode} from '@/components/demo/DemoQRCode';
+import {DemoSimulator,type Cart} from '@/components/demo/DemoSimulator';
 import {useMemo,useState} from 'react';
 import {
  ArrowLeft,ArrowRight,ArrowUpRight,BadgeCheck,Bike,BookOpen,CalendarClock,
- CarFront,CheckCircle2,ClipboardList,Eye,Fuel,Gauge,LockKeyhole,
+ CarFront,CheckCircle2,ClipboardList,Eye,Fuel,Gauge,LockKeyhole,ListChecks,MessageCircle,ShoppingCart,
  Package,Play,Search,ShieldCheck,Store,TrendingUp,Video,Wrench,
  type LucideIcon
 } from 'lucide-react';
@@ -12,11 +14,11 @@ import {
  type DemoArea,type DemoOrder,
 } from '@/lib/demo/demo-data';
 
-type DemoPage='visao'|'veiculos'|'abastecimentos'|'revisoes'|'fipe'|'videos'|'estoque'|'pedidos'|'servicos'|'vitrine';
+type DemoPage='visao'|'veiculos'|'abastecimentos'|'revisoes'|'fipe'|'videos'|'estoque'|'pedidos'|'servicos'|'vitrine'|'simular'|'chat'|'acompanhar';
 const PAGE_NAMES:Record<DemoPage,string>={
  visao:'Visão geral',veiculos:'Meus veículos',abastecimentos:'Abastecimentos',
  revisoes:'Revisões',fipe:'Tabela FIPE',videos:'Vídeos e reparos',
- estoque:'Estoque',pedidos:'Pedidos',servicos:'Serviços',vitrine:'Vitrine'
+ estoque:'Estoque',pedidos:'Pedidos',servicos:'Serviços',vitrine:'Vitrine',simular:'Simular compra/OS',chat:'Chat de teste',acompanhar:'Acompanhar etapas'
 };
 const CONFIG:{area:DemoArea;icon:LucideIcon;label:string;short:string}[]=[
  {area:'garage',icon:Gauge,label:'Minha garagem',short:'Proprietário'},
@@ -25,8 +27,8 @@ const CONFIG:{area:DemoArea;icon:LucideIcon;label:string;short:string}[]=[
  {area:'workshop',icon:Wrench,label:'Oficina mecânica',short:'Serviços e ordens'},
 ];
 const GARAGE_PAGES:DemoPage[]=['visao','veiculos','abastecimentos','revisoes','fipe','videos'];
-const STORE_PAGES:DemoPage[]=['visao','estoque','pedidos','vitrine'];
-const WORKSHOP_PAGES:DemoPage[]=['visao','pedidos','servicos','vitrine'];
+const STORE_PAGES:DemoPage[]=['visao','estoque','pedidos','vitrine','simular','chat','acompanhar'];
+const WORKSHOP_PAGES:DemoPage[]=['visao','pedidos','servicos','vitrine','simular','chat','acompanhar'];
 const formatDate=(value:string)=>new Date(value+'T12:00:00').toLocaleDateString('pt-BR');
 const number=(n:number)=>new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}).format(n);
 const card='sv-demo-panel rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5';
@@ -36,7 +38,7 @@ function PageIcon({id}:{id:DemoPage}){
  const Icon:LucideIcon={
  visao:Gauge,veiculos:CarFront,abastecimentos:Fuel,revisoes:CalendarClock,
  fipe:TrendingUp,videos:Video,estoque:Package,pedidos:ClipboardList,
- servicos:Wrench,vitrine:Store,
+ servicos:Wrench,vitrine:Store,simular:ShoppingCart,chat:MessageCircle,acompanhar:ListChecks,
  }[id];
  return <Icon size={16}/>;
 }
@@ -61,7 +63,7 @@ function ReadonlyBanner(){
   <span className="inline-flex items-center gap-2">
    <Eye className="shrink-0 text-orange-300" size={15}/>
    <strong className="font-extrabold text-orange-200">Modo demonstração</strong>
-   <span className="text-slate-300">Explore livremente com dados fictícios. Alterações e cadastros estão desativados.</span>
+   <span className="text-slate-300">Explore simulações com dados inventados. Nenhuma compra, conversa ou OS é enviada para clientes reais.</span>
   </span>
   <a href="/acesso?mode=register" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-orange-300/30 px-2.5 py-1.5 text-[11px] font-bold text-orange-200 hover:bg-orange-500/10">
    Criar conta <ArrowRight size={13}/>
@@ -122,6 +124,13 @@ function DemoPortal(){
     </div>
    </section>
    <ReadonlyBanner/>
+   <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/90 p-3 shadow-sm sm:p-4">
+    <div className="min-w-0"><p className="text-[10px] font-extrabold uppercase tracking-wider text-orange-700">Link exclusivo desta área</p>
+     <p className="mt-1 text-sm font-black text-slate-900">{config.label}</p>
+     <p className="mt-1 text-xs text-slate-600">QR Code exclusivo desta demonstração; não contém informações particulares.</p>
+    </div>
+    <DemoQRCode area={area} label={config.label} compact/>
+   </div>
    <div className="flex flex-wrap items-center justify-between gap-2">
     <p className="text-xs font-semibold text-slate-600">Você está conhecendo apenas a área de <strong className="text-slate-900">{config.label}</strong>.</p>
     <a href="/" className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-orange-700 hover:border-orange-300">
