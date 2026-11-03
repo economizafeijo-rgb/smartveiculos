@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {areaEntryLabel,areaEntryPath} from './area-entry';
-import {DEMO_AREAS,DEMO_STOCK,DEMO_ORDERS,DEMO_PERSONAS,DEMO_FUEL} from '@/lib/demo/demo-data';
+import {DEMO_AREAS,DEMO_STOCK,DEMO_ORDERS,DEMO_PERSONAS,DEMO_WORKSHOP_SERVICES} from '@/lib/demo/demo-data';
 
 describe('clique nas quatro áreas da homepage',()=>{
  it('visitantes entram em demos isoladas, sem login ou cadastro',()=>{
@@ -30,8 +30,9 @@ describe('separação dos acervos da demonstração',()=>{
   expect(Object.keys(DEMO_STOCK)).not.toContain('workshop');
   expect(DEMO_PERSONAS.workshop.role).toContain('Oficina');
  });
- it('garagem possui abastecimentos fictícios e acesso próprio',()=>{
-  expect(DEMO_FUEL.length).toBeGreaterThan(0);
-  expect(DEMO_PERSONAS.garage.company).toContain('demonstrativa');
+ it('garagem pública não possui registros de proprietários e oficina tem catálogo exclusivo',()=>{
+  expect(DEMO_PERSONAS.garage.company).toContain('garagem digital');
+  expect(DEMO_WORKSHOP_SERVICES.length).toBeGreaterThan(0);
+  expect(Object.keys(DEMO_STOCK)).not.toContain('garage');
  });
 });
