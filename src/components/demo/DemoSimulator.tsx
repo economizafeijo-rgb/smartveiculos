@@ -27,6 +27,7 @@ export function DemoSimulator({
  const isShop=area!=='workshop';
  const stock=isShop?DEMO_STOCK[area as DemoShopArea]:[];
  const [services,setServices]=useState<string[]>([]);
+ const [saleMode,setSaleMode]=useState<'compra'|'venda'>('compra');
  const [order,setOrder]=useState<null|{id:string;description:string;value:number}>(null);
  const [stage,setStage]=useState(0);
  const [text,setText]=useState('');
@@ -51,7 +52,7 @@ export function DemoSimulator({
   const description=isShop
    ?chosen.map(p=>(cart[p.id]??0)+'× '+p.name).join(' · ')
    :DEMO_WORKSHOP_SERVICES.filter(x=>services.includes(x.id)).map(x=>x.name).join(' · ');
-  setOrder({id:(isShop?'COMPRA':'OS')+'-SIMULADA',description,value:total});
+  setOrder({id:(isShop?(saleMode==='compra'?'COMPRA':'VENDA'):'OS')+'-SIMULADA',description,value:total});
   setStage(0);setFeedback('Simulação criada. Nenhum pedido foi enviado, pago ou gravado.');
  }
  function sendChat(){
@@ -76,6 +77,12 @@ export function DemoSimulator({
   {view==='simular'&&<>
    <div className={panel}>
     <h3 className="flex items-center gap-2 text-sm font-black text-slate-900">{isShop?<ShoppingCart size={18} className="text-orange-600"/>:<Wrench size={18} className="text-orange-600"/>}{isShop?'Selecione os produtos e quantidades':'Escolha os serviços para uma OS de teste'}</h3>
+    {isShop&&<div role="group" aria-label="Escolher simulação de compra ou venda" className="mt-4 flex flex-wrap gap-2">
+     <button type="button" aria-pressed={saleMode==='compra'} onClick={()=>setSaleMode('compra')}
+      className={'rounded-xl border px-3 py-2 text-xs font-black '+(saleMode==='compra'?'border-orange-400 bg-orange-500 text-slate-950':'border-slate-200 bg-white text-slate-800')}>Compra como cliente</button>
+     <button type="button" aria-pressed={saleMode==='venda'} onClick={()=>setSaleMode('venda')}
+      className={'rounded-xl border px-3 py-2 text-xs font-black '+(saleMode==='venda'?'border-orange-400 bg-orange-500 text-slate-950':'border-slate-200 bg-white text-slate-800')}>Venda pela loja</button>
+    </div>}
     <div className="mt-4 grid gap-2 sm:grid-cols-2">
      {isShop?stock.map(p=><div key={p.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
       <div className="min-w-0"><p className="text-xs font-black text-slate-900">{p.name}</p><p className="mt-1 text-[11px] text-slate-600">{formatDemoBRL(p.price)} · {p.sku}</p></div>
@@ -92,7 +99,7 @@ export function DemoSimulator({
     <div className="mt-5 flex flex-wrap items-end justify-between gap-3 border-t border-slate-200 pt-4">
      <div><p className="text-xs font-semibold text-slate-600">{count} {isShop?'produto(s) no carrinho':'serviço(s) selecionado(s)'}</p>
       <p className="mt-1 text-2xl font-black text-slate-900">{formatDemoBRL(total)}</p><p className="text-[11px] text-slate-500">Valor exclusivamente ilustrativo; nenhum pagamento ocorre.</p></div>
-     <button type="button" onClick={completeSimulation} className={buttons}>{isShop?'Simular pedido de compra':'Criar OS de demonstração'} <ChevronRight size={16}/></button>
+     <button type="button" onClick={completeSimulation} className={buttons}>{isShop?(saleMode==='compra'?'Simular pedido de compra':'Simular venda de produtos'):'Criar OS de demonstração'} <ChevronRight size={16}/></button>
     </div>
     {feedback&&<p role="status" className="mt-3 rounded-xl border border-orange-200 bg-orange-50 p-3 text-xs font-bold text-slate-800">{feedback}</p>}
    </div>
