@@ -9,7 +9,7 @@ import {
  type DemoBusinessArea,type DemoShopArea,
 } from '@/lib/demo/demo-data';
 
-type View='visao'|'simular'|'chat'|'acompanhar'|'pedidos'|'estoque'|'servicos'|'vitrine';
+type View=string; // A rota aceita também páginas específicas da garagem.
 type ChatMessage={id:number;author:'visitante'|'assistente';text:string};
 export type Cart=Record<string,number>;
 const statuses={
