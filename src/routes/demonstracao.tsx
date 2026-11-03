@@ -277,6 +277,12 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
  const [search,setSearch]=useState('');
  const [status,setStatus]=useState<'todos'|DemoOrder['status']>('todos');
  const [selectedOrder,setSelectedOrder]=useState<string|null>(null);
+ const [cart,setCart]=useState<Cart>({});
+ const [cartNotice,setCartNotice]=useState('');
+ function addProduct(id:string){
+  setCart(previous=>({...previous,[id]:Math.min(9,(previous[id]??0)+1)}));
+  setCartNotice('Peça adicionada à simulação. Abra a aba “Simular compra/OS” para finalizar o teste.');
+ }
  const filteredStock=useMemo(()=>stock.filter(p=>
   [p.name,p.application,p.sku,p.category].some(t=>t.toLowerCase().includes(search.toLowerCase()))
  ),[stock,search]);
@@ -288,6 +294,11 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
  const estimated=orders.reduce((sum,o)=>sum+o.value,0);
  const listHeading=isShop?'Solicitações e pedidos':'Ordens de serviço';
  return <div className="space-y-4">
+  {cartNotice&&<div role="status" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-orange-200 bg-orange-50 p-3 text-xs font-bold text-orange-900">
+   <span>{cartNotice}</span>
+   <Link to="/demonstracao" search={{area,pagina:'simular'}} onClick={()=>setCartNotice('')}
+    className="inline-flex items-center gap-1 rounded-lg border border-orange-300 px-3 py-2 font-black">Abrir simulação <ArrowRight size={13}/></Link>
+  </div>
   {page==='visao'&&<>
    <SectionTitle title="Painel de gestão demonstrativo" desc={isShop?'Controle ilustrativo de peças, estoque e solicitações.':'Ordens de serviço e etapas de atendimento em uma oficina fictícia.'}/>
    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -305,7 +316,7 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
      </Link>
     </SectionTitle>
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-     {stock.slice(0,4).map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'}/>)}
+     {stock.slice(0,4).map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'} onAdd={addProduct}/>)}
     </div>
    </section>:<section className={card+' space-y-4'}>
     <SectionTitle title="Serviços demonstrativos da oficina" desc="Serviços de exemplo próprios da oficina, sem peças ou cadastros de outras áreas."/>
@@ -328,7 +339,7 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
     <button type="button" disabled className={btnOff}><LockKeyhole size={14}/> Cadastrar peça</button></SectionTitle>
    <SearchField value={search} onChange={setSearch} placeholder="Buscar peça, SKU, aplicação…" />
    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    {filteredStock.map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'}/>)}
+    {filteredStock.map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'} onAdd={addProduct}/>)}
    </div>
    <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[630px] text-left text-xs">
     <thead className="bg-slate-50 text-slate-500"><tr>{['Código','Descrição','Aplicação','Categoria','Saldo','Preço ilustrativo'].map(h=><th key={h} className="px-3 py-3">{h}</th>)}</tr></thead>
@@ -356,7 +367,7 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
    <SectionTitle title={isShop?(area==='parts_cars'?'Vitrine de autopeças para carros':'Vitrine de motopeças'):'Vitrine de serviços da oficina'}
     desc="Catálogo demonstrativo, isolado das demais áreas e sem anúncios ou cadastros de clientes reais."/>
    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    {isShop?stock.map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'}/>)
+    {isShop?stock.map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'} onAdd={addProduct}/>)
      :DEMO_WORKSHOP_SERVICES.map(item=><WorkshopServiceCard key={item.id} item={item}/>)}
    </div>
    <button type="button" disabled className={btnOff+' mt-4'}><LockKeyhole size={14}/> Publicar item (bloqueado)</button>
@@ -371,6 +382,7 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
    <button type="button" className={btnOff+' mt-4'} disabled><LockKeyhole size={14}/> Atualizar andamento (bloqueado)</button>
   </section>}
   {focused&&page==='visao'&&<OrderDetail order={focused} onClose={()=>setSelectedOrder(null)}/>}
+  <DemoSimulator area={area} view={page} cart={cart} setCart={setCart}/>
  </div>;
 }
 function SearchField({value,onChange,placeholder}:{value:string;onChange:(value:string)=>void;placeholder:string}){
