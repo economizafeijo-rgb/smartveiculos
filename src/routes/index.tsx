@@ -7,6 +7,7 @@ import type {PortalArea} from '@/components/portal/PortalAreaDialog';
 import {supabase} from '@/lib/supabase/client';
 import {areaEntryPath,areaEntryLabel} from '@/lib/portal/area-entry';
 import {FreeGarageCampaign} from '@/components/marketing/FreeGarageCampaign';
+import {DemoQRCode} from '@/components/demo/DemoQRCode';
 
 export const Route=createFileRoute('/')({
  head:()=>({meta:[
@@ -98,6 +99,21 @@ function HomePortal(){
     </div>
    </section>
    <FreeGarageCampaign/>
+    <section id="qr-codes" aria-label="QR Codes de acesso por setor" className="sv-home-qr-section border-y border-slate-200 px-5 py-10 sm:px-8">
+     <div className="mx-auto max-w-7xl space-y-5">
+      <div><p className="text-xs font-black uppercase tracking-widest text-orange-700">Acessos independentes</p>
+       <h2 className="mt-2 text-2xl font-black text-slate-900">QR Codes de cada área</h2>
+       <p className="mt-2 text-sm text-slate-600">Cada código abre somente a página indicada. Os QR Codes não incluem informações particulares.</p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+       <DemoQRCode label="Homepage SmartVeículos"/>
+       <DemoQRCode area="garage" label="Garagem digital"/>
+       <DemoQRCode area="parts_cars" label="Autopeças para carros"/>
+       <DemoQRCode area="parts_bikes" label="Autopeças para motos"/>
+       <DemoQRCode area="workshop" label="Oficinas e serviços"/>
+      </div>
+     </div>
+    </section>
    <section id="solucoes" className="sv-ecosystem-section relative overflow-hidden border-t border-white/10 bg-[#111f33] py-12 text-white sm:py-16"><div className="relative mx-auto max-w-7xl space-y-7 px-5 sm:px-8">
     <MotionReveal><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-300">Escolha seu perfil</p><h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Qual é a sua área?</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">Cada ambiente foi pensado para o tipo de negócio. Empresas são registradas com CNPJ e passam por validação de cadastro.</p></div></MotionReveal>
     <MotionReveal delay={60}><div className="sv-ecosystem-panel sv-interactive-surface rounded-2xl border border-white/10 bg-white/[.06] p-4 shadow-sm backdrop-blur-sm sm:p-5"><button className="flex w-full items-center justify-between gap-3 text-left" aria-expanded={partsOpen} onClick={()=>setPartsOpen(v=>!v)}><span className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-orange-500/15 text-orange-300"><Package/></span><span><span className="block text-lg font-extrabold">Autopeças</span><span className="text-xs text-slate-300">Selecione o seu segmento para entrar na área correta</span></span></span><ChevronDown className={'transition-transform '+(partsOpen?'rotate-180':'')}/></button>{partsOpen&&<div className="sv-accordion-body mt-5 grid gap-4 border-t border-white/10 pt-5 md:grid-cols-2">{businessCards.slice(0,2).map(c=><a href={areaEntryPath(c.id,authenticated)} onKeyDown={handleCardKeyDown} key={c.label} aria-label={areaEntryLabel(c.id,authenticated)} className="sv-interactive-surface group relative min-h-64 w-full cursor-pointer overflow-hidden rounded-2xl bg-slate-900 text-left text-white focus-visible:outline-2 focus-visible:outline-[#F97316]"><img src={c.img} loading="lazy" alt={c.alt} className="sv-solution-photo absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"/><div className="sv-solution-scrim pointer-events-none absolute inset-0 bg-gradient-to-t from-[#061626]/72 via-[#061626]/0 via-[57%] to-transparent"/><div className="absolute inset-x-0 bottom-0 p-6"><c.icon size={27} className="mb-3 text-[#FDBA74]"/><h3 className="text-xl font-black">{c.label}</h3><p className="mt-1 text-sm text-slate-200">{c.subtitle}</p><span className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-[#FDBA74]">{authenticated?'Entrar na área':'Explorar sem login'} <ArrowRight size={16}/></span></div></a>)}</div>}</div></MotionReveal>
