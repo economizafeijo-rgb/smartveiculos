@@ -1,4 +1,6 @@
 import {useState} from 'react';
+import {usePersistentSession} from '@/components/auth/PersistentSession';
+import {returnToPanel} from '@/lib/auth/navigation';
 import {ArrowRight,Bike,CarFront,Check,CheckCircle2,ClipboardCheck,Clock3,Fuel,Gauge,LockKeyhole,ShieldCheck,Sparkles,Wallet,Wrench} from 'lucide-react';
 
 type VehicleAudience='carro'|'moto';
@@ -31,6 +33,7 @@ const gallery={
  * empresarial e não simular dados reais ou usuários que não existem.
  */
 export function FreeGarageCampaign(){
+ const {user}=usePersistentSession();
  const [audience,setAudience]=useState<VehicleAudience>('carro');
  const [step,setStep]=useState<FeatureIndex>(0);
  const active=gallery[audience];
@@ -62,11 +65,11 @@ export function FreeGarageCampaign(){
      </div>
     </div>
     <div className="mt-5 flex flex-wrap gap-2.5">
-     <a href="/acesso?mode=register" className="sv-free-cta sv-action-primary group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#f97316] px-5 py-3 text-sm font-black text-[#101b2c] shadow-lg shadow-orange-900/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
-      Criar minha garagem grátis <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" aria-hidden="true"/>
+     <a href={user?'/garagem':'/acesso?mode=register'} className="sv-free-cta sv-action-primary group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#f97316] px-5 py-3 text-sm font-black text-[#101b2c] shadow-lg shadow-orange-900/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
+      {user?'Abrir minha garagem grátis':'Criar minha garagem grátis'} <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" aria-hidden="true"/>
      </a>
-     <a href="/acesso?next=%2Fgaragem" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-sm font-bold text-white transition-colors hover:border-orange-400/60 hover:bg-white/15">
-      Já tenho conta
+     <a href={user?returnToPanel(user.id):'/acesso?next=%2Fgaragem'} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-sm font-bold text-white transition-colors hover:border-orange-400/60 hover:bg-white/15">
+      {user?'Voltar ao meu painel':'Já tenho conta'}
      </a>
     </div>
     <p className="mt-3 text-xs leading-5 text-slate-300"><ShieldCheck size={14} className="mr-1 inline text-orange-300" aria-hidden="true"/> É necessário criar uma conta para salvar e consultar seus registros. O acesso gratuito refere-se à área de proprietários; soluções para empresas são separadas.</p>
