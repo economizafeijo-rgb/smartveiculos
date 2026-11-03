@@ -215,11 +215,35 @@ function GarageDemo({page}:{page:DemoPage}){
  </div>;
 }
 
-function ProductCard({product,sector}:{product:(typeof DEMO_STOCK.parts_cars)[number];sector:'parts_cars'|'parts_bikes'}){
+/** Fotos de categoria ilustrativas, não são fotos dos SKUs, anúncios ou inventário reais. */
+const PRODUCT_PHOTOS:Record<string,string>={
+ 'car-filter-oil':'https://api.autoplanet.cl/medias/sys_master/images/ha3/h4f/9966083112990/400x400_Repuestos/400x400-Repuestos.png',
+ 'car-brake-pad':'https://api.autoplanet.cl/medias/sys_master/images/ha3/h4f/9966083112990/400x400_Repuestos/400x400-Repuestos.png',
+ 'car-spark':'https://repuestos.toyotainalmotors.cl/assets/banner2-xxOGrIQs.jpg',
+ 'car-air-filter':'https://api.autoplanet.cl/medias/sys_master/images/ha3/h4f/9966083112990/400x400_Repuestos/400x400-Repuestos.png',
+ 'car-belt':'https://cdn.autodoc.de/thumb?id=7487293&lng=en&m=0&n=0&rev=94077955',
+ 'car-battery':'https://www.cdiscount.com/pdt2/6/3/0/1/700x700/exi3661024034630/rw/batterie-exide-excell-lb2-12v-60ah-540a-242x175x17.jpg',
+ 'car-cabin':'https://repuestos.toyotainalmotors.cl/assets/banner2-xxOGrIQs.jpg',
+ 'car-shock':'https://repuestos.toyotainalmotors.cl/assets/banner2-xxOGrIQs.jpg',
+ 'bike-filter-oil':'https://gxmotor.co/cdn/shop/files/29848.jpg?v=1767030540&width=1000',
+ 'bike-brake-pad':'https://images.tcdn.com.br/img/img_prod/983748/kit_relacao_para_moto_nx_400_falcon_coxim_pastilha_traseira_dianteira_filtro_de_oleo_3279_1_a9f5a13b9989cb33faec49673cfb12da.jpg',
+ 'bike-chain-kit':'https://nicheindustries.com/cdn/shop/files/15kit_mk1013135_1.jpg?v=1747145798',
+ 'bike-air-filter':'https://gxmotor.co/cdn/shop/files/29848.jpg?v=1767030540&width=1000',
+ 'bike-spark':'https://images.tcdn.com.br/img/img_prod/983748/kit_relacao_para_moto_nx_400_falcon_coxim_pastilha_traseira_dianteira_filtro_de_oleo_3279_1_a9f5a13b9989cb33faec49673cfb12da.jpg',
+ 'bike-gloves':'https://www.outletmotostorevalencia.com/web/image/190272/ms-guantes-moto-homologados--3-2026-07-23.jpg',
+ 'bike-clutch':'https://nicheindustries.com/cdn/shop/files/15kit_mk1013135_1.jpg?v=1747145798',
+ 'bike-tire':'https://ubikemotos.cl/36275-large_default/neumatico-eurogrip-120-70-zr17-m-c-58w-roadhound-tl.jpg'
+};
+function ProductCard({product,sector,onAdd}:{product:(typeof DEMO_STOCK.parts_cars)[number];sector:'parts_cars'|'parts_bikes';onAdd:(id:string)=>void}){
  const Icon=sector==='parts_cars'?CarFront:Bike;
  return <article className="sv-demo-product-card flex h-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+  <div className="relative mb-3 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-[#f0f3f7]">
+   <img loading="lazy" src={PRODUCT_PHOTOS[product.id]} alt={'Foto ilustrativa da categoria '+product.category}
+    className="h-full w-full object-contain p-2" onError={e=>{e.currentTarget.style.display='none'}}/>
+   <span className="absolute bottom-2 left-2 rounded-md border border-white/60 bg-white/90 px-2 py-1 text-[9px] font-extrabold text-slate-700">Ilustração de categoria</span>
+  </div>
   <div className="flex items-center justify-between gap-3">
-   <span className="grid size-11 place-items-center rounded-xl bg-[#152c48] text-orange-300"><Icon size={23}/></span>
+   <span className="grid size-9 place-items-center rounded-xl bg-[#152c48] text-orange-300"><Icon size={19}/></span>
    <span className="rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-[10px] font-black text-orange-800">{product.category}</span>
   </div>
   <h3 className="mt-4 text-sm font-black text-slate-900">{product.name}</h3>
@@ -229,6 +253,10 @@ function ProductCard({product,sector}:{product:(typeof DEMO_STOCK.parts_cars)[nu
    <div><p className="text-[10px] font-bold text-slate-500">Preço demonstrativo</p><p className="text-lg font-black text-slate-900">{formatDemoBRL(product.price)}</p></div>
    <span className="text-[11px] font-semibold text-slate-600">{product.quantity} un. (exemplo)</span>
   </div>
+  <button type="button" onClick={()=>onAdd(product.id)}
+   className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-orange-300 bg-orange-50 px-3 py-2.5 text-xs font-black text-orange-800 hover:bg-orange-100">
+   <ShoppingCart size={15}/> Adicionar à compra de teste
+  </button>
  </article>;
 }
 function WorkshopServiceCard({item}:{item:(typeof DEMO_WORKSHOP_SERVICES)[number]}){
