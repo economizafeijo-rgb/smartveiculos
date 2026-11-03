@@ -268,7 +268,7 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
      </Link>
     </SectionTitle>
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-     {stock.slice(0,4).map(item=><ProductCard key={item.id} product={item} sector={area}/>)}
+     {stock.slice(0,4).map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'}/>)}
     </div>
    </section>:<section className={card+' space-y-4'}>
     <SectionTitle title="Serviços demonstrativos da oficina" desc="Serviços de exemplo próprios da oficina, sem peças ou cadastros de outras áreas."/>
@@ -291,7 +291,7 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
     <button type="button" disabled className={btnOff}><LockKeyhole size={14}/> Cadastrar peça</button></SectionTitle>
    <SearchField value={search} onChange={setSearch} placeholder="Buscar peça, SKU, aplicação…" />
    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    {filteredStock.map(item=><ProductCard key={item.id} product={item} sector={area}/>)}
+    {filteredStock.map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'}/>)}
    </div>
    <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[630px] text-left text-xs">
     <thead className="bg-slate-50 text-slate-500"><tr>{['Código','Descrição','Aplicação','Categoria','Saldo','Preço ilustrativo'].map(h=><th key={h} className="px-3 py-3">{h}</th>)}</tr></thead>
@@ -319,7 +319,7 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
    <SectionTitle title={isShop?(area==='parts_cars'?'Vitrine de autopeças para carros':'Vitrine de motopeças'):'Vitrine de serviços da oficina'}
     desc="Catálogo demonstrativo, isolado das demais áreas e sem anúncios ou cadastros de clientes reais."/>
    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    {isShop?stock.map(item=><ProductCard key={item.id} product={item} sector={area}/>)
+    {isShop?stock.map(item=><ProductCard key={item.id} product={item} sector={area==='parts_bikes'?'parts_bikes':'parts_cars'}/>)
      :DEMO_WORKSHOP_SERVICES.map(item=><WorkshopServiceCard key={item.id} item={item}/>)}
    </div>
    <button type="button" disabled className={btnOff+' mt-4'}><LockKeyhole size={14}/> Publicar item (bloqueado)</button>
