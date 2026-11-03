@@ -214,12 +214,6 @@ function OwnerGarage(){
    setError('');
   }catch(e){setNotice('');setError(e instanceof Error?e.message:'Não foi possível importar.');}
  };
- const logout=async()=>{
-  if(!supabase)return;
-  const {error:signOutError}=await supabase.auth.signOut();
-  if(signOutError){setError(signOutError.message);return;}
-  window.location.assign('/');
- };
  const openLocal=(id:string)=>{
   if(!id.startsWith('local:')){
    setNotice('Para acessar a manutenção desse modelo, abra sua ficha dedicada.');
@@ -237,7 +231,7 @@ function OwnerGarage(){
      <Link to="/" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 hover:bg-slate-100"><Home size={14}/> Início</Link>
      <a href="/meus-atendimentos" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-[11px] font-bold text-orange-900 hover:bg-orange-100"><Wrench size={14}/> Meus atendimentos</a>
      {isAdmin&&<a href="/admin" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-[11px] font-bold text-orange-900 hover:bg-orange-100"><ShieldCheck size={14}/> Administração</a>}
-     <button type="button" onClick={()=>void logout()} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#111e30] px-3 py-1.5 text-[11px] font-bold text-white hover:bg-[#24354e]"><LogOut size={14}/> Sair</button>
+     <span className="hidden items-center gap-1 rounded-lg border border-emerald-200/80 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-bold text-emerald-900 md:inline-flex"><ShieldCheck size={13}/> Sessão ativa</span>
     </nav>
    </div>
   </header>
