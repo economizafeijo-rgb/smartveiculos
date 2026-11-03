@@ -21,14 +21,14 @@ describe('clique nas quatro áreas da homepage',()=>{
 });
 describe('separação dos acervos da demonstração',()=>{
  it('peças do estoque de carro e moto têm códigos distintos',()=>{
-  expect(DEMO_STOCK.parts_cars.every(v=>v.sku.startsWith('CAR-'))).toBe(true);
-  expect(DEMO_STOCK.parts_bikes.every(v=>v.sku.startsWith('MOT-'))).toBe(true);
+  expect(DEMO_STOCK.parts_cars.every(v=>v.sku.startsWith('DEMO-CAR-'))).toBe(true);
+  expect(DEMO_STOCK.parts_bikes.every(v=>v.sku.startsWith('DEMO-MOT-'))).toBe(true);
   expect(DEMO_STOCK.parts_cars.map(v=>v.id).some(id=>DEMO_STOCK.parts_bikes.some(x=>x.id===id))).toBe(false);
  });
  it('oficina contém ordens de serviço, sem inventário de autopeças',()=>{
   expect(DEMO_ORDERS.workshop.length).toBeGreaterThan(0);
   expect(Object.keys(DEMO_STOCK)).not.toContain('workshop');
-  expect(DEMO_PERSONAS.workshop.role).toContain('Oficina');
+  expect(DEMO_PERSONAS.workshop.company).toContain('Oficina');
  });
  it('garagem pública não possui registros de proprietários e oficina tem catálogo exclusivo',()=>{
   expect(DEMO_PERSONAS.garage.company).toContain('garagem digital');
