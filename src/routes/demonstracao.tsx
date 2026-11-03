@@ -9,7 +9,7 @@ import {
 import {
  DEMO_PERSONAS,DEMO_STOCK,DEMO_ORDERS,DEMO_WORKSHOP_SERVICES,
  formatDemoBRL,demoStockValue,demoOpenOrders,isDemoArea,
- type DemoArea,type DemoOrder,type DemoShopArea,
+ type DemoArea,type DemoOrder,
 } from '@/lib/demo/demo-data';
 
 type DemoPage='visao'|'veiculos'|'abastecimentos'|'revisoes'|'fipe'|'videos'|'estoque'|'pedidos'|'servicos'|'vitrine';
@@ -205,6 +205,34 @@ function GarageDemo({page}:{page:DemoPage}){
   </>}
  </div>;
 }
+
+function ProductCard({product,sector}:{product:(typeof DEMO_STOCK.parts_cars)[number];sector:'parts_cars'|'parts_bikes'}){
+ const Icon=sector==='parts_cars'?CarFront:Bike;
+ return <article className="sv-demo-product-card flex h-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+  <div className="flex items-center justify-between gap-3">
+   <span className="grid size-11 place-items-center rounded-xl bg-[#152c48] text-orange-300"><Icon size={23}/></span>
+   <span className="rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-[10px] font-black text-orange-800">{product.category}</span>
+  </div>
+  <h3 className="mt-4 text-sm font-black text-slate-900">{product.name}</h3>
+  <p className="mt-1 text-[11px] font-semibold text-slate-500">{product.sku}</p>
+  <p className="mt-3 flex-1 text-xs leading-5 text-slate-600">{product.application}</p>
+  <div className="mt-4 flex items-end justify-between gap-2 border-t border-slate-200 pt-3">
+   <div><p className="text-[10px] font-bold text-slate-500">Preço demonstrativo</p><p className="text-lg font-black text-slate-900">{formatDemoBRL(product.price)}</p></div>
+   <span className="text-[11px] font-semibold text-slate-600">{product.quantity} un. (exemplo)</span>
+  </div>
+ </article>;
+}
+function WorkshopServiceCard({item}:{item:(typeof DEMO_WORKSHOP_SERVICES)[number]}){
+ return <article className="sv-demo-product-card flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+  <div className="flex items-center justify-between gap-2">
+   <span className="grid size-11 place-items-center rounded-xl bg-[#152c48] text-orange-300"><Wrench size={22}/></span>
+   <span className="rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-[10px] font-black text-orange-800">{item.category}</span>
+  </div>
+  <h3 className="mt-4 text-sm font-black text-slate-900">{item.name}</h3>
+  <p className="mt-2 flex-1 text-xs leading-5 text-slate-600">{item.description}</p>
+  <p className="mt-4 border-t border-slate-200 pt-3 text-[11px] font-bold text-slate-600">Valor ilustrativo a partir de <strong className="block text-lg font-black text-slate-900">{formatDemoBRL(item.priceFrom)}</strong></p>
+ </article>;
+}
 function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage}){
  const isShop=area!=='workshop';
  const stock=area==='workshop'?[]:DEMO_STOCK[area];
@@ -231,8 +259,25 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
     <Metric title={isShop?'Valor do estoque':'Orçamentos apresentados'} value={formatDemoBRL(isShop?demoStockValue(stock):estimated)} icon={TrendingUp} sub="Valores fictícios"/>
     <Metric title="Pedidos pendentes" value={String(demoOpenOrders(orders))} icon={CalendarClock}/>
    </div>
+   {isShop?<section className={card+' space-y-4'}>
+    <SectionTitle title={area==='parts_cars'?'Peças automotivas de demonstração':'Motopeças de demonstração'}
+     desc={area==='parts_cars'?'Catálogo exclusivo de peças para carros. Preços e saldos são exemplos, sem produtos reais.':'Catálogo exclusivo para motocicletas, sem peças de automóveis.'}>
+     <Link to="/demonstracao" search={{area,pagina:'estoque'}}
+      className="inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-black text-orange-800 hover:bg-orange-100">
+      Ver todo o catálogo <ArrowRight size={15}/>
+     </Link>
+    </SectionTitle>
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+     {stock.slice(0,4).map(item=><ProductCard key={item.id} product={item} sector={area}/>)}
+    </div>
+   </section>:<section className={card+' space-y-4'}>
+    <SectionTitle title="Serviços demonstrativos da oficina" desc="Serviços de exemplo próprios da oficina, sem peças ou cadastros de outras áreas."/>
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+     {DEMO_WORKSHOP_SERVICES.slice(0,3).map(item=><WorkshopServiceCard key={item.id} item={item}/>)}
+    </div>
+   </section>}
    <div className="grid gap-3 lg:grid-cols-2">
-    <section className={card}><SectionTitle title="Atividade recente" desc="Pedidos exibidos exclusivamente com dados de exemplo."/>
+    <section className={card}><SectionTitle title={isShop?'Pedidos recentes da loja':'Ordens de serviço recentes'} desc="Registros de demonstração, sem dados de clientes reais."/>
      <OrdersList orders={orders.slice(0,3)} onSelect={setSelectedOrder}/></section>
     <section className={darkCard}><p className="text-xs font-extrabold uppercase tracking-widest text-orange-300">O que você pode fazer na conta real</p>
      <h3 className="mt-3 text-xl font-black text-white">{isShop?'Controle de autopeças':'Gestão de oficina'}</h3>
@@ -242,9 +287,12 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
    </div>
   </>}
   {page==='estoque'&&isShop&&<section className={card}>
-   <SectionTitle title="Catálogo e controle do estoque" desc="Pesquise peças pelo código, aplicação ou categoria.">
+   <SectionTitle title={area==='parts_cars'?'Estoque de autopeças para carros':'Estoque exclusivo de motopeças'} desc="Produtos e quantidades de exemplo, sem ligação com lojas reais. Pesquise por SKU ou aplicação.">
     <button type="button" disabled className={btnOff}><LockKeyhole size={14}/> Cadastrar peça</button></SectionTitle>
    <SearchField value={search} onChange={setSearch} placeholder="Buscar peça, SKU, aplicação…" />
+   <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    {filteredStock.map(item=><ProductCard key={item.id} product={item} sector={area}/>)}
+   </div>
    <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[630px] text-left text-xs">
     <thead className="bg-slate-50 text-slate-500"><tr>{['Código','Descrição','Aplicação','Categoria','Saldo','Preço ilustrativo'].map(h=><th key={h} className="px-3 py-3">{h}</th>)}</tr></thead>
     <tbody>{filteredStock.map(p=><tr key={p.id} className="border-t border-slate-100 text-slate-700">
@@ -268,12 +316,12 @@ function BusinessDemo({area,page}:{area:Exclude<DemoArea,'garage'>;page:DemoPage
    {focused&&<OrderDetail order={focused} onClose={()=>setSelectedOrder(null)}/>}
   </section>}
   {page==='vitrine'&&<section className={card}>
-   <SectionTitle title={isShop?'Vitrine de peças demonstrativas':'Vitrine de serviços da oficina'} desc="Informações de exemplo; publicação e edição não estão disponíveis nesta demonstração."/>
+   <SectionTitle title={isShop?(area==='parts_cars'?'Vitrine de autopeças para carros':'Vitrine de motopeças'):'Vitrine de serviços da oficina'}
+    desc="Catálogo demonstrativo, isolado das demais áreas e sem anúncios ou cadastros de clientes reais."/>
    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    {(isShop?stock:orders).map(item=>('sku' in item
-     ?<div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><span className="rounded-full bg-orange-100 px-2 py-1 text-[10px] font-black text-orange-800">{item.category}</span><h3 className="mt-3 text-sm font-black text-slate-900">{item.name}</h3><p className="mt-2 text-xs leading-5 text-slate-600">{item.application}</p><p className="mt-4 text-xl font-black text-slate-900">{formatDemoBRL(item.price)}</p><p className="mt-1 text-[11px] text-slate-500">Disponível: {item.quantity}</p></div>
-     :<div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><span className="rounded-full bg-orange-100 px-2 py-1 text-[10px] font-black text-orange-800">Serviço demonstrativo</span><h3 className="mt-3 text-sm font-black text-slate-900">{item.service}</h3><p className="mt-2 text-xs text-slate-500">{item.vehicle}</p><p className="mt-4 text-xl font-black">{formatDemoBRL(item.value)}</p></div>
-    ))}</div>
+    {isShop?stock.map(item=><ProductCard key={item.id} product={item} sector={area}/>)
+     :DEMO_WORKSHOP_SERVICES.map(item=><WorkshopServiceCard key={item.id} item={item}/>)}
+   </div>
    <button type="button" disabled className={btnOff+' mt-4'}><LockKeyhole size={14}/> Publicar item (bloqueado)</button>
   </section>}
   {page==='servicos'&&!isShop&&<section className={card}>
