@@ -1,10 +1,11 @@
 import {DeveloperCredit} from '@/components/ui/DeveloperCredit';
 import { createFileRoute } from '@tanstack/react-router';
-import { ArrowRight, Bike, CarFront, CheckCircle2, ChevronDown, ClipboardCheck, Eye, Gauge, Layers3, Package, ShieldCheck, Store, Wrench } from 'lucide-react';
-import {useEffect,useState,type KeyboardEvent} from 'react';
+import { ArrowLeft, ArrowRight, Bike, CarFront, CheckCircle2, ChevronDown, ClipboardCheck, Eye, Gauge, Layers3, Package, ShieldCheck, Store, Wrench } from 'lucide-react';
+import {useState,type KeyboardEvent} from 'react';
 import { MotionReveal } from '@/components/ui/MotionReveal';
 import type {PortalArea} from '@/components/portal/PortalAreaDialog';
-import {supabase} from '@/lib/supabase/client';
+import {usePersistentSession} from '@/components/auth/PersistentSession';
+import {returnToPanel} from '@/lib/auth/navigation';
 import {areaEntryPath,areaEntryLabel} from '@/lib/portal/area-entry';
 import {FreeGarageCampaign} from '@/components/marketing/FreeGarageCampaign';
 import {DemoQRCode} from '@/components/demo/DemoQRCode';
@@ -35,22 +36,8 @@ const heroTiles=[
 ] as const;
 function HomePortal(){
  const [partsOpen,setPartsOpen]=useState(true);
- const [authenticated,setAuthenticated]=useState(false);
- useEffect(()=>{
-  const client=supabase;
-  if(!client)return;
-  let mounted=true;
-  const check=()=>{void client.auth.getUser().then(({data,error})=>{
-   if(mounted)setAuthenticated(!error&&Boolean(data.user));
-  }).catch(()=>{if(mounted)setAuthenticated(false)})};
-  const {data}=client.auth.onAuthStateChange((event,session)=>{
-   if(!mounted)return;
-   if(event==='SIGNED_OUT')setAuthenticated(false);
-   else if(event==='SIGNED_IN'||event==='TOKEN_REFRESHED')setAuthenticated(Boolean(session?.user));
-  });
-  check();
-  return ()=>{mounted=false;data.subscription.unsubscribe();};
- },[]);
+ const {user,ready}=usePersistentSession();
+ const authenticated=Boolean(user);
  const handleCardKeyDown=(event:KeyboardEvent<HTMLAnchorElement>)=>{
   if(event.key===' '){event.preventDefault();event.currentTarget.click();}
  };
@@ -58,7 +45,7 @@ function HomePortal(){
   <header className="sv-glass-header sticky top-0 z-20 border-b border-white/15 text-white">
    <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
     <a href="/" className="flex items-center gap-2.5 font-extrabold tracking-tight"><span className="sv-logo-mark grid size-10 place-items-center rounded-xl bg-[#F97316] text-[#111827] shadow-[0_6px_18px_-8px_rgba(249,115,22,.8)]"><Gauge size={23}/></span><span className="text-xl">Smart<span className="text-[#FDBA74]">Veículos</span><span className="block text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400">Ecossistema automotivo</span></span></a>
-    <div className="flex items-center gap-2 sm:gap-5"><a href="#garagem-gratis" className="sv-free-nav hidden items-center gap-1.5 rounded-full border border-orange-400/40 bg-orange-500/10 px-3 py-2 text-xs font-extrabold text-orange-200 hover:bg-orange-500/20 lg:inline-flex">Garagem grátis <ArrowRight size={13}/></a><a href="#solucoes" className="hidden text-sm font-semibold text-slate-300 hover:text-white md:block">Soluções</a><a href="/vitrines" className="hidden text-sm font-semibold text-orange-300 hover:text-orange-200 sm:block">Vitrines</a><a href="/demonstracao" className="inline-flex items-center gap-1.5 rounded-xl border border-orange-300/40 bg-orange-500/10 px-3 py-2.5 text-xs font-black text-orange-200 transition-colors hover:bg-orange-500/20"><Eye size={15}/> <span className="hidden sm:inline">Testar</span> Demo</a><a href="/acesso" className="sv-nav-action rounded-xl border border-white/20 px-3 py-2.5 text-xs font-bold hover:bg-white/10 sm:px-5 sm:text-sm">Entrar</a><a href="/acesso?mode=register" className="sv-action-primary sv-nav-action rounded-xl bg-[#F97316] px-3 py-2.5 text-xs font-bold text-[#111827] shadow-sm hover:bg-[#EA580C] sm:px-5 sm:text-sm">Criar conta</a></div>
+    <div className="flex items-center gap-2 sm:gap-5"><a href="#garagem-gratis" className="sv-free-nav hidden items-center gap-1.5 rounded-full border border-orange-400/40 bg-orange-500/10 px-3 py-2 text-xs font-extrabold text-orange-200 hover:bg-orange-500/20 lg:inline-flex">Garagem grátis <ArrowRight size={13}/></a><a href="#solucoes" className="hidden text-sm font-semibold text-slate-300 hover:text-white md:block">Soluções</a><a href="/vitrines" className="hidden text-sm font-semibold text-orange-300 hover:text-orange-200 sm:block">Vitrines</a><a href="/demonstracao" className="inline-flex items-center gap-1.5 rounded-xl border border-orange-300/40 bg-orange-500/10 px-3 py-2.5 text-xs font-black text-orange-200 transition-colors hover:bg-orange-500/20"><Eye size={15}/> <span className="hidden sm:inline">Testar</span> Demo</a>{authenticated&&user?<a href={returnToPanel(user.id)} className="sv-home-back-button sv-nav-action inline-flex items-center gap-2 rounded-xl border border-orange-300/45 bg-orange-500/10 px-3 py-2.5 text-xs font-extrabold text-orange-200 hover:bg-orange-500/20 sm:px-5 sm:text-sm"><ArrowLeft size={16}/> Voltar ao painel</a>:ready?<><a href="/acesso" className="sv-nav-action rounded-xl border border-white/20 px-3 py-2.5 text-xs font-bold hover:bg-white/10 sm:px-5 sm:text-sm">Entrar</a><a href="/acesso?mode=register" className="sv-action-primary sv-nav-action rounded-xl bg-[#F97316] px-3 py-2.5 text-xs font-bold text-[#111827] shadow-sm hover:bg-[#EA580C] sm:px-5 sm:text-sm">Criar conta</a></>:null}</div>
    </div>
   </header>
   <main>
